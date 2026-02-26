@@ -1,0 +1,387 @@
+/* ========================================
+   FORMS & MODALS STYLING
+   ======================================== */
+
+:root {
+    --primary-blue: #003366;
+    --secondary-blue: #0055cc;
+    --light-blue: #e6f0ff;
+    --baby-blue: #bbdefb;
+    --green-primary: #00cc66;
+    --red-primary: #ff4444;
+    --gray-light: #f0f4f8;
+    --gray-border: #cce6ff;
+    --error-color: #dc3545;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --shadow-light: 0 4px 12px rgba(0, 51, 102, 0.2);
+    --shadow-medium: 0 8px 16px rgba(0, 51, 102, 0.3);
+}
+
+/* ========================================
+   PAGE BACKGROUND
+   ======================================== */
+
+.form-page-container {
+    background-color: var(--baby-blue);
+    min-height: 100vh;
+    padding: 3rem 1.5rem;
+}
+
+/* ========================================
+   HEADER SECTION
+   ======================================== */
+
+.form-header {
+    margin-bottom: 2rem;
+}
+
+.form-header h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #003366;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.5px;
+}
+
+.form-header p {
+    font-size: 1rem;
+    color: #0055cc;
+    opacity: 0.85;
+    margin: 0;
+}
+
+/* ========================================
+   FORM CARD CONTAINER
+   ======================================== */
+
+.form-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 51, 102, 0.2);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.form-card-wrapper {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* ========================================
+   ERROR MESSAGES
+   ======================================== */
+
+.error-alert {
+    background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+    border-left: 4px solid var(--error-color);
+    padding: 1rem;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 1.5rem;
+}
+
+.error-alert h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #c62828;
+    margin-bottom: 0.75rem;
+}
+
+.error-alert ul {
+    list-style: disc;
+    margin-left: 1.25rem;
+}
+
+.error-alert li {
+    font-size: 0.9rem;
+    color: #b71c1c;
+    margin-bottom: 0.25rem;
+}
+
+/* ========================================
+   FORM GROUP
+   ======================================== */
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group:last-of-type:not(.form-buttons) {
+    margin-bottom: 2rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #003366;
+    margin-bottom: 0.5rem;
+}
+
+/* ========================================
+   INPUT FIELDS
+   ======================================== */
+
+.form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    background-color: white;
+}
+
+.form-input:focus {
+    border-color: var(--secondary-blue);
+    box-shadow: 0 0 0 3px rgba(0, 85, 204, 0.1);
+    outline: none;
+}
+
+.form-input:disabled {
+    background-color: #f5f5f5;
+    color: #888;
+    cursor: not-allowed;
+    border-color: #ccc;
+}
+
+.form-input.error {
+    border-color: var(--error-color);
+}
+
+.form-input.error:focus {
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+/* ========================================
+   FORM MESSAGES
+   ======================================== */
+
+.form-error-message {
+    color: var(--error-color);
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.field-warning {
+    color: #666;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+/* ========================================
+   FORM BUTTONS
+   ======================================== */
+
+.form-buttons {
+    display: flex;
+    gap: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e0e0e0;
+    margin-bottom: 0;
+}
+
+.btn-submit {
+    flex: 1;
+    background: linear-gradient(135deg, #0055cc 0%, #0077ff 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 85, 204, 0.3);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-submit:hover {
+    background: linear-gradient(135deg, #0077ff 0%, #0055cc 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 85, 204, 0.4);
+}
+
+.btn-cancel {
+    flex: 1;
+    background: linear-gradient(135deg, #999999 0%, #777777 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-cancel:hover {
+    background: linear-gradient(135deg, #777777 0%, #555555 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* ========================================
+   INFO BOX
+   ======================================== */
+
+.info-box {
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    border-left: 4px solid var(--success-color);
+    padding: 1.25rem;
+    border-radius: 0 8px 8px 0;
+    margin-top: 2rem;
+}
+
+.info-box h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1b5e20;
+    margin-bottom: 0.75rem;
+}
+
+.info-box ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.info-box li {
+    font-size: 0.9rem;
+    color: #2e7d32;
+    margin-bottom: 0.5rem;
+    padding-left: 0;
+}
+
+.info-box li:last-child {
+    margin-bottom: 0;
+}
+
+/* ========================================
+   FORM WRAPPER FOR CENTER & MAX-WIDTH
+   ======================================== */
+
+.form-wrapper {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-wrapper-inner {
+    padding: 0 1.5rem;
+}
+
+/* ========================================
+   TEXTAREA STYLING
+   ======================================== */
+
+textarea.form-input {
+    resize: vertical;
+    min-height: 100px;
+}
+
+textarea.form-input:focus {
+    border-color: var(--secondary-blue);
+    box-shadow: 0 0 0 3px rgba(0, 85, 204, 0.1);
+}
+
+/* ========================================
+   SELECT STYLING
+   ======================================== */
+
+select.form-input {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 768px) {
+    .form-page-container {
+        padding: 2rem 1rem;
+    }
+
+    .form-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .form-card {
+        padding: 1.5rem;
+    }
+
+    .form-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .btn-submit,
+    .btn-cancel {
+        width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .form-page-container {
+        padding: 1rem;
+    }
+
+    .form-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .form-header p {
+        font-size: 0.9rem;
+    }
+
+    .form-card {
+        padding: 1rem;
+        border-radius: 8px;
+    }
+
+    .form-group label {
+        font-size: 0.9rem;
+    }
+
+    .form-input {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    .error-alert,
+    .info-box {
+        padding: 0.75rem;
+        border-radius: 0 6px 6px 0;
+    }
+
+    .error-alert h3,
+    .info-box h3 {
+        font-size: 0.9rem;
+    }
+
+    .error-alert li,
+    .info-box li {
+        font-size: 0.85rem;
+    }
+}
