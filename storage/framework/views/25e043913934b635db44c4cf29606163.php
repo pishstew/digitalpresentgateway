@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('content'); ?>
 <div class="form-page-container">
     <div class="form-wrapper">
@@ -82,19 +80,28 @@ unset($__errorArgs, $__bag); ?>
 
                 <!-- Kelas Field -->
                 <div class="form-group">
-                    <label for="kelas">📚 Kelas</label>
-                    <input type="text" id="kelas" name="kelas" 
-                        class="form-input <?php $__errorArgs = ['kelas'];
+                    <label>📚 Kelas</label>
+                    <div class="radio-group" <?php $__errorArgs = ['kelas'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> error <?php unset($message);
+$message = $__bag->first($__errorArgs[0]); ?> style="border: 1px solid #dc3545; padding: 10px; border-radius: 4px;" <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>" 
-                        placeholder="Contoh: XI RPL 1" 
-                        value="<?php echo e(old('kelas')); ?>" 
-                        required>
+unset($__errorArgs, $__bag); ?>>
+                        <label class="radio-label">
+                            <input type="radio" name="kelas" value="XI SIJA 1" 
+                                <?php if(old('kelas') == 'XI SIJA 1'): ?> checked <?php endif; ?>
+                                required>
+                            XI SIJA 1
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="kelas" value="XI SIJA 2" 
+                                <?php if(old('kelas') == 'XI SIJA 2'): ?> checked <?php endif; ?>
+                                required>
+                            XI SIJA 2
+                        </label>
+                    </div>
                     <?php $__errorArgs = ['kelas'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :

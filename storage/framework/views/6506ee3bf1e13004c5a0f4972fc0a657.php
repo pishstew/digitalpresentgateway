@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('content'); ?>
 <style>
     :root {
@@ -498,7 +496,7 @@
 
                 <div class="form-group">
                     <label for="jam_ke">⏰ Jam Ke</label>
-                    <input type="text" id="jam_ke" name="jam_ke" placeholder="Contoh: 1, 2, 3..." required>
+                    <input type="text" id="jam_ke" name="jam_ke" placeholder="1-2" required>
                 </div>
 
                 <div class="form-group">
@@ -521,9 +519,18 @@
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label for="kelas">👥 Kelas</label>
-                    <input type="text" id="kelas" name="kelas" placeholder="Contoh: XI RPL 1" required>
+                <div class="form-group" style="flex: none; display: flex; align-items: center; gap: 20px; padding: 12px 0;">
+                    <label style="margin-bottom: 0;">👥 Kelas</label>
+                    <div style="display: flex; gap: 20px; align-items: center;">
+                        <label style="margin: 0; display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: normal;">
+                            <input type="radio" name="kelas" value="XI SIJA 1" required>
+                            XI SIJA 1
+                        </label>
+                        <label style="margin: 0; display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: normal;">
+                            <input type="radio" name="kelas" value="XI SIJA 2" required>
+                            XI SIJA 2
+                        </label>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-submit">Tambah Jadwal</button>

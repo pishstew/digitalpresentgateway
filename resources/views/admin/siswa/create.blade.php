@@ -54,12 +54,21 @@
 
                 <!-- Kelas Field -->
                 <div class="form-group">
-                    <label for="kelas">📚 Kelas</label>
-                    <input type="text" id="kelas" name="kelas" 
-                        class="form-input @error('kelas') error @enderror" 
-                        placeholder="Contoh: XI RPL 1" 
-                        value="{{ old('kelas') }}" 
-                        required>
+                    <label>📚 Kelas</label>
+                    <div class="radio-group" @error('kelas') style="border: 1px solid #dc3545; padding: 10px; border-radius: 4px;" @enderror>
+                        <label class="radio-label">
+                            <input type="radio" name="kelas" value="XI SIJA 1" 
+                                @if(old('kelas') == 'XI SIJA 1') checked @endif
+                                required>
+                            XI SIJA 1
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="kelas" value="XI SIJA 2" 
+                                @if(old('kelas') == 'XI SIJA 2') checked @endif
+                                required>
+                            XI SIJA 2
+                        </label>
+                    </div>
                     @error('kelas')
                         <p class="form-error-message">❌ {{ $message }}</p>
                     @enderror

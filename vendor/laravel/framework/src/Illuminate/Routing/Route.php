@@ -1008,7 +1008,9 @@ class Route
         }
 
         if (isset($this->action['can'])) {
-            $this->can($this->action['can']);
+            foreach ($this->action['can'] as $can) {
+                $this->can($can[0], $can[1] ?? []);
+            }
         }
 
         return $this;
@@ -1065,7 +1067,7 @@ class Route
      * Get or set the middlewares attached to the route.
      *
      * @param  array|string|null  $middleware
-     * @return $this|array
+     * @return ($middleware is null ? array : $this)
      */
     public function middleware($middleware = null)
     {

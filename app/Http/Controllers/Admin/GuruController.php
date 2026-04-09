@@ -69,4 +69,37 @@ class GuruController extends Controller
 
         return redirect()->route('guru.index')->with('success','Data berhasil dihapus');
     }
+
+    public function export()
+{
+    $data = Guru::with('mapel')->get();
+
+    $filename = "data_guru_" . date('Y-m-d') . ".csv";
+
+    $headers = [
+        "Content-Type" => "text/csv",
+        "Content-Disposition" => "attachment; filename=$filename",
+    ];
+
+    $callback = function() use ($data) {
+
+        $file = fopen('php://output', 'w');
+
+        fputcsv($file, ['No', 'NIP', 'Nama Guru', 'Mata Pelajaran']);
+
+        $no = 1;
+        foreach ($data as $row) {
+            fputcsv($file, [
+                $no++,
+                $row->nip,
+                $row->nama_guru,
+                $row->mapel->nama_mapel ?? '-'
+            ]);
+        }
+
+        fclose($file);
+    };
+
+    return response()->stream($callback, 200, $headers);
+}
 }

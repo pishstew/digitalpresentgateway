@@ -27,6 +27,8 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::resource('mapel', MapelController::class);
     Route::resource('jadwal', JadwalPelajaranController::class);
     Route::resource('presensi', PresensiController::class);
+    Route::get('/presensi/export', [PresensiController::class, 'export'])->name('presensi.export');
+    Route::get('/guru/export', [App\Http\Controllers\GuruController::class, 'export'])->name('guru.export');
 
 });
 

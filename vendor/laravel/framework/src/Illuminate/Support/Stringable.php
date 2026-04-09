@@ -223,6 +223,18 @@ class Stringable implements JsonSerializable, ArrayAccess, BaseStringable
     }
 
     /**
+     * Determine if a given string doesn't contain a given substring.
+     *
+     * @param  string|iterable<string>  $needles
+     * @param  bool  $ignoreCase
+     * @return bool
+     */
+    public function doesntContain($needles, $ignoreCase = false)
+    {
+        return Str::doesntContain($this->value, $needles, $ignoreCase);
+    }
+
+    /**
      * Convert the case of a string.
      *
      * @param  int  $mode
@@ -237,12 +249,12 @@ class Stringable implements JsonSerializable, ArrayAccess, BaseStringable
     /**
      * Replace consecutive instances of a given character with a single character.
      *
-     * @param  string  $character
+     * @param  array<string>|string  $characters
      * @return static
      */
-    public function deduplicate(string $character = ' ')
+    public function deduplicate(array|string $characters = ' ')
     {
-        return new static(Str::deduplicate($this->value, $character));
+        return new static(Str::deduplicate($this->value, $characters));
     }
 
     /**
@@ -1096,6 +1108,17 @@ class Stringable implements JsonSerializable, ArrayAccess, BaseStringable
     }
 
     /**
+     * Capitalize the first character of each word in a string.
+     *
+     * @param  string  $separators
+     * @return static
+     */
+    public function ucwords($separators = " \t\r\n\f\v")
+    {
+        return new static(Str::ucwords($this->value, $separators));
+    }
+
+    /**
      * Split a string by uppercase characters.
      *
      * @return \Illuminate\Support\Collection<int, string>
@@ -1470,7 +1493,7 @@ class Stringable implements JsonSerializable, ArrayAccess, BaseStringable
      */
     public function toFloat()
     {
-        return floatval($this->value);
+        return (float) $this->value;
     }
 
     /**

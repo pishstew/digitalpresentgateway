@@ -511,9 +511,13 @@
         <!-- Card Container -->
         <div class="card-container">
             <!-- Card Header -->
-            <div class="card-header">
-                <h2>📋 Daftar Guru</h2>
-            </div>
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+    <h2>📋 Daftar Guru</h2>
+
+    <a href="{{ route('guru.export') }}" class="btn-add">
+        ⬇️ Export Excel
+    </a>
+</div>
 
             <!-- Table -->
             <div class="table-container">

@@ -310,6 +310,46 @@
         margin: 0;
         font-weight: 500;
     }
+
+    /* Pagination Styling */
+    .pagination-container {
+        background: linear-gradient(90deg, #f5f9ff 0%, #e6f0ff 100%);
+        border-top: 1px solid #cce6ff;
+    }
+
+    .pagination-container .pagination {
+        justify-content: center;
+        margin: 0;
+    }
+
+    .pagination-container .page-link {
+        color: var(--primary-blue);
+        background-color: white;
+        border: 1px solid #cce6ff;
+        padding: 8px 12px;
+        margin: 0 2px;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .pagination-container .page-link:hover {
+        background-color: var(--light-blue);
+        color: var(--dark-blue);
+        border-color: var(--secondary-blue);
+    }
+
+    .pagination-container .page-item.active .page-link {
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+        color: white;
+        border-color: var(--primary-blue);
+    }
+
+    .pagination-container .page-item.disabled .page-link {
+        color: #ccc;
+        background-color: #f8f9fa;
+        border-color: #dee2e6;
+    }
 </style>
 
 <div class="page-bg py-12">
@@ -383,15 +423,21 @@
                                     </div>
                                 </td>
                             </tr>
+
                         @endforelse
                     </tbody>
                 </table>
             </div>
 
+            <!-- Pagination -->
+            <div class="pagination-container" style="padding: 20px; text-align: center;">
+                {{ $siswa->links() }}
+            </div>
+
             <!-- Card Footer -->
             <div class="card-footer">
                 <span>📊 Total Siswa:</span>
-                <span style="color: var(--secondary-blue); font-size: 1.2rem; margin-left: 8px;">{{ count($siswa) }}</span>
+                <span style="color: var(--secondary-blue); font-size: 1.2rem; margin-left: 8px;">{{ $siswa->total() }}</span>
                 <span style="margin-left: 4px;">orang</span>
             </div>
         </div>

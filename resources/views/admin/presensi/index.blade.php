@@ -272,6 +272,36 @@
         color: white;
     }
 
+    /* Kelas Filter Button */
+    .btn-kelas {
+        flex: 1;
+        text-align: center;
+        padding: 12px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: 2px solid #0055cc;
+        background: white;
+        color: #0055cc;
+        cursor: pointer;
+        font-size: 1rem;
+        box-shadow: 0 2px 4px rgba(0, 85, 204, 0.1);
+    }
+
+    .btn-kelas:hover {
+        background: linear-gradient(135deg, #0055cc 0%, #003366 100%);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 85, 204, 0.2);
+    }
+
+    .btn-kelas.active {
+        background: linear-gradient(135deg, #0055cc 0%, #003366 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(0, 85, 204, 0.3);
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
         .header-section {
@@ -311,6 +341,25 @@
             </div>
         @endif
 
+        <!-- Kelas Filter Section -->
+        <div class="card-container mb-8">
+            <div class="card-header">
+                <h2>📚 Pilih Kelas</h2>
+            </div>
+            <div style="padding: 20px 30px;">
+                <div style="display: flex; gap: 12px;">
+                    <a href="{{ route('presensi.index', ['kelas' => 'XI SIJA 1']) }}" 
+                       class="btn-kelas @if($kelas === 'XI SIJA 1') active @endif">
+                        👥 XI SIJA 1
+                    </a>
+                    <a href="{{ route('presensi.index', ['kelas' => 'XI SIJA 2']) }}" 
+                       class="btn-kelas @if($kelas === 'XI SIJA 2') active @endif">
+                        👥 XI SIJA 2
+                    </a>
+                </div>
+            </div>
+        </div>
+
         <!-- Search Section -->
         <div class="card-container mb-8">
             <div class="card-header">
@@ -319,6 +368,9 @@
             <div style="padding: 20px 30px;">
                 <form method="GET" class="search-section">
                     <input type="text" name="search" placeholder="Cari berdasarkan nama siswa atau status..." value="{{ request('search') }}">
+                    @if($kelas)
+                        <input type="hidden" name="kelas" value="{{ $kelas }}">
+                    @endif
                     <button type="submit">Cari</button>
                 </form>
             </div>
@@ -328,7 +380,7 @@
         <div class="card-container">
             <!-- Card Header -->
             <div class="card-header">
-                <h2>📋 Daftar Presensi</h2>
+                <h2>📋 Daftar Presensi @if($kelas) - {{ $kelas }} @endif</h2>
             </div>
 
             <!-- Table -->
@@ -387,12 +439,15 @@
                 <span>📊 Total Presensi:</span>
                 <span style="color: var(--secondary-blue); font-size: 1.2rem; margin-left: 8px;">{{ $presensi->total() }}</span>
                 <span style="margin-left: 4px;">record</span>
+                <a href="{{ route('presensi.export') }}" class="btn btn-success">
+                Export Excel
+                </a>
             </div>
         </div>
 
         <!-- Pagination -->
         <div style="margin-top: 24px; display: flex; justify-content: center;">
-            {{ $presensi->links() }}
+            {{ $presensi->appends(request()->query())->links() }}
         </div>
     </div>
 </div>
