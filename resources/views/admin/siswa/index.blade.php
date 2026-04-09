@@ -196,8 +196,34 @@
         box-shadow: 0 5px 12px rgba(255, 68, 68, 0.4);
     }
 
-    /* Card Footer */
-    .card-footer {
+    /* Filter Buttons */
+    .btn-filter {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        color: var(--primary-blue);
+        padding: 8px 16px;
+        border: 2px solid var(--primary-blue);
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        box-shadow: 0 2px 8px rgba(0, 51, 102, 0.1);
+    }
+
+    .btn-filter:hover {
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 51, 102, 0.3);
+    }
+
+    .btn-filter.active {
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(0, 51, 102, 0.3);
+    }
         background: linear-gradient(90deg, #f5f9ff 0%, #e6f0ff 100%);
         padding: 16px 30px;
         border-top: 2px solid #cce6ff;
@@ -382,6 +408,17 @@
             <!-- Card Header -->
             <div class="card-header">
                 <h2>📋 Daftar Siswa</h2>
+                <div style="margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap;">
+                    <a href="{{ route('siswa.index') }}" class="btn-filter {{ !request('kelas') ? 'active' : '' }}">
+                        📚 Semua Kelas
+                    </a>
+                    <a href="{{ route('siswa.index', ['kelas' => 'XI SIJA 1']) }}" class="btn-filter {{ request('kelas') == 'XI SIJA 1' ? 'active' : '' }}">
+                        🎓 XI SIJA 1
+                    </a>
+                    <a href="{{ route('siswa.index', ['kelas' => 'XI SIJA 2']) }}" class="btn-filter {{ request('kelas') == 'XI SIJA 2' ? 'active' : '' }}">
+                        🎓 XI SIJA 2
+                    </a>
+                </div>
             </div>
 
             <!-- Table -->
@@ -431,7 +468,7 @@
 
             <!-- Pagination -->
             <div class="pagination-container" style="padding: 20px; text-align: center;">
-                {{ $siswa->links() }}
+                {{ $siswa->appends(request()->query())->links() }}
             </div>
 
             <!-- Card Footer -->
