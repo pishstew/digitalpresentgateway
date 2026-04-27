@@ -1,3 +1,4 @@
+php artisan view:clear
 #!/usr/bin/env php
 <?php
 

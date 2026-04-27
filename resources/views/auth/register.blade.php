@@ -4,8 +4,8 @@
 
         <!-- NAME -->
         <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input 
+            <x-input-label for="name" :value="__('Nama Lengkap')" />
+            <x-text-input
                 id="name"
                 class="block mt-1 w-full"
                 type="text"
@@ -20,7 +20,7 @@
         <!-- EMAIL -->
         <div class="mt-4">
             <x-input-label for="email" :value="__('Email')" />
-            <x-text-input 
+            <x-text-input
                 id="email"
                 class="block mt-1 w-full"
                 type="email"
@@ -34,7 +34,7 @@
         <!-- PASSWORD -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
-            <x-text-input 
+            <x-text-input
                 id="password"
                 class="block mt-1 w-full"
                 type="password"
@@ -46,36 +46,45 @@
 
         <!-- CONFIRM PASSWORD -->
         <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-            <x-text-input 
+            <x-input-label for="password_confirmation" :value="__('Konfirmasi Password')" />
+            <x-text-input
                 id="password_confirmation"
                 class="block mt-1 w-full"
                 type="password"
                 name="password_confirmation"
                 required
             />
+            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
         <!-- ROLE -->
         <div class="mt-4">
-            <x-input-label value="Role" />
-            <select name="role" class="block mt-1 w-full border rounded p-2" required>
+            <x-input-label for="role" :value="__('Daftar Sebagai')" />
+            <select
+                id="role"
+                name="role"
+                class="block mt-1 w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                required
+                onchange="toggleNip(this.value)"
+            >
                 <option value="">-- Pilih Role --</option>
-                <option value="admin">Admin</option>
-                <option value="guru">Guru</option>
+                <option value="guru"  {{ old('role') === 'guru'  ? 'selected' : '' }}>Guru</option>
+                <option value="siswa" {{ old('role') === 'siswa' ? 'selected' : '' }}>Siswa</option>
+                {{-- Admin tidak bisa daftar sendiri, hanya dibuat via seeder/manual --}}
             </select>
             <x-input-error :messages="$errors->get('role')" class="mt-2" />
         </div>
 
-        <!-- NIP -->
-        <div class="mt-4">
-            <x-input-label value="NIP (khusus guru)" />
-            <input 
+        <!-- NIP (hanya tampil jika role = guru) -->
+        <div class="mt-4" id="nip-field" style="{{ old('role') === 'guru' ? '' : 'display:none' }}">
+            <x-input-label for="nip" :value="__('NIP (Nomor Induk Pegawai)')" />
+            <x-text-input
+                id="nip"
+                class="block mt-1 w-full"
                 type="text"
                 name="nip"
-                value="{{ old('nip') }}"
-                class="block mt-1 w-full border rounded p-2"
-                placeholder="Isi jika guru"
+                :value="old('nip')"
+                placeholder="Isi NIP jika mendaftar sebagai Guru"
             />
             <x-input-error :messages="$errors->get('nip')" class="mt-2" />
         </div>
@@ -88,9 +97,16 @@
             </a>
 
             <x-primary-button class="ms-4">
-                Register
+                Daftar
             </x-primary-button>
         </div>
 
     </form>
+
+    <script>
+        function toggleNip(role) {
+            const nipField = document.getElementById('nip-field');
+            nipField.style.display = role === 'guru' ? 'block' : 'none';
+        }
+    </script>
 </x-guest-layout>

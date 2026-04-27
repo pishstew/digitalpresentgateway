@@ -25,10 +25,27 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $user = auth()->user();
+
+        // Cek apakah akun aktif
+        if (!$user->is_active) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login')->withErrors([
+                'email' => 'Akun Anda telah dinonaktifkan. Hubungi administrator.',
+            ]);
+        }
+
+        return match($user->role) {
+            'admin' => redirect()->intended(route('admin.dashboard')),
+            'guru'  => redirect()->intended(route('guru.dashboard')),
+            'siswa' => redirect()->intended(route('siswa.dashboard')),
+            default => redirect()->route('login'),
+        };
     }
 
     /**

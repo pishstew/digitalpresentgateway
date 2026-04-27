@@ -1,521 +1,88 @@
 @extends('layouts.app')
 
 @section('content')
-<style>
-    :root {
-        --primary-blue: #003366;
-        --secondary-blue: #0055cc;
-        --light-blue: #e6f0ff;
-        --dark-blue: #001f44;
-        --gold-accent: #ffcc00;
-    }
+<div class="page-bg">
 
-    /* Background Gradient */
-    .page-bg {
-        background: linear-gradient(135deg, #f0f4f8 0%, #e6f0ff 100%);
-        min-height: 100vh;
-    }
+    {{-- HERO --}}
+    <div class="page-hero">
+        <div class="hero-blob hero-blob-1"></div>
+        <div class="hero-blob hero-blob-2"></div>
+        <h1 class="hero-title">📚 Manajemen Mata Pelajaran</h1>
+        <p class="hero-sub">Kelola data mata pelajaran sekolah dengan mudah dan efisien</p>
+    </div>
 
-    /* Header Styling */
-    .header-section {
-        background: linear-gradient(135deg, #003366 0%, #0055cc 100%);
-        padding: 30px;
-        border-radius: 12px;
-        color: white;
-        margin-bottom: 30px;
-        box-shadow: 0 8px 16px rgba(0, 51, 102, 0.3);
-    }
+    <div class="dash-body" style="max-width: 1100px;">
 
-    .header-section h1 {
-        color: white;
-        margin-bottom: 8px;
-        font-size: 2.5rem;
-        margin-top: 0;
-    }
-
-    .header-section p {
-        color: #e6f0ff;
-        font-size: 1.1rem;
-        margin: 0;
-    }
-
-    /* Form Section */
-    .form-section {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 8px 24px rgba(0, 51, 102, 0.15);
-        padding: 30px;
-        margin-bottom: 30px;
-    }
-
-    .form-section h2 {
-        color: var(--primary-blue);
-        font-size: 1.5rem;
-        margin-top: 0;
-        margin-bottom: 20px;
-        border-bottom: 3px solid var(--light-blue);
-        padding-bottom: 12px;
-    }
-
-    .form-horizontal {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 16px;
-        align-items: flex-end;
-    }
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        min-width: 200px;
-    }
-
-    .form-group label {
-        font-weight: 600;
-        color: var(--primary-blue);
-        margin-bottom: 8px;
-        font-size: 0.95rem;
-    }
-
-    .form-group input,
-    .form-group select {
-        padding: 12px 16px;
-        border: 2px solid #cce6ff;
-        border-radius: 8px;
-        font-size: 1rem;
-        font-family: inherit;
-        transition: all 0.3s ease;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus {
-        border-color: var(--secondary-blue);
-        outline: none;
-        box-shadow: 0 0 8px rgba(0, 85, 204, 0.2);
-    }
-
-    .btn-submit {
-        padding: 12px 28px;
-        background: linear-gradient(135deg, #00cc66 0%, #00aa55 100%);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 3px 8px rgba(0, 204, 102, 0.3);
-    }
-
-    .btn-submit:hover {
-        background: linear-gradient(135deg, #00aa55 0%, #008844 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 5px 12px rgba(0, 204, 102, 0.4);
-    }
-
-    /* Tombol Kembali ke Dashboard */
-    .btn-back {
-        background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
-        color: white;
-        padding: 10px 18px;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        display: inline-block;
-        box-shadow: 0 3px 8px rgba(108, 117, 125, 0.3);
-        margin-bottom: 20px;
-    }
-
-    .btn-back:hover {
-        background: linear-gradient(135deg, #5a6268 0%, #495057 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 5px 12px rgba(108, 117, 125, 0.4);
-        text-decoration: none;
-        color: white;
-    }
-
-    /* Search Form */
-    .search-section {
-        display: flex;
-        gap: 12px;
-        margin-bottom: 20px;
-    }
-
-    .search-section input {
-        flex: 1;
-        padding: 10px 16px;
-        border: 2px solid #cce6ff;
-        border-radius: 8px;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-    }
-
-    .search-section input:focus {
-        border-color: var(--secondary-blue);
-        outline: none;
-        box-shadow: 0 0 8px rgba(0, 85, 204, 0.2);
-    }
-
-    .search-section button {
-        padding: 10px 20px;
-        background: linear-gradient(135deg, #003366 0%, #0055cc 100%);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 3px 8px rgba(0, 51, 102, 0.3);
-    }
-
-    .search-section button:hover {
-        background: linear-gradient(135deg, #0055cc 0%, #003366 100%);
-        transform: translateY(-2px);
-    }
-
-    /* Card Container */
-    .card-container {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 8px 24px rgba(0, 51, 102, 0.15);
-        overflow: hidden;
-    }
-
-    .card-header {
-        background: linear-gradient(135deg, #003366 0%, #0055cc 50%, #0077ff 100%);
-        padding: 20px 30px;
-        color: white;
-    }
-
-    .card-header h2 {
-        margin: 0;
-        font-size: 1.5rem;
-    }
-
-    /* Table Styling */
-    .table-container {
-        overflow-x: auto;
-    }
-
-    .table-wrapper {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .table-wrapper thead {
-        background: linear-gradient(90deg, #e6f0ff 0%, #cce6ff 100%);
-    }
-
-    .table-wrapper th {
-        padding: 16px 20px;
-        text-align: left;
-        font-weight: 600;
-        color: var(--primary-blue);
-        border-bottom: 2px solid var(--primary-blue);
-    }
-
-    .table-wrapper td {
-        padding: 14px 20px;
-        border-bottom: 1px solid #e0e7ff;
-        color: #333;
-    }
-
-    .table-wrapper tbody tr {
-        transition: all 0.3s ease;
-    }
-
-    .table-wrapper tbody tr:hover {
-        background-color: #fffacd;
-        box-shadow: inset 0 0 8px rgba(255, 204, 0, 0.2);
-    }
-
-    .table-wrapper tbody tr:nth-child(even) {
-        background-color: #f5f9ff;
-    }
-
-    /* Badge Mapel */
-    .badge-mapel {
-        display: inline-block;
-        background: linear-gradient(135deg, #003366 0%, #0055cc 100%);
-        color: white;
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        box-shadow: 0 2px 8px rgba(0, 51, 102, 0.2);
-    }
-
-    /* Action Buttons */
-    .btn-action {
-        padding: 8px 14px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: 600;
-        font-size: 0.85rem;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        display: inline-block;
-        margin: 0 4px;
-    }
-
-    .btn-edit {
-        background: linear-gradient(135deg, #ff9500 0%, #ff8800 100%);
-        color: white;
-        box-shadow: 0 3px 8px rgba(255, 149, 0, 0.3);
-    }
-
-    .btn-edit:hover {
-        background: linear-gradient(135deg, #ff8800 0%, #ff7700 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 5px 12px rgba(255, 149, 0, 0.4);
-    }
-
-    .btn-delete {
-        background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
-        color: white;
-        border: none;
-        box-shadow: 0 3px 8px rgba(255, 68, 68, 0.3);
-    }
-
-    .btn-delete:hover {
-        background: linear-gradient(135deg, #cc0000 0%, #990000 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 5px 12px rgba(255, 68, 68, 0.4);
-    }
-
-    /* Card Footer */
-    .card-footer {
-        background: linear-gradient(90deg, #f5f9ff 0%, #e6f0ff 100%);
-        padding: 16px 30px;
-        border-top: 2px solid #cce6ff;
-        color: var(--primary-blue);
-        font-weight: 600;
-    }
-
-    /* Modal Styling */
-    .modal-overlay {
-        position: fixed;
-        inset: 0;
-        background-color: rgba(0, 0, 0, 0.6);
-        z-index: 50;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .modal-overlay.hidden {
-        display: none;
-    }
-
-    .modal-content {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 12px 40px rgba(0, 51, 102, 0.3);
-        padding: 30px;
-        width: 90%;
-        max-width: 420px;
-    }
-
-    .modal-header {
-        font-size: 1.3rem;
-        font-weight: bold;
-        color: var(--primary-blue);
-        margin-bottom: 16px;
-    }
-
-    .modal-text {
-        color: #555;
-        margin-bottom: 24px;
-        line-height: 1.6;
-    }
-
-    .modal-buttons {
-        display: flex;
-        gap: 12px;
-    }
-
-    .btn-modal {
-        flex: 1;
-        padding: 12px 16px;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .btn-modal-cancel {
-        background: linear-gradient(135deg, #999999 0%, #777777 100%);
-        color: white;
-    }
-
-    .btn-modal-cancel:hover {
-        background: linear-gradient(135deg, #777777 0%, #555555 100%);
-        transform: translateY(-2px);
-    }
-
-    .btn-modal-confirm {
-        background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
-        color: white;
-    }
-
-    .btn-modal-confirm:hover {
-        background: linear-gradient(135deg, #cc0000 0%, #990000 100%);
-        transform: translateY(-2px);
-    }
-
-    /* Empty State */
-    .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-        color: #999;
-    }
-
-    .empty-state p:first-child {
-        font-size: 1.3rem;
-        font-weight: bold;
-        color: #666;
-        margin-bottom: 8px;
-    }
-
-    .empty-state p:last-child {
-        color: #999;
-        font-size: 0.95rem;
-    }
-
-    /* Success Alert */
-    .alert-success {
-        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-        border-left: 4px solid #28a745;
-        padding: 16px 20px;
-        border-radius: 8px;
-        margin-bottom: 24px;
-    }
-
-    .alert-success p {
-        color: #155724;
-        margin: 0;
-        font-weight: 500;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-        .form-horizontal {
-            flex-direction: column;
-        }
-
-        .form-group {
-            min-width: 100%;
-        }
-
-        .header-section {
-            flex-direction: column;
-            text-align: center;
-        }
-
-        .header-section h1 {
-            font-size: 1.8rem;
-        }
-    }
-</style>
-
-<div class="page-bg py-12">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <!-- Header Section with Gradient -->
-        <div class="header-section mb-8" style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <h1>📚 Manajemen Mata Pelajaran</h1>
-                <p>Kelola data mata pelajaran sekolah dengan mudah dan efisien</p>
-            </div>
-            <a href="{{ route('dashboard') }}" class="btn-back">
-                ⬅️ Kembali ke Dashboard
-            </a>
-        </div>
-
-        <!-- Success Alert -->
         @if ($message = Session::get('success'))
-            <div class="alert-success">
-                <p>✅ {{ $message }}</p>
-            </div>
+            <div class="alert-success">✅ {{ $message }}</div>
         @endif
 
-        <!-- Form Section -->
+        {{-- ACTION BAR --}}
+        <div style="display: flex; justify-content: flex-start; margin-bottom: 16px;">
+            <a href="{{ route('admin.dashboard') }}" class="btn btn-slate">⬅️ Dashboard</a>
+        </div>
+
+        {{-- FORM TAMBAH --}}
         <div class="form-section">
             <h2>➕ Tambah Mata Pelajaran</h2>
-            <form action="{{ route('mapel.store') }}" method="POST" class="form-horizontal">
+            <form action="{{ route('admin.mapel.store') }}" method="POST" class="form-horizontal">
                 @csrf
-
                 <div class="form-group">
-                    <label for="kode_mapel">🔑 Kode Mapel</label>
-                    <input type="text" id="kode_mapel" name="kode_mapel" placeholder="Contoh: MPL01" required>
+                    <label class="form-label">🔑 Kode Mapel</label>
+                    <input type="text" name="kode_mapel" class="form-input" placeholder="Contoh: MPL01" required>
                 </div>
-
                 <div class="form-group">
-                    <label for="nama_mapel">📖 Nama Mata Pelajaran</label>
-                    <input type="text" id="nama_mapel" name="nama_mapel" placeholder="Contoh: Bahasa Indonesia" required>
+                    <label class="form-label">📖 Nama Mata Pelajaran</label>
+                    <input type="text" name="nama_mapel" class="form-input" placeholder="Contoh: Bahasa Indonesia" required>
                 </div>
-
-                <button type="submit" class="btn-submit">Tambah Mapel</button>
+                <div style="display: flex; align-items: flex-end;">
+                    <button type="submit" class="btn btn-teal">➕ Tambah Mapel</button>
+                </div>
             </form>
         </div>
 
-        <!-- Search Section -->
-        <div class="card-container mb-8">
-            <div class="card-header">
-                <h2>🔍 Cari Mata Pelajaran</h2>
-            </div>
-            <div style="padding: 20px 30px;">
+        {{-- SEARCH --}}
+        <div class="g-card">
+            <div class="g-card-header"><h2>🔍 Cari Mata Pelajaran</h2></div>
+            <div class="g-card-body">
                 <form method="GET" class="search-section">
-                    <input type="text" name="search" placeholder="Cari berdasarkan kode atau nama mata pelajaran..." value="{{ request('search') }}">
-                    <button type="submit">Cari</button>
+                    <input type="text" name="search" class="form-input" placeholder="Cari berdasarkan kode atau nama mata pelajaran..." value="{{ request('search') }}">
+                    <button type="submit" class="btn btn-blue">Cari</button>
                 </form>
             </div>
         </div>
 
-        <!-- Card Container -->
-        <div class="card-container">
-            <!-- Card Header -->
-            <div class="card-header">
-                <h2>📋 Daftar Mata Pelajaran</h2>
-            </div>
+        {{-- TABEL --}}
+        <div class="g-card">
+            <div class="g-card-header"><h2>📋 Daftar Mata Pelajaran</h2></div>
 
-            <!-- Table -->
             <div class="table-container">
                 <table class="table-wrapper">
                     <thead>
                         <tr>
                             <th style="width: 5%;">No</th>
                             <th style="width: 25%;">Kode Mapel</th>
-                            <th style="width: 50%;">Nama Mata Pelajaran</th>
-                            <th style="width: 20%; text-align: center;">Aksi</th>
+                            <th style="width: 55%;">Nama Mata Pelajaran</th>
+                            <th style="width: 15%; text-align: center;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($mapel as $index => $item)
                             <tr>
                                 <td>{{ $mapel->firstItem() + $index }}</td>
-                                <td style="font-family: monospace; font-weight: 500;">{{ $item->kode_mapel }}</td>
+                                <td><span class="badge badge-navy" style="font-family: monospace;">{{ $item->kode_mapel }}</span></td>
                                 <td style="font-weight: 500;">{{ $item->nama_mapel }}</td>
                                 <td style="text-align: center;">
-                                    <a href="{{ route('mapel.edit', $item->kode_mapel) }}" class="btn-action btn-edit">
-                                        ✏️ Edit
-                                    </a>
-                                    <button type="button" onclick="deleteConfirm('{{ route('mapel.destroy', $item->kode_mapel) }}', '{{ $item->nama_mapel }}')" class="btn-action btn-delete">
-                                        🗑️ Hapus
-                                    </button>
+                                    <a href="{{ route('admin.mapel.edit', $item->kode_mapel) }}" class="btn btn-sm btn-orange">✏️ Edit</a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="4">
                                     <div class="empty-state">
-                                        <p>📭 Belum ada data mata pelajaran</p>
-                                        <p>Gunakan form di atas untuk menambahkan data baru</p>
+                                        <div class="empty-icon">📭</div>
+                                        <p>Belum ada data mata pelajaran</p>
+                                        <small>Gunakan form di atas untuk menambahkan data baru</small>
                                     </div>
                                 </td>
                             </tr>
@@ -524,59 +91,16 @@
                 </table>
             </div>
 
-            <!-- Card Footer -->
+            <div class="pagination-wrap">
+                {{ $mapel->links() }}
+            </div>
+
             <div class="card-footer">
-                <span>📊 Total Mata Pelajaran:</span>
-                <span style="color: var(--secondary-blue); font-size: 1.2rem; margin-left: 8px;">{{ $mapel->total() }}</span>
-                <span style="margin-left: 4px;">item</span>
+                <span>📊 Total Mata Pelajaran</span>
+                <span class="badge badge-blue">{{ $mapel->total() }} item</span>
             </div>
         </div>
 
-        <!-- Pagination -->
-        <div style="margin-top: 24px; display: flex; justify-content: center;">
-            {{ $mapel->links() }}
-        </div>
     </div>
 </div>
-
-<!-- Delete Confirmation Modal -->
-<div id="deleteModal" class="modal-overlay hidden">
-    <div class="modal-content">
-        <div class="modal-header">⚠️ Konfirmasi Penghapusan</div>
-        <div class="modal-text">
-            Apakah Anda yakin ingin menghapus mata pelajaran <strong id="mapelName"></strong>? Tindakan ini tidak dapat dibatalkan.
-        </div>
-        <div class="modal-buttons">
-            <button type="button" onclick="cancelDelete()" class="btn-modal btn-modal-cancel">
-                ❌ Batal
-            </button>
-            <form id="deleteForm" method="POST" style="flex: 1;">
-                @csrf
-                @method('DELETE')
-                <button type="submit" style="width: 100%;" class="btn-modal btn-modal-confirm">
-                    🗑️ Hapus
-                </button>
-            </form>
-        </div>
-    </div>
-</div>
-
-<script>
-function deleteConfirm(deleteUrl, mapelName) {
-    document.getElementById('deleteForm').action = deleteUrl;
-    document.getElementById('mapelName').textContent = mapelName;
-    document.getElementById('deleteModal').classList.remove('hidden');
-}
-
-function cancelDelete() {
-    document.getElementById('deleteModal').classList.add('hidden');
-}
-
-// Close modal when clicking outside
-document.getElementById('deleteModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        cancelDelete();
-    }
-});
-</script>
 @endsection

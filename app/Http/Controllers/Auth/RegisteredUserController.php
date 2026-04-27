@@ -25,34 +25,34 @@ class RegisteredUserController extends Controller
     /**
      * Proses register user
      */
-    public function store(Request $request): RedirectResponse
-    {
-        // VALIDASI INPUT
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+// app/Http/Controllers/Auth/RegisteredUserController.php
 
-            // TAMBAHAN ROLE & NIP
-            'role' => ['required'],
-            'nip' => ['nullable', 'string'],
-        ]);
+public function store(Request $request): RedirectResponse
+{
+    $request->validate([
+        'name'     => ['required', 'string', 'max:255'],
+        'email'    => ['required', 'string', 'email', 'max:255', 'unique:users'],
+        'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        'role'     => ['required', 'in:admin,guru,siswa'], // validasi role
+        'nip'      => ['nullable', 'string'],              // untuk guru
+    ]);
 
-        // SIMPAN USER
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+    $user = User::create([
+        'name'     => $request->name,
+        'email'    => $request->email,
+        'password' => Hash::make($request->password),
+        'role'     => $request->role,   // ← INI YANG PENTING, jangan hardcode 'admin'
+        'nip'      => $request->nip,
+    ]);
 
-            // TAMBAHAN
-            'role' => $request->role,
-            'nip' => $request->nip,
-        ]);
+    event(new Registered($user));
+    Auth::login($user);
 
-        event(new Registered($user));
-
-        Auth::login($user);
-
-        return redirect(route('dashboard', absolute: false));
-    }
+    return match($user->role) {
+        'admin' => redirect()->route('admin.dashboard'),
+        'guru'  => redirect()->route('guru.dashboard'),
+        'siswa' => redirect()->route('siswa.dashboard'),
+        default => redirect()->route('login'),
+    };
+}
 }

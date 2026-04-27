@@ -23,7 +23,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('mapel.update', $mapel->kode_mapel) }}" method="POST">
+            <form action="{{ route('admin.mapel.update', $mapel->kode_mapel) }}" method="POST">
                 @csrf
                 @method('PUT')
 
@@ -55,7 +55,7 @@
                     <button type="submit" class="btn-submit">
                         ✅ Perbarui
                     </button>
-                    <a href="{{ route('mapel.index') }}" class="btn-cancel">
+                    <a href="{{ route('admin.mapel.index') }}" class="btn-cancel">
                         ❌ Batal
                     </a>
                 </div>

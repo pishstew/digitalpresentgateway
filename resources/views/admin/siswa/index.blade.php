@@ -1,524 +1,264 @@
 @extends('layouts.app')
 
 @section('content')
-<style>
-    :root {
-        --primary-blue: #003366;
-        --secondary-blue: #0055cc;
-        --light-blue: #e6f0ff;
-        --dark-blue: #001f44;
-        --gold-accent: #ffcc00;
-    }
+<div class="page-bg">
 
-    /* Background Gradient */
-    .page-bg {
-        background: linear-gradient(135deg, #f0f4f8 0%, #e6f0ff 100%);
-        min-height: 100vh;
-    }
+    {{-- HERO --}}
+    <div class="page-hero">
+        <div class="hero-blob hero-blob-1"></div>
+        <div class="hero-blob hero-blob-2"></div>
+        <h1 class="hero-title">👥 Manajemen Siswa</h1>
+        <p class="hero-sub">Kelola data siswa sekolah dengan mudah dan efisien</p>
+    </div>
 
-    /* Header Styling */
-    .header-section {
-        background: linear-gradient(135deg, #003366 0%, #0055cc 100%);
-        padding: 30px;
-        border-radius: 12px;
-        color: white;
-        margin-bottom: 30px;
-        box-shadow: 0 8px 16px rgba(0, 51, 102, 0.3);
-    }
+    <div class="dash-body" style="max-width: 1100px;">
 
-    .header-section h1 {
-        color: white;
-        margin-bottom: 8px;
-        font-size: 2.5rem;
-        margin-top: 0;
-    }
-
-    .header-section p {
-        color: #e6f0ff;
-        font-size: 1.1rem;
-        margin: 0;
-    }
-
-    /* Tombol Tambah Siswa */
-    .btn-add {
-        background: linear-gradient(135deg, #00cc66 0%, #00aa55 100%);
-        color: white;
-        padding: 12px 24px;
-        border: none;
-        border-radius: 8px;
-        font-weight: bold;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        display: inline-block;
-        box-shadow: 0 4px 12px rgba(0, 204, 102, 0.3);
-    }
-
-    .btn-add:hover {
-        background: linear-gradient(135deg, #00aa55 0%, #008844 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(0, 204, 102, 0.4);
-    }
-
-    /* Tombol Kembali ke Dashboard */
-    .btn-back {
-        background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
-        color: white;
-        padding: 12px 24px;
-        border: none;
-        border-radius: 8px;
-        font-weight: bold;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        display: inline-block;
-        box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
-    }
-
-    .btn-back:hover {
-        background: linear-gradient(135deg, #5a6268 0%, #495057 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(108, 117, 125, 0.4);
-        text-decoration: none;
-        color: white;
-    }
-
-    /* Card Container */
-    .card-container {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 8px 24px rgba(0, 51, 102, 0.15);
-        overflow: hidden;
-    }
-
-    .card-header {
-        background: linear-gradient(135deg, #003366 0%, #0055cc 50%, #0077ff 100%);
-        padding: 20px 30px;
-        color: white;
-    }
-
-    .card-header h2 {
-        margin: 0;
-        font-size: 1.5rem;
-    }
-
-    /* Table Styling */
-    .table-container {
-        overflow-x: auto;
-    }
-
-    .table-wrapper {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .table-wrapper thead {
-        background: linear-gradient(90deg, #e6f0ff 0%, #cce6ff 100%);
-    }
-
-    .table-wrapper th {
-        padding: 16px 20px;
-        text-align: left;
-        font-weight: 600;
-        color: var(--primary-blue);
-        border-bottom: 2px solid var(--primary-blue);
-    }
-
-    .table-wrapper td {
-        padding: 14px 20px;
-        border-bottom: 1px solid #e0e7ff;
-        color: #333;
-    }
-
-    .table-wrapper tbody tr {
-        transition: all 0.3s ease;
-    }
-
-    .table-wrapper tbody tr:hover {
-        background-color: #fffacd;
-        box-shadow: inset 0 0 8px rgba(255, 204, 0, 0.2);
-    }
-
-    .table-wrapper tbody tr:nth-child(even) {
-        background-color: #f5f9ff;
-    }
-
-    /* Badge Kelas */
-    .badge-kelas {
-        display: inline-block;
-        background: linear-gradient(135deg, #003366 0%, #0055cc 100%);
-        color: white;
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        box-shadow: 0 2px 8px rgba(0, 51, 102, 0.2);
-    }
-
-    /* Action Buttons */
-    .btn-action {
-        padding: 8px 14px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: 600;
-        font-size: 0.85rem;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        display: inline-block;
-        margin: 0 4px;
-    }
-
-    .btn-edit {
-        background: linear-gradient(135deg, #ff9500 0%, #ff8800 100%);
-        color: white;
-        box-shadow: 0 3px 8px rgba(255, 149, 0, 0.3);
-    }
-
-    .btn-edit:hover {
-        background: linear-gradient(135deg, #ff8800 0%, #ff7700 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 5px 12px rgba(255, 149, 0, 0.4);
-    }
-
-    .btn-delete {
-        background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
-        color: white;
-        border: none;
-        box-shadow: 0 3px 8px rgba(255, 68, 68, 0.3);
-    }
-
-    .btn-delete:hover {
-        background: linear-gradient(135deg, #cc0000 0%, #990000 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 5px 12px rgba(255, 68, 68, 0.4);
-    }
-
-    /* Filter Buttons */
-    .btn-filter {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        color: var(--primary-blue);
-        padding: 8px 16px;
-        border: 2px solid var(--primary-blue);
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        display: inline-block;
-        box-shadow: 0 2px 8px rgba(0, 51, 102, 0.1);
-    }
-
-    .btn-filter:hover {
-        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
-        color: white;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 51, 102, 0.3);
-    }
-
-    .btn-filter.active {
-        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
-        color: white;
-        box-shadow: 0 4px 12px rgba(0, 51, 102, 0.3);
-    }
-        background: linear-gradient(90deg, #f5f9ff 0%, #e6f0ff 100%);
-        padding: 16px 30px;
-        border-top: 2px solid #cce6ff;
-        color: var(--primary-blue);
-        font-weight: 600;
-    }
-
-    /* Modal Styling */
-    .modal-overlay {
-        position: fixed;
-        inset: 0;
-        background-color: rgba(0, 0, 0, 0.6);
-        z-index: 50;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .modal-overlay.hidden {
-        display: none;
-    }
-
-    .modal-content {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 12px 40px rgba(0, 51, 102, 0.3);
-        padding: 30px;
-        width: 90%;
-        max-width: 420px;
-    }
-
-    .modal-header {
-        font-size: 1.3rem;
-        font-weight: bold;
-        color: var(--primary-blue);
-        margin-bottom: 16px;
-    }
-
-    .modal-text {
-        color: #555;
-        margin-bottom: 24px;
-        line-height: 1.6;
-    }
-
-    .modal-buttons {
-        display: flex;
-        gap: 12px;
-    }
-
-    .btn-modal {
-        flex: 1;
-        padding: 12px 16px;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .btn-modal-cancel {
-        background: linear-gradient(135deg, #999999 0%, #777777 100%);
-        color: white;
-    }
-
-    .btn-modal-cancel:hover {
-        background: linear-gradient(135deg, #777777 0%, #555555 100%);
-        transform: translateY(-2px);
-    }
-
-    .btn-modal-confirm {
-        background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
-        color: white;
-    }
-
-    .btn-modal-confirm:hover {
-        background: linear-gradient(135deg, #cc0000 0%, #990000 100%);
-        transform: translateY(-2px);
-    }
-
-    /* Empty State */
-    .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-        color: #999;
-    }
-
-    .empty-state p:first-child {
-        font-size: 1.3rem;
-        font-weight: bold;
-        color: #666;
-        margin-bottom: 8px;
-    }
-
-    .empty-state p:last-child {
-        color: #999;
-        font-size: 0.95rem;
-    }
-
-    /* Success Alert */
-    .alert-success {
-        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-        border-left: 4px solid #28a745;
-        padding: 16px 20px;
-        border-radius: 8px;
-        margin-bottom: 24px;
-    }
-
-    .alert-success p {
-        color: #155724;
-        margin: 0;
-        font-weight: 500;
-    }
-
-    /* Pagination Styling */
-    .pagination-container {
-        background: linear-gradient(90deg, #f5f9ff 0%, #e6f0ff 100%);
-        border-top: 1px solid #cce6ff;
-    }
-
-    .pagination-container .pagination {
-        justify-content: center;
-        margin: 0;
-    }
-
-    .pagination-container .page-link {
-        color: var(--primary-blue);
-        background-color: white;
-        border: 1px solid #cce6ff;
-        padding: 8px 12px;
-        margin: 0 2px;
-        border-radius: 6px;
-        text-decoration: none;
-        transition: all 0.3s ease;
-    }
-
-    .pagination-container .page-link:hover {
-        background-color: var(--light-blue);
-        color: var(--dark-blue);
-        border-color: var(--secondary-blue);
-    }
-
-    .pagination-container .page-item.active .page-link {
-        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
-        color: white;
-        border-color: var(--primary-blue);
-    }
-
-    .pagination-container .page-item.disabled .page-link {
-        color: #ccc;
-        background-color: #f8f9fa;
-        border-color: #dee2e6;
-    }
-</style>
-
-<div class="page-bg py-12">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <!-- Header Section with Gradient -->
-        <div class="header-section mb-8 flex justify-between items-center">
-            <div>
-                <h1>👥 Manajemen Siswa</h1>
-                <p>Kelola data siswa sekolah dengan mudah dan efisien</p>
-            </div>
-            <div style="display: flex; gap: 12px;">
-                <a href="{{ route('dashboard') }}" class="btn-back">
-                    ⬅️ Kembali ke Dashboard
-                </a>
-                <a href="{{ route('siswa.create') }}" class="btn-add">
-                    ➕ Tambah Siswa
-                </a>
-            </div>
-        </div>
-
-        <!-- Success Alert -->
         @if ($message = Session::get('success'))
-            <div class="alert-success">
-                <p>✅ {{ $message }}</p>
-            </div>
+            <div class="alert-success">✅ {{ $message }}</div>
         @endif
 
-        <!-- Card Container -->
-        <div class="card-container">
-            <!-- Card Header -->
-            <div class="card-header">
+        {{-- ACTION BAR --}}
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+            <a href="{{ route('admin.dashboard') }}" class="btn btn-slate">⬅️ Dashboard</a>
+            <a href="{{ route('admin.siswa.create') }}" class="btn btn-teal">➕ Tambah Siswa</a>
+        </div>
+
+        {{-- CARD --}}
+        <div class="g-card">
+            <div class="g-card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                 <h2>📋 Daftar Siswa</h2>
-                <div style="margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap;">
-                    <a href="{{ route('siswa.index') }}" class="btn-filter {{ !request('kelas') ? 'active' : '' }}">
-                        📚 Semua Kelas
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <a href="{{ route('admin.siswa.index') }}"
+                       class="btn btn-sm {{ !request('kelas') ? 'btn-yellow' : 'btn-outline' }}">
+                       📚 Semua
                     </a>
-                    <a href="{{ route('siswa.index', ['kelas' => 'XI SIJA 1']) }}" class="btn-filter {{ request('kelas') == 'XI SIJA 1' ? 'active' : '' }}">
-                        🎓 XI SIJA 1
+                    <a href="{{ route('admin.siswa.index', ['kelas' => 'XI SIJA 1']) }}"
+                       class="btn btn-sm {{ request('kelas') == 'XI SIJA 1' ? 'btn-yellow' : 'btn-outline' }}">
+                       🎓 XI SIJA 1
                     </a>
-                    <a href="{{ route('siswa.index', ['kelas' => 'XI SIJA 2']) }}" class="btn-filter {{ request('kelas') == 'XI SIJA 2' ? 'active' : '' }}">
-                        🎓 XI SIJA 2
+                    <a href="{{ route('admin.siswa.index', ['kelas' => 'XI SIJA 2']) }}"
+                       class="btn btn-sm {{ request('kelas') == 'XI SIJA 2' ? 'btn-yellow' : 'btn-outline' }}">
+                       🎓 XI SIJA 2
                     </a>
                 </div>
             </div>
 
-            <!-- Table -->
+            <div class="table-container">
+                <table class="table-wrapper">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%;">No</th>
+                            <th style="width: 18%;">NIS</th>
+                            <th style="width: 28%;">Nama Siswa</th>
+                            <th style="width: 17%;">Kelas</th>
+                            <th style="width: 17%; text-align: center;">Status</th>
+                            <th style="width: 15%; text-align: center;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($siswa as $index => $item)
+                            @php $userSiswa = \App\Models\User::where('email', 'siswa.' . $item->nis . '@sija.sch.id')->first(); @endphp
+                            <tr>
+                                <td>{{ $index + 1 }}</td>
+                                <td style="font-family: monospace; font-weight: 600;">{{ $item->nis }}</td>
+                                <td style="font-weight: 500;">{{ $item->nama_siswa }}</td>
+                                <td><span class="badge badge-navy">{{ $item->kelas }}</span></td>
+                                <td style="text-align: center;">
+                                    @if($userSiswa)
+                                        <span class="badge {{ $userSiswa->is_active ? 'badge-teal' : 'badge-red' }}">
+                                            {{ $userSiswa->is_active ? '✅ Aktif' : '🚫 Nonaktif' }}
+                                        </span>
+                                    @else
+                                        <span class="badge badge-orange">⚠️ No Akun</span>
+                                    @endif
+                                </td>
+                                <td style="text-align: center;">
+                                    <a href="{{ route('admin.siswa.edit', $item->nis) }}" class="btn btn-sm btn-orange">✏️ Edit</a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6">
+                                    <div class="empty-state">
+                                        <div class="empty-icon">📭</div>
+                                        <p>Belum ada data siswa</p>
+                                        <small>Klik tombol "Tambah Siswa" untuk menambahkan data baru</small>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination-wrap">
+                {{ $siswa->appends(request()->query())->links() }}
+            </div>
+
+            <div class="card-footer">
+                <span>📊 Total Siswa</span>
+                <span class="badge badge-blue">{{ $siswa->total() }} orang</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+@endsection@extends('layouts.app')
+
+@section('content')
+<div class="page-bg">
+
+    {{-- HERO --}}
+    <div class="page-hero">
+        <div class="hero-blob hero-blob-1"></div>
+        <div class="hero-blob hero-blob-2"></div>
+        <h1 class="hero-title">🎓 Manajemen Siswa</h1>
+        <p class="hero-sub">Kelola data siswa sekolah dengan mudah dan efisien</p>
+    </div>
+
+    <div class="dash-body" style="max-width: 1100px;">
+
+        @if ($message = Session::get('success'))
+            <div class="alert-success">✅ {{ $message }}</div>
+        @endif
+
+        @if ($message = Session::get('error'))
+            <div class="alert-error">❌ {{ $message }}</div>
+        @endif
+
+        @if (Session::has('import_errors'))
+            <div class="alert-warning">
+                <strong>⚠️ Detail error saat import:</strong>
+                <ul style="margin: 8px 0 0 16px;">
+                    @foreach (Session::get('import_errors') as $err)
+                        <li style="font-size: 13px;">{{ $err }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        {{-- ACTION BAR --}}
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <a href="{{ route('admin.dashboard') }}" class="btn btn-slate">⬅️ Dashboard</a>
+            <a href="{{ route('admin.siswa.create') }}" class="btn btn-teal">➕ Tambah Siswa</a>
+        </div>
+
+        {{-- IMPORT EXCEL --}}
+        <div class="g-card" style="margin-bottom: 20px;">
+            <div class="g-card-header">
+                <h2>📥 Import Data Siswa dari Excel</h2>
+            </div>
+            <div class="g-card-body">
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+                    Upload file Excel sesuai format template untuk menambahkan banyak siswa sekaligus.
+                    Akun login akan dibuat otomatis untuk setiap siswa yang berhasil diimport.
+                </p>
+
+                {{-- Info format --}}
+                <div style="background: var(--bg-soft); border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; font-size: 13px;">
+                    <strong>📋 Format kolom Excel:</strong>
+                    <span style="font-family: monospace; background: #1e293b; color: #7dd3fc; padding: 2px 8px; border-radius: 4px; margin-left: 8px;">
+                        NIS | Nama Siswa | Kelas
+                    </span>
+                    <br>
+                    <span style="color: var(--text-muted); margin-top: 6px; display: block;">
+                        ⚠️ Kolom Kelas hanya boleh diisi: <strong>XI SIJA 1</strong> atau <strong>XI SIJA 2</strong>
+                        &nbsp;|&nbsp; Data diisi mulai baris ke-4
+                    </span>
+                </div>
+
+                <div style="display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap;">
+                    {{-- Form Upload --}}
+                    <form action="{{ route('admin.siswa.import') }}" method="POST" enctype="multipart/form-data"
+                          style="display: flex; gap: 10px; align-items: center; flex: 1; min-width: 280px;">
+                        @csrf
+                        <input type="file" name="file_import" accept=".xlsx,.xls"
+                               class="form-input" style="flex: 1; padding: 6px 10px; font-size: 13px;" required>
+                        <button type="submit" class="btn btn-teal" style="white-space: nowrap;">
+                            📤 Upload & Import
+                        </button>
+                    </form>
+
+                    {{-- Download Template --}}
+                    <a href="{{ route('admin.siswa.template-import') }}" class="btn btn-yellow" style="white-space: nowrap;">
+                        ⬇️ Download Template
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {{-- TABEL --}}
+        <div class="g-card">
+            <div class="g-card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <h2>📋 Daftar Siswa</h2>
+                <div style="display: flex; gap: 8px;">
+                    <a href="{{ route('admin.siswa.index') }}"
+                       class="btn btn-sm {{ !request('kelas') ? 'btn-yellow' : 'btn-slate' }}">🏫 Semua</a>
+                    <a href="{{ route('admin.siswa.index', ['kelas' => 'XI SIJA 1']) }}"
+                       class="btn btn-sm {{ request('kelas') == 'XI SIJA 1' ? 'btn-yellow' : 'btn-slate' }}">🎓 XI SIJA 1</a>
+                    <a href="{{ route('admin.siswa.index', ['kelas' => 'XI SIJA 2']) }}"
+                       class="btn btn-sm {{ request('kelas') == 'XI SIJA 2' ? 'btn-yellow' : 'btn-slate' }}">🎓 XI SIJA 2</a>
+                </div>
+            </div>
+
             <div class="table-container">
                 <table class="table-wrapper">
                     <thead>
                         <tr>
                             <th style="width: 5%;">No</th>
                             <th style="width: 20%;">NIS</th>
-                            <th style="width: 30%;">Nama Siswa</th>
-                            <th style="width: 20%;">Kelas</th>
-                            <th style="width: 25%; text-align: center;">Aksi</th>
+                            <th style="width: 32%;">Nama Siswa</th>
+                            <th style="width: 18%;">Kelas</th>
+                            <th style="width: 12%; text-align: center;">Status</th>
+                            <th style="width: 13%; text-align: center;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($siswa as $index => $item)
+                            @php $userSiswa = \App\Models\User::where('email', 'siswa.' . $item->nis . '@sija.sch.id')->first(); @endphp
                             <tr>
-                                <td>{{ $index + 1 }}</td>
-                                <td style="font-family: monospace; font-weight: 500;">{{ $item->nis }}</td>
+                                <td>{{ $siswa->firstItem() + $index }}</td>
+                                <td style="font-family: monospace; font-weight: 600;">{{ $item->nis }}</td>
                                 <td style="font-weight: 500;">{{ $item->nama_siswa }}</td>
-                                <td>
-                                    <span class="badge-kelas">{{ $item->kelas }}</span>
+                                <td><span class="badge badge-navy">{{ $item->kelas }}</span></td>
+                                <td style="text-align: center;">
+                                    @if($userSiswa)
+                                        <span class="badge {{ $userSiswa->is_active ? 'badge-teal' : 'badge-red' }}">
+                                            {{ $userSiswa->is_active ? '✅ Aktif' : '🚫 Nonaktif' }}
+                                        </span>
+                                    @else
+                                        <span class="badge badge-orange">⚠️ No Akun</span>
+                                    @endif
                                 </td>
                                 <td style="text-align: center;">
-                                    <a href="{{ route('siswa.edit', $item->nis) }}" class="btn-action btn-edit">
-                                        ✏️ Edit
-                                    </a>
-                                    <button type="button" onclick="deleteConfirm('{{ route('siswa.destroy', $item->nis) }}', '{{ $item->nama_siswa }}')" class="btn-action btn-delete">
-                                        🗑️ Hapus
-                                    </button>
+                                    <a href="{{ route('admin.siswa.edit', $item->nis) }}" class="btn btn-sm btn-orange">✏️ Edit</a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5">
+                                <td colspan="6">
                                     <div class="empty-state">
-                                        <p>📭 Belum ada data siswa</p>
-                                        <p>Klik tombol "Tambah Siswa" untuk menambahkan data baru</p>
+                                        <div class="empty-icon">📭</div>
+                                        <p>Belum ada data siswa</p>
+                                        <small>Gunakan tombol "Tambah Siswa" atau import Excel di atas</small>
                                     </div>
                                 </td>
                             </tr>
-
                         @endforelse
                     </tbody>
                 </table>
             </div>
 
-            <!-- Pagination -->
-            <div class="pagination-container" style="padding: 20px; text-align: center;">
-                {{ $siswa->appends(request()->query())->links() }}
+            <div class="pagination-wrap">
+                {{ $siswa->links() }}
             </div>
 
-            <!-- Card Footer -->
             <div class="card-footer">
-                <span>📊 Total Siswa:</span>
-                <span style="color: var(--secondary-blue); font-size: 1.2rem; margin-left: 8px;">{{ $siswa->total() }}</span>
-                <span style="margin-left: 4px;">orang</span>
+                <span>📊 Total Siswa</span>
+                <span class="badge badge-blue">{{ $siswa->total() }} orang</span>
             </div>
         </div>
+
     </div>
 </div>
-
-<!-- Delete Confirmation Modal -->
-<div id="deleteModal" class="modal-overlay hidden">
-    <div class="modal-content">
-        <div class="modal-header">⚠️ Konfirmasi Penghapusan</div>
-        <div class="modal-text">
-            Apakah Anda yakin ingin menghapus data siswa <strong id="studentName"></strong>? Tindakan ini tidak dapat dibatalkan.
-        </div>
-        <div class="modal-buttons">
-            <button type="button" onclick="cancelDelete()" class="btn-modal btn-modal-cancel">
-                ❌ Batal
-            </button>
-            <form id="deleteForm" method="POST" style="flex: 1;">
-                @csrf
-                @method('DELETE')
-                <button type="submit" style="width: 100%;" class="btn-modal btn-modal-confirm">
-                    🗑️ Hapus
-                </button>
-            </form>
-        </div>
-    </div>
-</div>
-
-<script>
-function deleteConfirm(deleteUrl, studentName) {
-    document.getElementById('deleteForm').action = deleteUrl;
-    document.getElementById('studentName').textContent = studentName;
-    document.getElementById('deleteModal').classList.remove('hidden');
-}
-
-function cancelDelete() {
-    document.getElementById('deleteModal').classList.add('hidden');
-}
-
-// Close modal when clicking outside
-document.getElementById('deleteModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        cancelDelete();
-    }
-});
-</script>
 @endsection

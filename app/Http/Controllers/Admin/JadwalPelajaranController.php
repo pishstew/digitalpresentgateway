@@ -48,7 +48,7 @@ class JadwalPelajaranController extends Controller
             'kelas' => $request->kelas
         ]);
 
-        return redirect()->route('jadwal.index')
+        return redirect()->route('admin.jadwal.index')
             ->with('success','Jadwal berhasil ditambahkan');
     }
 
@@ -82,7 +82,7 @@ class JadwalPelajaranController extends Controller
             'kelas' => $request->kelas
         ]);
 
-        return redirect()->route('jadwal.index')
+        return redirect()->route('admin.jadwal.index')
             ->with('success', 'Jadwal berhasil diupdate');
     }
 
@@ -91,7 +91,7 @@ class JadwalPelajaranController extends Controller
     {
         JadwalPelajaran::destroy($id);
 
-        return redirect()->route('jadwal.index')
+        return redirect()->route('admin.jadwal.index')
             ->with('success','Jadwal dihapus');
     }
 }

@@ -1,560 +1,174 @@
 @extends('layouts.app')
 
 @section('content')
-<style>
-    :root {
-        --primary-blue: #003366;
-        --secondary-blue: #0055cc;
-        --light-blue: #e6f0ff;
-        --dark-blue: #001f44;
-        --gold-accent: #ffcc00;
-    }
+<div class="page-bg">
 
-    /* Background Gradient */
-    .page-bg {
-        background: linear-gradient(135deg, #f0f4f8 0%, #e6f0ff 100%);
-        min-height: 100vh;
-    }
+    {{-- HERO --}}
+    <div class="page-hero">
+        <div class="hero-blob hero-blob-1"></div>
+        <div class="hero-blob hero-blob-2"></div>
+        <h1 class="hero-title">🧑‍🏫 Manajemen Guru</h1>
+        <p class="hero-sub">Kelola data guru sekolah dengan mudah dan efisien</p>
+    </div>
 
-    /* Header Styling */
-    .header-section {
-        background: linear-gradient(135deg, #003366 0%, #0055cc 100%);
-        padding: 30px;
-        border-radius: 12px;
-        color: white;
-        margin-bottom: 30px;
-        box-shadow: 0 8px 16px rgba(0, 51, 102, 0.3);
-    }
+    <div class="dash-body" style="max-width: 1100px;">
 
-    .header-section h1 {
-        color: white;
-        margin-bottom: 8px;
-        font-size: 2.5rem;
-        margin-top: 0;
-    }
-
-    .header-section p {
-        color: #e6f0ff;
-        font-size: 1.1rem;
-        margin: 0;
-    }
-
-    /* Tombol Tambah Guru */
-    .btn-add {
-        background: linear-gradient(135deg, #00cc66 0%, #00aa55 100%);
-        color: white;
-        padding: 12px 24px;
-        border: none;
-        border-radius: 8px;
-        font-weight: bold;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        display: inline-block;
-        box-shadow: 0 4px 12px rgba(0, 204, 102, 0.3);
-    }
-
-    .btn-add:hover {
-        background: linear-gradient(135deg, #00aa55 0%, #008844 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(0, 204, 102, 0.4);
-    }
-
-    /* Form Section */
-    .form-section {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 8px 24px rgba(0, 51, 102, 0.15);
-        padding: 30px;
-        margin-bottom: 30px;
-    }
-
-    .form-section h2 {
-        color: var(--primary-blue);
-        font-size: 1.5rem;
-        margin-top: 0;
-        margin-bottom: 20px;
-        border-bottom: 3px solid var(--light-blue);
-        padding-bottom: 12px;
-    }
-
-    .form-horizontal {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 16px;
-        align-items: flex-end;
-    }
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        min-width: 200px;
-    }
-
-    .form-group label {
-        font-weight: 600;
-        color: var(--primary-blue);
-        margin-bottom: 8px;
-        font-size: 0.95rem;
-    }
-
-    .form-group input,
-    .form-group select {
-        padding: 12px 16px;
-        border: 2px solid #cce6ff;
-        border-radius: 8px;
-        font-size: 1rem;
-        font-family: inherit;
-        transition: all 0.3s ease;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus {
-        border-color: var(--secondary-blue);
-        outline: none;
-        box-shadow: 0 0 8px rgba(0, 85, 204, 0.2);
-    }
-
-    .btn-submit {
-        padding: 12px 28px;
-        background: linear-gradient(135deg, #00cc66 0%, #00aa55 100%);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 3px 8px rgba(0, 204, 102, 0.3);
-    }
-
-    .btn-submit:hover {
-        background: linear-gradient(135deg, #00aa55 0%, #008844 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 5px 12px rgba(0, 204, 102, 0.4);
-    }
-
-    /* Tombol Kembali ke Dashboard */
-    .btn-back {
-        background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
-        color: white;
-        padding: 12px 24px;
-        border: none;
-        border-radius: 8px;
-        font-weight: bold;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        display: inline-block;
-        box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
-    }
-
-    .btn-back:hover {
-        background: linear-gradient(135deg, #5a6268 0%, #495057 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(108, 117, 125, 0.4);
-        text-decoration: none;
-        color: white;
-    }
-
-    /* Search Form */
-    .search-section {
-        display: flex;
-        gap: 12px;
-        margin-bottom: 20px;
-    }
-
-    .search-section input {
-        flex: 1;
-        padding: 10px 16px;
-        border: 2px solid #cce6ff;
-        border-radius: 8px;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-    }
-
-    .search-section input:focus {
-        border-color: var(--secondary-blue);
-        outline: none;
-        box-shadow: 0 0 8px rgba(0, 85, 204, 0.2);
-    }
-
-    .search-section button {
-        padding: 10px 20px;
-        background: linear-gradient(135deg, #003366 0%, #0055cc 100%);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 3px 8px rgba(0, 51, 102, 0.3);
-    }
-
-    .search-section button:hover {
-        background: linear-gradient(135deg, #0055cc 0%, #003366 100%);
-        transform: translateY(-2px);
-    }
-
-    /* Card Container */
-    .card-container {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 8px 24px rgba(0, 51, 102, 0.15);
-        overflow: hidden;
-    }
-
-    .card-header {
-        background: linear-gradient(135deg, #003366 0%, #0055cc 50%, #0077ff 100%);
-        padding: 20px 30px;
-        color: white;
-    }
-
-    .card-header h2 {
-        margin: 0;
-        font-size: 1.5rem;
-    }
-
-    /* Table Styling */
-    .table-container {
-        overflow-x: auto;
-    }
-
-    .table-wrapper {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .table-wrapper thead {
-        background: linear-gradient(90deg, #e6f0ff 0%, #cce6ff 100%);
-    }
-
-    .table-wrapper th {
-        padding: 16px 20px;
-        text-align: left;
-        font-weight: 600;
-        color: var(--primary-blue);
-        border-bottom: 2px solid var(--primary-blue);
-    }
-
-    .table-wrapper td {
-        padding: 14px 20px;
-        border-bottom: 1px solid #e0e7ff;
-        color: #333;
-    }
-
-    .table-wrapper tbody tr {
-        transition: all 0.3s ease;
-    }
-
-    .table-wrapper tbody tr:hover {
-        background-color: #fffacd;
-        box-shadow: inset 0 0 8px rgba(255, 204, 0, 0.2);
-    }
-
-    .table-wrapper tbody tr:nth-child(even) {
-        background-color: #f5f9ff;
-    }
-
-    /* Badge Mapel */
-    .badge-mapel {
-        display: inline-block;
-        background: linear-gradient(135deg, #003366 0%, #0055cc 100%);
-        color: white;
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        box-shadow: 0 2px 8px rgba(0, 51, 102, 0.2);
-    }
-
-    /* Action Buttons */
-    .btn-action {
-        padding: 8px 14px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: 600;
-        font-size: 0.85rem;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        display: inline-block;
-        margin: 0 4px;
-    }
-
-    .btn-delete {
-        background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
-        color: white;
-        border: none;
-        box-shadow: 0 3px 8px rgba(255, 68, 68, 0.3);
-    }
-
-    .btn-delete:hover {
-        background: linear-gradient(135deg, #cc0000 0%, #990000 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 5px 12px rgba(255, 68, 68, 0.4);
-    }
-
-    .btn-edit {
-        background: linear-gradient(135deg, #ff9500 0%, #ff8800 100%);
-        color: white;
-        box-shadow: 0 3px 8px rgba(255, 149, 0, 0.3);
-    }
-
-    .btn-edit:hover {
-        background: linear-gradient(135deg, #ff8800 0%, #ff7700 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 5px 12px rgba(255, 149, 0, 0.4);
-    }
-
-    /* Card Footer */
-    .card-footer {
-        background: linear-gradient(90deg, #f5f9ff 0%, #e6f0ff 100%);
-        padding: 16px 30px;
-        border-top: 2px solid #cce6ff;
-        color: var(--primary-blue);
-        font-weight: 600;
-    }
-
-    /* Modal Styling */
-    .modal-overlay {
-        position: fixed;
-        inset: 0;
-        background-color: rgba(0, 0, 0, 0.6);
-        z-index: 50;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .modal-overlay.hidden {
-        display: none;
-    }
-
-    .modal-content {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 12px 40px rgba(0, 51, 102, 0.3);
-        padding: 30px;
-        width: 90%;
-        max-width: 420px;
-    }
-
-    .modal-header {
-        font-size: 1.3rem;
-        font-weight: bold;
-        color: var(--primary-blue);
-        margin-bottom: 16px;
-    }
-
-    .modal-text {
-        color: #555;
-        margin-bottom: 24px;
-        line-height: 1.6;
-    }
-
-    .modal-buttons {
-        display: flex;
-        gap: 12px;
-    }
-
-    .btn-modal {
-        flex: 1;
-        padding: 12px 16px;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .btn-modal-cancel {
-        background: linear-gradient(135deg, #999999 0%, #777777 100%);
-        color: white;
-    }
-
-    .btn-modal-cancel:hover {
-        background: linear-gradient(135deg, #777777 0%, #555555 100%);
-        transform: translateY(-2px);
-    }
-
-    .btn-modal-confirm {
-        background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
-        color: white;
-    }
-
-    .btn-modal-confirm:hover {
-        background: linear-gradient(135deg, #cc0000 0%, #990000 100%);
-        transform: translateY(-2px);
-    }
-
-    /* Empty State */
-    .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-        color: #999;
-    }
-
-    .empty-state p:first-child {
-        font-size: 1.3rem;
-        font-weight: bold;
-        color: #666;
-        margin-bottom: 8px;
-    }
-
-    .empty-state p:last-child {
-        color: #999;
-        font-size: 0.95rem;
-    }
-
-    /* Success Alert */
-    .alert-success {
-        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-        border-left: 4px solid #28a745;
-        padding: 16px 20px;
-        border-radius: 8px;
-        margin-bottom: 24px;
-    }
-
-    .alert-success p {
-        color: #155724;
-        margin: 0;
-        font-weight: 500;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-        .form-horizontal {
-            flex-direction: column;
-        }
-
-        .form-group {
-            min-width: 100%;
-        }
-
-        .header-section {
-            flex-direction: column;
-            text-align: center;
-        }
-
-        .header-section h1 {
-            font-size: 1.8rem;
-        }
-    }
-</style>
-
-<div class="page-bg py-12">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <!-- Header Section with Gradient -->
-        <div class="header-section mb-8 flex justify-between items-center">
-            <div>
-                <h1>🧑‍🏫 Manajemen Guru</h1>
-                <p>Kelola data guru sekolah dengan mudah dan efisien</p>
-            </div>
-            <a href="{{ route('dashboard') }}" class="btn-back">
-                ⬅️ Kembali ke Dashboard
-            </a>
-        </div>
-
-        <!-- Success Alert -->
         @if ($message = Session::get('success'))
-            <div class="alert-success">
-                <p>✅ {{ $message }}</p>
+            <div class="alert-success">✅ {{ $message }}</div>
+        @endif
+
+        @if ($message = Session::get('error'))
+            <div class="alert-error">❌ {{ $message }}</div>
+        @endif
+
+        @if (Session::has('import_errors'))
+            <div class="alert-warning">
+                <strong>⚠️ Detail error saat import:</strong>
+                <ul style="margin: 8px 0 0 16px;">
+                    @foreach (Session::get('import_errors') as $err)
+                        <li style="font-size: 13px;">{{ $err }}</li>
+                    @endforeach
+                </ul>
             </div>
         @endif
 
-        <!-- Form Section -->
+        {{-- ACTION BAR --}}
+        <div style="display: flex; justify-content: flex-start; margin-bottom: 16px;">
+            <a href="{{ route('admin.dashboard') }}" class="btn btn-slate">⬅️ Dashboard</a>
+        </div>
+
+        {{-- FORM TAMBAH --}}
         <div class="form-section">
             <h2>➕ Tambah Data Guru</h2>
-            <form action="{{ route('guru.store') }}" method="POST" class="form-horizontal">
+            <form action="{{ route('admin.guru.store') }}" method="POST" class="form-horizontal">
                 @csrf
-
                 <div class="form-group">
-                    <label for="nip">🆔 NIP</label>
-                    <input type="text" id="nip" name="nip" placeholder="Nomor Induk Pegawai" required>
+                    <label class="form-label">🆔 NIP</label>
+                    <input type="text" name="nip" class="form-input" placeholder="Nomor Induk Pegawai" required>
                 </div>
-
                 <div class="form-group">
-                    <label for="nama_guru">👤 Nama Guru</label>
-                    <input type="text" id="nama_guru" name="nama_guru" placeholder="Nama Lengkap" required>
+                    <label class="form-label">👤 Nama Guru</label>
+                    <input type="text" name="nama_guru" class="form-input" placeholder="Nama Lengkap" required>
                 </div>
-
                 <div class="form-group">
-                    <label for="kode_mapel">📚 Mata Pelajaran</label>
-                    <select id="kode_mapel" name="kode_mapel" required>
+                    <label class="form-label">📚 Mata Pelajaran</label>
+                    <select name="kode_mapel" class="form-input" required>
                         <option value="">-- Pilih Mapel --</option>
                         @foreach($mapel as $m)
                             <option value="{{ $m->kode_mapel }}">{{ $m->nama_mapel }}</option>
                         @endforeach
                     </select>
                 </div>
-
-                <button type="submit" class="btn-submit">Tambah Guru</button>
+                <div style="display: flex; align-items: flex-end;">
+                    <button type="submit" class="btn btn-teal">➕ Tambah Guru</button>
+                </div>
             </form>
         </div>
 
-        <!-- Search Section -->
-        <div class="card-container mb-8">
-            <div class="card-header">
-                <h2>🔍 Cari Guru</h2>
+        {{-- IMPORT EXCEL --}}
+        <div class="g-card" style="margin-bottom: 20px;">
+            <div class="g-card-header">
+                <h2>📥 Import Data Guru dari Excel</h2>
             </div>
-            <div style="padding: 20px 30px;">
-                <form method="GET" class="search-section">
-                    <input type="text" name="search" placeholder="Cari berdasarkan NIP, nama guru, atau mata pelajaran..." value="{{ request('search') }}">
-                    <button type="submit">Cari</button>
+            <div class="g-card-body">
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+                    Upload file Excel sesuai format template untuk menambahkan banyak guru sekaligus.
+                    Akun login akan dibuat otomatis untuk setiap guru yang berhasil diimport.
+                </p>
+
+                {{-- Info format --}}
+                <div style="background: var(--bg-soft); border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; font-size: 13px;">
+                    <strong>📋 Format kolom Excel:</strong>
+                    <span style="font-family: monospace; background: #1e293b; color: #7dd3fc; padding: 2px 8px; border-radius: 4px; margin-left: 8px;">
+                        NIP | Nama Guru | Kode Mapel
+                    </span>
+                    <br>
+                    <span style="color: var(--text-muted); margin-top: 6px; display: block;">
+                        ⚠️ Kode Mapel harus sesuai data yang ada di sistem (contoh: MTK, BIN, ING, dll.)
+                        &nbsp;|&nbsp; Data diisi mulai baris ke-4
+                    </span>
+                </div>
+
+                <div style="display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap;">
+                    {{-- Form Upload --}}
+                    <form action="{{ route('admin.guru.import') }}" method="POST" enctype="multipart/form-data"
+                          style="display: flex; gap: 10px; align-items: center; flex: 1; min-width: 280px;">
+                        @csrf
+                        <input type="file" name="file_import" accept=".xlsx,.xls"
+                               class="form-input" style="flex: 1; padding: 6px 10px; font-size: 13px;" required>
+                        <button type="submit" class="btn btn-teal" style="white-space: nowrap;">
+                            📤 Upload & Import
+                        </button>
+                    </form>
+
+                    {{-- Download Template --}}
+                    <a href="{{ route('admin.guru.template-import') }}" class="btn btn-yellow" style="white-space: nowrap;">
+                        ⬇️ Download Template
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {{-- SEARCH --}}
+        <div class="g-card">
+            <div class="g-card-header"><h2>🔍 Cari Guru</h2></div>
+            <div class="g-card-body">
+                <form method="GET" action="{{ route('admin.guru.index') }}" class="search-section">
+                    <input type="text" name="search" class="form-input"
+                           placeholder="Cari berdasarkan NIP atau nama guru..."
+                           value="{{ request('search') }}">
+                    <button type="submit" class="btn btn-blue">Cari</button>
                 </form>
             </div>
         </div>
 
-        <!-- Card Container -->
-        <div class="card-container">
-            <!-- Card Header -->
-            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-    <h2>📋 Daftar Guru</h2>
+        {{-- TABEL --}}
+        <div class="g-card">
+            <div class="g-card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <h2>📋 Daftar Guru</h2>
+                <a href="{{ route('admin.guru.export') }}" class="btn btn-sm btn-yellow">⬇️ Export CSV</a>
+            </div>
 
-    <a href="{{ route('guru.export') }}" class="btn-add">
-        ⬇️ Export Excel
-    </a>
-</div>
-
-            <!-- Table -->
             <div class="table-container">
                 <table class="table-wrapper">
                     <thead>
                         <tr>
                             <th style="width: 5%;">No</th>
                             <th style="width: 20%;">NIP</th>
-                            <th style="width: 30%;">Nama Guru</th>
-                            <th style="width: 25%;">Mata Pelajaran</th>
-                            <th style="width: 20%; text-align: center;">Aksi</th>
+                            <th style="width: 28%;">Nama Guru</th>
+                            <th style="width: 22%;">Mata Pelajaran</th>
+                            <th style="width: 12%; text-align: center;">Status</th>
+                            <th style="width: 13%; text-align: center;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($guru as $index => $item)
+                            @php $userGuru = \App\Models\User::where('nip', $item->nip)->first(); @endphp
                             <tr>
                                 <td>{{ $guru->firstItem() + $index }}</td>
-                                <td style="font-family: monospace; font-weight: 500;">{{ $item->nip }}</td>
+                                <td style="font-family: monospace; font-weight: 600;">{{ $item->nip }}</td>
                                 <td style="font-weight: 500;">{{ $item->nama_guru }}</td>
-                                <td>
-                                    <span class="badge-mapel">{{ $item->mapel->nama_mapel ?? '-' }}</span>
+                                <td><span class="badge badge-navy">{{ $item->mapel->nama_mapel ?? '-' }}</span></td>
+                                <td style="text-align: center;">
+                                    @if($userGuru)
+                                        <span class="badge {{ $userGuru->is_active ? 'badge-teal' : 'badge-red' }}">
+                                            {{ $userGuru->is_active ? '✅ Aktif' : '🚫 Nonaktif' }}
+                                        </span>
+                                    @else
+                                        <span class="badge badge-orange">⚠️ No Akun</span>
+                                    @endif
                                 </td>
                                 <td style="text-align: center;">
-                                    <a href="{{ route('guru.edit', $item->nip) }}" class="btn-action btn-edit">
-                                        ✏️ Edit
-                                    </a>
-                                    <button type="button" onclick="deleteConfirm('{{ route('guru.destroy', $item->nip) }}', '{{ $item->nama_guru }}')" class="btn-action btn-delete">
-                                        🗑️ Hapus
-                                    </button>
+                                    <a href="{{ route('admin.guru.edit', $item->nip) }}" class="btn btn-sm btn-orange">✏️ Edit</a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5">
+                                <td colspan="6">
                                     <div class="empty-state">
-                                        <p>📭 Belum ada data guru</p>
-                                        <p>Gunakan form di atas untuk menambahkan data guru baru</p>
+                                        <div class="empty-icon">📭</div>
+                                        <p>Belum ada data guru</p>
+                                        <small>Gunakan form di atas untuk menambahkan data guru baru</small>
                                     </div>
                                 </td>
                             </tr>
@@ -563,59 +177,16 @@
                 </table>
             </div>
 
-            <!-- Card Footer -->
+            <div class="pagination-wrap">
+                {{ $guru->links() }}
+            </div>
+
             <div class="card-footer">
-                <span>📊 Total Guru:</span>
-                <span style="color: var(--secondary-blue); font-size: 1.2rem; margin-left: 8px;">{{ $guru->total() }}</span>
-                <span style="margin-left: 4px;">orang</span>
+                <span>📊 Total Guru</span>
+                <span class="badge badge-blue">{{ $guru->total() }} orang</span>
             </div>
         </div>
 
-        <!-- Pagination -->
-        <div style="margin-top: 24px; display: flex; justify-content: center;">
-            {{ $guru->links() }}
-        </div>
     </div>
 </div>
-
-<!-- Delete Confirmation Modal -->
-<div id="deleteModal" class="modal-overlay hidden">
-    <div class="modal-content">
-        <div class="modal-header">⚠️ Konfirmasi Penghapusan</div>
-        <div class="modal-text">
-            Apakah Anda yakin ingin menghapus data guru <strong id="guruName"></strong>? Tindakan ini tidak dapat dibatalkan.
-        </div>
-        <div class="modal-buttons">
-            <button type="button" onclick="cancelDelete()" class="btn-modal btn-modal-cancel">
-                ❌ Batal
-            </button>
-            <form id="deleteForm" method="POST" style="flex: 1;">
-                @csrf
-                @method('DELETE')
-                <button type="submit" style="width: 100%;" class="btn-modal btn-modal-confirm">
-                    🗑️ Hapus
-                </button>
-            </form>
-        </div>
-    </div>
-</div>
-
-<script>
-function deleteConfirm(deleteUrl, guruName) {
-    document.getElementById('deleteForm').action = deleteUrl;
-    document.getElementById('guruName').textContent = guruName;
-    document.getElementById('deleteModal').classList.remove('hidden');
-}
-
-function cancelDelete() {
-    document.getElementById('deleteModal').classList.add('hidden');
-}
-
-// Close modal when clicking outside
-document.getElementById('deleteModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        cancelDelete();
-    }
-});
-</script>
 @endsection

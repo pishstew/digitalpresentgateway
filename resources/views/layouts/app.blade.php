@@ -12,7 +12,8 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <!-- Admin Custom Styles -->
-        <link rel="stylesheet" href="{{ asset('css/admin-style.css') }}">
+
+        <link rel="stylesheet" href="{{ asset('css/smk-style.css') }}">
         <link rel="stylesheet" href="{{ asset('css/forms-style.css') }}">
 
         <!-- Scripts -->
