@@ -17,7 +17,8 @@ class Presensi extends Model
         'kode_jam_pelajaran',
         'jam_masuk',
         'status',
-        'nis'
+        'nis',
+        'token'
     ];
 
     // relasi ke siswa

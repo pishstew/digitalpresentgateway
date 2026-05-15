@@ -65,6 +65,7 @@ Route::middleware(['auth', 'role:guru'])->prefix('guru')->name('guru.')->group(f
 Route::middleware(['auth', 'role:siswa'])->prefix('siswa')->name('siswa.')->group(function () {
 
     Route::get('dashboard', [\App\Http\Controllers\Siswa\DashboardController::class, 'index'])->name('dashboard');
+    Route::post('dashboard/presensi', [\App\Http\Controllers\Siswa\DashboardController::class, 'store'])->name('presensi.store');
     Route::get('presensi',        [\App\Http\Controllers\Siswa\PresensiController::class, 'index'])->name('presensi.index');
     Route::get('presensi/search', [\App\Http\Controllers\Siswa\PresensiController::class, 'search'])->name('presensi.search');
 });
