@@ -72,6 +72,15 @@ Route::middleware(['auth', 'role:siswa'])->prefix('siswa')->name('siswa.')->grou
 
 /*
 |--------------------------------------------------------------------------
+| WALIKELAS AREA
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'role:walikelas'])->prefix('walikelas')->name('walikelas.')->group(function () {
+    Route::get('dashboard', [\App\Http\Controllers\Walikelas\DashboardController::class, 'index'])->name('dashboard');
+});
+
+/*
+|--------------------------------------------------------------------------
 | AUTH ROUTES
 |--------------------------------------------------------------------------
 */

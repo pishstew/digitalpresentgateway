@@ -38,6 +38,7 @@
 .role-badge.admin  { background: rgba(239,68,68,.15);  color: #f87171; border: 1px solid rgba(239,68,68,.2); }
 .role-badge.guru   { background: rgba(59,130,246,.15); color: #60a5fa; border: 1px solid rgba(59,130,246,.2); }
 .role-badge.siswa  { background: rgba(34,197,94,.15);  color: #4ade80; border: 1px solid rgba(34,197,94,.2); }
+.role-badge.walikelas { background: rgba(168,85,247,.15); color: #c084fc; border: 1px solid rgba(168,85,247,.2); }
 
 /* Nav links — center */
 .topbar-nav {
@@ -170,6 +171,8 @@ body { padding-top: 60px !important; margin: 0; }
         <a href="{{ route('admin.dashboard') }}" class="topbar-brand">
     @elseif($role === 'guru')
         <a href="{{ route('guru.dashboard') }}" class="topbar-brand">
+    @elseif($role === 'walikelas')
+        <a href="{{ route('walikelas.dashboard') }}" class="topbar-brand">
     @else
         <a href="{{ route('siswa.dashboard') }}" class="topbar-brand">
     @endif
@@ -198,6 +201,9 @@ body { padding-top: 60px !important; margin: 0; }
         @elseif($role === 'siswa')
             <a href="{{ route('siswa.dashboard') }}"      class="topbar-nav-link {{ request()->routeIs('siswa.dashboard') ? 'active' : '' }}"><span class="nav-em">🏠</span>Dashboard</a>
             <a href="{{ route('siswa.presensi.index') }}" class="topbar-nav-link {{ request()->routeIs('siswa.presensi.*') ? 'active' : '' }}"><span class="nav-em">✅</span>Presensi Saya</a>
+            
+        @elseif($role === 'walikelas')
+            <a href="{{ route('walikelas.dashboard') }}"  class="topbar-nav-link {{ request()->routeIs('walikelas.dashboard') ? 'active' : '' }}"><span class="nav-em">📊</span>Dashboard Walikelas</a>
         @endif
     </nav>
 
@@ -245,6 +251,9 @@ body { padding-top: 60px !important; margin: 0; }
     @elseif($role === 'siswa')
         <a href="{{ route('siswa.dashboard') }}"      class="sb-link {{ request()->routeIs('siswa.dashboard') ? 'active' : '' }}"><span class="sb-em">🏠</span>Dashboard</a>
         <a href="{{ route('siswa.presensi.index') }}" class="sb-link {{ request()->routeIs('siswa.presensi.*') ? 'active' : '' }}"><span class="sb-em">✅</span>Presensi Saya</a>
+        
+    @elseif($role === 'walikelas')
+        <a href="{{ route('walikelas.dashboard') }}"  class="sb-link {{ request()->routeIs('walikelas.dashboard') ? 'active' : '' }}"><span class="sb-em">📊</span>Dashboard Walikelas</a>
     @endif
 
     <div class="sb-label" style="margin-top:24px;">Akun</div>

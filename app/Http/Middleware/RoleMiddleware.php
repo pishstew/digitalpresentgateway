@@ -20,6 +20,7 @@ class RoleMiddleware
                 'admin' => redirect()->route('admin.dashboard'),
                 'guru'  => redirect()->route('guru.dashboard'),
                 'siswa' => redirect()->route('siswa.dashboard'),
+                'walikelas' => redirect()->route('walikelas.dashboard'),
                 default => redirect()->route('login'),
             };
         }
