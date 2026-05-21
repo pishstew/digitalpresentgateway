@@ -173,6 +173,8 @@ body { padding-top: 60px !important; margin: 0; }
         <a href="{{ route('guru.dashboard') }}" class="topbar-brand">
     @elseif($role === 'walikelas')
         <a href="{{ route('walikelas.dashboard') }}" class="topbar-brand">
+    @elseif($role === 'kakon')
+        <a href="{{ route('kakon.dashboard') }}" class="topbar-brand">
     @else
         <a href="{{ route('siswa.dashboard') }}" class="topbar-brand">
     @endif
@@ -204,6 +206,9 @@ body { padding-top: 60px !important; margin: 0; }
             
         @elseif($role === 'walikelas')
             <a href="{{ route('walikelas.dashboard') }}"  class="topbar-nav-link {{ request()->routeIs('walikelas.dashboard') ? 'active' : '' }}"><span class="nav-em">📊</span>Dashboard Walikelas</a>
+        
+        @elseif($role === 'kakon')
+            <a href="{{ route('kakon.dashboard') }}"  class="topbar-nav-link {{ request()->routeIs('kakon.dashboard') ? 'active' : '' }}"><span class="nav-em">📊</span>Dashboard Kakon</a>
         @endif
     </nav>
 
@@ -254,6 +259,9 @@ body { padding-top: 60px !important; margin: 0; }
         
     @elseif($role === 'walikelas')
         <a href="{{ route('walikelas.dashboard') }}"  class="sb-link {{ request()->routeIs('walikelas.dashboard') ? 'active' : '' }}"><span class="sb-em">📊</span>Dashboard Walikelas</a>
+
+    @elseif($role === 'kakon')
+        <a href="{{ route('kakon.dashboard') }}" class="sb-link {{ request()->routeIs('kakon.dashboard') ? 'active' : '' }}"><span class="sb-em">📊</span>Dashboard Kakon</a>
     @endif
 
     <div class="sb-label" style="margin-top:24px;">Akun</div>

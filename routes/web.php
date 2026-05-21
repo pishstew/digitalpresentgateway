@@ -21,9 +21,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // ─── Route custom HARUS di atas Route::resource ────────────────────────────
-    // (supaya Laravel tidak salah baca "template-import" sebagai parameter {guru}/{siswa})
-
     Route::get('/guru/export',           [GuruController::class,  'export'])->name('guru.export');
     Route::get('/guru/template-import',  [GuruController::class,  'templateImport'])->name('guru.template-import');
     Route::post('/guru/import',          [GuruController::class,  'import'])->name('guru.import');
@@ -33,7 +30,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     Route::get('/presensi/export',       [PresensiController::class, 'export'])->name('presensi.export');
 
-    // ─── Resource routes (setelah route custom) ────────────────────────────────
     Route::resource('siswa',    SiswaController::class);
     Route::resource('guru',     GuruController::class);
     Route::resource('mapel',    MapelController::class);
@@ -44,9 +40,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 /*
 |--------------------------------------------------------------------------
 | GURU AREA
+| Diakses oleh: guru, walikelas, kakon
+| (walikelas & kakon tetap guru pengajar, dashboard ini adalah home utama mereka)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:guru'])->prefix('guru')->name('guru.')->group(function () {
+Route::middleware(['auth', 'role:guru,walikelas,kakon'])->prefix('guru')->name('guru.')->group(function () {
 
     Route::get('dashboard', [\App\Http\Controllers\Guru\DashboardController::class, 'index'])->name('dashboard');
     Route::post('token/generate', [\App\Http\Controllers\Guru\DashboardController::class, 'generateToken'])->name('token.generate');
@@ -73,10 +71,21 @@ Route::middleware(['auth', 'role:siswa'])->prefix('siswa')->name('siswa.')->grou
 /*
 |--------------------------------------------------------------------------
 | WALIKELAS AREA
+| Hanya bisa diakses dari tombol redirect di dashboard guru
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:walikelas'])->prefix('walikelas')->name('walikelas.')->group(function () {
     Route::get('dashboard', [\App\Http\Controllers\Walikelas\DashboardController::class, 'index'])->name('dashboard');
+});
+
+/*
+|--------------------------------------------------------------------------
+| KAKON (KEPALA KONSENTRASI) AREA
+| Hanya bisa diakses dari tombol redirect di dashboard guru
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'role:kakon'])->prefix('kakon')->name('kakon.')->group(function () {
+    Route::get('dashboard', [\App\Http\Controllers\Kakon\DashboardController::class, 'index'])->name('dashboard');
 });
 
 /*

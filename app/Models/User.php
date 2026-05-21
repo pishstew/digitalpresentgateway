@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Guru; // TAMBAH INI
+use App\Models\Guru;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -11,13 +11,15 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-   protected $fillable = [
-    'name',
-    'email',
-    'password',
-    'role',
-    'nip'
-];
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'role',       // admin | guru | walikelas | kakon | siswa
+        'nip',        // relasi ke tabel guru (nullable)
+        'is_active',  // 1 = aktif, 0 = nonaktif
+        'walikelas', // hanya diisi jika role = walikelas: 'XI SIJA 1' / 'XI SIJA 2'
+    ];
 
     protected $hidden = [
         'password',
@@ -28,11 +30,12 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
+            'is_active'         => 'boolean',
         ];
     }
 
-    // RELASI KE GURU
+    // Relasi ke tabel guru via NIP
     public function guru()
     {
         return $this->belongsTo(Guru::class, 'nip', 'nip');

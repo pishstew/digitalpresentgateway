@@ -1,5 +1,5 @@
 php artisan view:clear
-#!/usr/bin/env php
+php artisan migrate#!/usr/bin/env php
 <?php
 
 use Illuminate\Foundation\Application;

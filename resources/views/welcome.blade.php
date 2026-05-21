@@ -1,102 +1,530 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SIJA Presensi Digital — SMK</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+        :root {
+            --navy:      #0B1F3A;
+            --navy-mid:  #132D52;
+            --navy-soft: #1C3D6E;
+            --gold:      #C9963C;
+            --gold-lt:   #E8B455;
+            --gold-dim:  #F5D9A0;
+            --white:     #FAFAF8;
+            --muted:     #8FA3C0;
+            --border:    rgba(201,150,60,.25);
+        }
 
-        <!-- Styles / Scripts -->
-        @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
-            @vite(['resources/css/app.css', 'resources/js/app.js'])
-        @else
-            <style>
-                /*! tailwindcss v4.0.7 | MIT License | https://tailwindcss.com */
-            </style>
-        @endif
-    </head>
-    <body class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
-        <header class="w-full lg:max-w-4xl max-w-[335px] text-sm mb-6 not-has-[nav]:hidden">
-            @if (Route::has('login'))
-                <nav class="flex items-center justify-end gap-4">
-                    @auth
-                        {{--
-                            ✅ DIPERBAIKI:
-                            Sebelumnya: route('siswa.index') → ERROR karena route tidak ada
-                            Sekarang: redirect ke dashboard sesuai role masing-masing
-                        --}}
-                        @php $role = auth()->user()->role; @endphp
+        html, body { height: 100%; }
 
-                        <a
-                            href="{{ $role === 'admin'
-                                ? route('admin.dashboard')
-                                : ($role === 'guru'
-                                    ? route('guru.dashboard')
-                                    : route('siswa.dashboard')) }}"
-                            class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal"
-                        >
-                            @if($role === 'admin')
-                                Dashboard Admin
-                            @elseif($role === 'guru')
-                                Dashboard Guru
-                            @else
-                                Dashboard Siswa
-                            @endif
-                        </a>
-                    @else
-                        <a
-                            href="{{ route('login') }}"
-                            class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] text-[#1b1b18] border border-transparent hover:border-[#19140035] dark:hover:border-[#3E3E3A] rounded-sm text-sm leading-normal"
-                        >
-                            Log in
-                        </a>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--navy);
+            color: var(--white);
+            overflow-x: hidden;
+        }
 
-                        @if (Route::has('register'))
-                            <a
-                                href="{{ route('register') }}"
-                                class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal">
-                                Register
-                            </a>
-                        @endif
-                    @endauth
-                </nav>
-            @endif
-        </header>
+        /* ── BACKGROUND PATTERN ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 70% 10%, rgba(28,61,110,.7) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 10% 80%, rgba(201,150,60,.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
 
-        <div class="flex items-center justify-center w-full transition-opacity opacity-100 duration-750 lg:grow starting:opacity-0">
-            <main class="flex max-w-[335px] w-full flex-col-reverse lg:max-w-4xl lg:flex-row">
-                <div class="text-[13px] leading-[20px] flex-1 p-6 pb-12 lg:p-20 bg-white dark:bg-[#161615] dark:text-[#EDEDEC] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-bl-lg rounded-br-lg lg:rounded-tl-lg lg:rounded-br-none">
-                    <h1 class="mb-1 font-medium">Presensi Digital</h1>
-                    <p class="mb-2 text-[#706f6c] dark:text-[#A1A09A]">Sistem Presensi Digital 11 SIJA 1 & 2.<br>Silakan login untuk melanjutkan.</p>
-                    <ul class="flex gap-3 text-sm leading-normal mt-4">
-                        <li>
-                            <a href="{{ route('login') }}" class="inline-block dark:bg-[#eeeeec] dark:border-[#eeeeec] dark:text-[#1C1C1A] dark:hover:bg-white dark:hover:border-white hover:bg-black hover:border-black px-5 py-1.5 bg-[#1b1b18] rounded-sm border border-black text-white text-sm leading-normal">
-                                Login Sekarang
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="bg-[#fff2f2] dark:bg-[#1D0002] relative lg:-ml-px -mb-px lg:mb-0 rounded-t-lg lg:rounded-t-none lg:rounded-r-lg aspect-[335/376] lg:aspect-auto w-full lg:w-[438px] shrink-0 overflow-hidden">
-                    {{-- Laravel Logo --}}
-                    <svg class="w-full text-[#F53003] dark:text-[#F61500] transition-all translate-y-0 opacity-100 max-w-none duration-750 starting:opacity-0 starting:translate-y-6" viewBox="0 0 438 104" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M17.2036 -3H0V102.197H49.5189V86.7187H17.2036V-3Z" fill="currentColor" />
-                        <path d="M110.256 41.6337C108.061 38.1275 104.945 35.3731 100.905 33.3681C96.8667 31.3647 92.8016 30.3618 88.7131 30.3618C83.4247 30.3618 78.5885 31.3389 74.201 33.2923C69.8111 35.2456 66.0474 37.928 62.9059 41.3333C59.7643 44.7401 57.3198 48.6726 55.5754 53.1293C53.8287 57.589 52.9572 62.274 52.9572 67.1813C52.9572 72.1925 53.8287 76.8995 55.5754 81.3069C57.3191 85.7173 59.7636 89.6241 62.9059 93.0293C66.0474 96.4361 69.8119 99.1155 74.201 101.069C78.5885 103.022 83.4247 103.999 88.7131 103.999C92.8016 103.999 96.8667 102.997 100.905 100.994C104.945 98.9911 108.061 96.2359 110.256 92.7282V102.195H126.563V32.1642H110.256V41.6337ZM108.76 75.7472C107.762 78.4531 106.366 80.8078 104.572 82.8112C102.776 84.8161 100.606 86.4183 98.0637 87.6206C95.5202 88.823 92.7004 89.4238 89.6103 89.4238C86.5178 89.4238 83.7252 88.823 81.2324 87.6206C78.7388 86.4183 76.5949 84.8161 74.7998 82.8112C73.004 80.8078 71.6319 78.4531 70.6856 75.7472C69.7356 73.0421 69.2644 70.1868 69.2644 67.1821C69.2644 64.1758 69.7356 61.3205 70.6856 58.6154C71.6319 55.9102 73.004 53.5571 74.7998 51.5522C76.5949 49.5495 78.738 47.9451 81.2324 46.7427C83.7252 45.5404 86.5178 44.9396 89.6103 44.9396C92.7012 44.9396 95.5202 45.5404 98.0637 46.7427C100.606 47.9451 102.776 49.5487 104.572 51.5522C106.367 53.5571 107.762 55.9102 108.76 58.6154C109.756 61.3205 110.256 64.1758 110.256 67.1821C110.256 70.1868 109.756 73.0421 108.76 75.7472Z" fill="currentColor" />
-                        <path d="M438 -3H421.694V102.197H438V-3Z" fill="currentColor" />
-                        <path d="M139.43 102.197H155.735V48.2834H183.712V32.1665H139.43V102.197Z" fill="currentColor" />
-                        <path d="M324.49 32.1665L303.995 85.794L283.498 32.1665H266.983L293.748 102.197H314.242L341.006 32.1665H324.49Z" fill="currentColor" />
-                        <path d="M376.571 30.3656C356.603 30.3656 340.797 46.8497 340.797 67.1828C340.797 89.6597 356.094 104 378.661 104C391.29 104 399.354 99.1488 409.206 88.5848L398.189 80.0226C398.183 80.031 389.874 90.9895 377.468 90.9895C363.048 90.9895 356.977 79.3111 356.977 73.269H411.075C413.917 50.1328 398.775 30.3656 376.571 30.3656ZM357.02 61.0967C357.145 59.7487 359.023 43.3761 376.442 43.3761C393.861 43.3761 395.978 59.7464 396.099 61.0967H357.02Z" fill="currentColor" />
-                    </svg>
-                    <div class="absolute inset-0 rounded-t-lg lg:rounded-t-none lg:rounded-r-lg shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]"></div>
-                </div>
-            </main>
+        /* subtle grid lines */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(201,150,60,.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(201,150,60,.04) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── NAV ── */
+        nav {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 3rem;
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(8px);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-logo {
+            width: 40px;
+            height: 40px;
+            background: var(--gold);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--navy);
+            flex-shrink: 0;
+        }
+
+        .nav-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--white);
+            letter-spacing: .3px;
+        }
+
+        .nav-sub {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 1px;
+            letter-spacing: .5px;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-outline {
+            padding: 8px 20px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all .2s;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--gold);
+            color: var(--gold-lt);
+        }
+
+        .btn-gold {
+            padding: 8px 22px;
+            background: var(--gold);
+            border: 1px solid var(--gold);
+            border-radius: 8px;
+            color: var(--navy);
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all .2s;
+        }
+
+        .btn-gold:hover {
+            background: var(--gold-lt);
+            border-color: var(--gold-lt);
+        }
+
+        /* ── HERO ── */
+        .hero {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            min-height: calc(100vh - 73px);
+            padding: 4rem 3rem;
+            gap: 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero-left {
+            flex: 1;
+            animation: fadeUp .8s ease both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(28px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: rgba(201,150,60,.12);
+            border: 1px solid rgba(201,150,60,.3);
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gold-lt);
+            letter-spacing: .5px;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+        }
+
+        .hero-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--gold);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50%       { opacity: .5; transform: scale(.7); }
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.4rem, 5vw, 3.8rem);
+            font-weight: 700;
+            line-height: 1.12;
+            color: var(--white);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-title span {
+            color: var(--gold);
+        }
+
+        .hero-desc {
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--muted);
+            max-width: 480px;
+            margin-bottom: 2.5rem;
+        }
+
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn-hero {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 28px;
+            background: var(--gold);
+            border-radius: 10px;
+            color: var(--navy);
+            font-size: 15px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all .2s;
+            letter-spacing: .2px;
+        }
+
+        .btn-hero:hover {
+            background: var(--gold-lt);
+            transform: translateY(-1px);
+        }
+
+        .btn-hero svg { transition: transform .2s; }
+        .btn-hero:hover svg { transform: translateX(3px); }
+
+        .hero-note {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        /* ── STATS ROW ── */
+        .stats-row {
+            display: flex;
+            gap: 2rem;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--gold);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        /* ── HERO RIGHT — CARD PANEL ── */
+        .hero-right {
+            flex: 0 0 400px;
+            animation: fadeUp .8s .2s ease both;
+        }
+
+        .feature-card {
+            background: rgba(255,255,255,.04);
+            border: 1px solid rgba(255,255,255,.09);
+            border-radius: 16px;
+            padding: 2rem;
+            backdrop-filter: blur(16px);
+        }
+
+        .feature-card-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255,255,255,.06);
+        }
+
+        .feature-item:last-child { border-bottom: none; }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .fi-gold  { background: rgba(201,150,60,.15); }
+        .fi-blue  { background: rgba(56,139,253,.12); }
+        .fi-teal  { background: rgba(45,212,191,.1); }
+        .fi-coral { background: rgba(251,113,133,.1); }
+
+        .feature-icon svg { width: 20px; height: 20px; }
+
+        .feature-text strong {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 3px;
+        }
+
+        .feature-text span {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        /* ── STATUS BAR ── */
+        .status-bar {
+            margin-top: 1.5rem;
+            background: rgba(201,150,60,.08);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+            animation: pulse 2s infinite;
+            flex-shrink: 0;
+        }
+
+        .status-text {
+            font-size: 13px;
+            color: var(--gold-dim);
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        @media (max-width: 768px) {
+            nav { padding: 1.2rem 1.5rem; }
+            .hero { flex-direction: column; padding: 2.5rem 1.5rem; gap: 2.5rem; min-height: auto; }
+            .hero-right { flex: none; width: 100%; }
+            .stats-row { gap: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    {{-- NAV --}}
+    <nav>
+        <div class="nav-brand">
+            <div class="nav-logo">S</div>
+            <div>
+                <div class="nav-name">SIJA Presensi</div>
+                <div class="nav-sub">Sistem Informasi Akademik</div>
+            </div>
         </div>
 
-        @if (Route::has('login'))
-            <div class="h-14.5 hidden lg:block"></div>
-        @endif
-    </body>
+        <div class="nav-links">
+            @auth
+                @php $role = auth()->user()->role; @endphp
+                <a href="{{ $role === 'admin' ? route('admin.dashboard') : ($role === 'guru' ? route('guru.dashboard') : route('siswa.dashboard')) }}"
+                   class="btn-gold">
+                    @if($role === 'admin') Dashboard Admin
+                    @elseif($role === 'guru') Dashboard Guru
+                    @else Dashboard Siswa
+                    @endif
+                </a>
+            @else
+                <a href="{{ route('login') }}" class="btn-outline">Masuk</a>
+            @endauth
+        </div>
+    </nav>
+
+    {{-- HERO --}}
+    <div class="hero">
+        <div class="hero-left">
+            <div class="hero-badge">Tahun Ajaran 2025 / 2026</div>
+
+            <h1 class="hero-title">
+                Presensi Digital<br>
+                Kelas <span>XI SIJA</span><br>
+                yang Modern
+            </h1>
+
+            <p class="hero-desc">
+                Platform presensi berbasis kode 4-digit acak untuk siswa kelas XI SIJA. Pantau kehadiran secara real-time, akurat, dan transparan — kapan saja, di mana saja.
+            </p>
+
+            <div class="hero-actions">
+                <a href="{{ route('login') }}" class="btn-hero">
+                    Masuk ke Sistem
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                <span class="hero-note">Gunakan akun yang diberikan oleh sekolah</span>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat">
+                    <span class="stat-num">2</span>
+                    <span class="stat-label">Kelas SIJA</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-num">4</span>
+                    <span class="stat-label">Role Pengguna</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-num">NUM</span>
+                    <span class="stat-label">Token Presensi</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-right">
+            <div class="feature-card">
+                <p class="feature-card-title">Fitur Sistem</p>
+
+                <div class="feature-item">
+                    <div class="feature-icon fi-gold">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#C9963C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+                            <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+                        </svg>
+                    </div>
+                    <div class="feature-text">
+                        <strong>Token 4-digit Presensi</strong>
+                        <span>Guru generate token unik, siswa menginputkan token untuk absen secara real-time</span>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon fi-blue">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </div>
+                    <div class="feature-text">
+                        <strong>Multi-Role Akses</strong>
+                        <span>Admin, Guru, Wali Kelas, dan Kepala Konsentrasi dengan dashboard masing-masing</span>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon fi-teal">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+                            <line x1="6" y1="20" x2="6" y2="14"/>
+                        </svg>
+                    </div>
+                    <div class="feature-text">
+                        <strong>Rekap & Monitoring</strong>
+                        <span>Wali kelas pantau presensi kelasnya, kakon lihat seluruh data SIJA</span>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon fi-coral">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#fb7185" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                    </div>
+                    <div class="feature-text">
+                        <strong>Akun Terkelola</strong>
+                        <span>Admin kelola akun guru dan siswa, nonaktifkan akun kapan saja</span>
+                    </div>
+                </div>
+
+                <div class="status-bar">
+                    <div class="status-dot"></div>
+                    <span class="status-text">Sistem aktif dan berjalan normal</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; {{ date('Y') }} SMK — Sistem Presensi Digital Kelas XI SIJA 1 &amp; 2
+    </footer>
+
+</body>
 </html>

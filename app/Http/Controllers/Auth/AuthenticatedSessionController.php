@@ -42,11 +42,16 @@ class AuthenticatedSessionController extends Controller
 
         // Arahkan user ke halaman dashboard yang sesuai dengan rolenya masing-masing
         return match($user->role) {
-            'admin' => redirect()->intended(route('admin.dashboard')), // Jika role admin, arahkan ke dashboard admin
-            'guru'  => redirect()->intended(route('guru.dashboard')), // Jika role guru, arahkan ke dashboard guru
-            'siswa' => redirect()->intended(route('siswa.dashboard')), // Jika role siswa, arahkan ke dashboard siswa
-            'walikelas' => redirect()->intended(route('walikelas.dashboard')), // Jika role walikelas, arahkan ke dashboard walikelas
-            default => redirect()->route('login'), // Jika role tidak dikenali, kembalikan ke halaman login
+            'admin'     => redirect()->intended(route('admin.dashboard')),
+            'siswa'     => redirect()->intended(route('siswa.dashboard')),
+
+            // walikelas & kakon adalah guru pengajar — dashboard utama tetap guru
+            // tombol switch ke dashboard khusus tersedia di sana
+            'guru',
+            'walikelas',
+            'kakon'     => redirect()->intended(route('guru.dashboard')),
+
+            default     => redirect()->route('login'),
         };
     }
 

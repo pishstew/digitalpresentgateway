@@ -36,9 +36,18 @@ class GuruController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nip'        => 'required|unique:guru,nip',
-            'nama_guru'  => 'required',
-            'kode_mapel' => 'required',
+            'nip'        => [
+                'required',
+                'string',
+                'digits:18',
+                'unique:guru,nip',
+            ],
+            'nama_guru'  => 'required|string',
+            'kode_mapel' => 'required|string',
+        ], [
+            'nip.digits'  => 'NIP harus tepat 18 digit angka.',
+            'nip.unique'  => 'NIP sudah terdaftar di sistem.',
+            'nip.required' => 'NIP wajib diisi.',
         ]);
 
         Guru::create([
@@ -52,12 +61,13 @@ class GuruController extends Controller
         $passwordGuru = 'Guru#' . substr($nip, -4);
 
         User::create([
-            'name'      => $request->nama_guru,
-            'email'     => $emailGuru,
-            'password'  => Hash::make($passwordGuru),
-            'role'      => 'guru',
-            'nip'       => $nip,
-            'is_active' => true,
+            'name'       => $request->nama_guru,
+            'email'      => $emailGuru,
+            'password'   => Hash::make($passwordGuru),
+            'role'       => 'guru',
+            'nip'        => $nip,
+            'is_active'  => true,
+            'kelas_wali' => null,
         ]);
 
         return redirect()->route('admin.guru.index')
@@ -75,25 +85,36 @@ class GuruController extends Controller
 
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'nama_guru'  => 'required|string',
+            'kode_mapel' => 'required|string',
+            'role'       => 'required|in:guru,walikelas,kakon',
+            'kelas_wali' => 'nullable|in:XI SIJA 1,XI SIJA 2',
+        ]);
+
+        // Update tabel guru
         $guru = Guru::findOrFail($id);
         $guru->update([
             'nama_guru'  => $request->nama_guru,
             'kode_mapel' => $request->kode_mapel,
         ]);
 
+        // Update tabel users
         $user = User::where('nip', $id)->first();
         if ($user) {
+            $kelasWali = ($request->role === 'walikelas') ? $request->kelas_wali : null;
+
             $user->update([
-                'name'      => $request->nama_guru,
-                'is_active' => $request->has('is_active') ? 1 : 0,
+                'name'       => $request->nama_guru,
+                'role'       => $request->role,
+                'is_active'  => $request->has('is_active') ? 1 : 0,
+                'kelas_wali' => $kelasWali,
             ]);
         }
 
         return redirect()->route('admin.guru.index')
             ->with('success', 'Data guru berhasil diupdate');
     }
-
-    // ❌ destroy() DIHAPUS — fitur hapus dinonaktifkan
 
     public function export()
     {
@@ -107,14 +128,17 @@ class GuruController extends Controller
 
         $callback = function () use ($data) {
             $file = fopen('php://output', 'w');
-            fputcsv($file, ['No', 'NIP', 'Nama Guru', 'Mata Pelajaran']);
+            fputcsv($file, ['No', 'NIP', 'Nama Guru', 'Mata Pelajaran', 'Role', 'Kelas Wali']);
             $no = 1;
             foreach ($data as $row) {
+                $user = User::where('nip', $row->nip)->first();
                 fputcsv($file, [
                     $no++,
                     $row->nip,
                     $row->nama_guru,
                     $row->mapel->nama_mapel ?? '-',
+                    $user->role ?? 'guru',
+                    $user->kelas_wali ?? '-',
                 ]);
             }
             fclose($file);
@@ -167,13 +191,19 @@ class GuruController extends Controller
                 if (empty($nip) && empty($namaGuru)) continue;
 
                 if (empty($nip) || empty($namaGuru) || empty($kodeMapel)) {
-                    $gagal[] = "Baris " . ($i + 1) . ": Data tidak lengkap (NIP/Nama/Kode Mapel kosong)";
+                    $gagal[] = "Baris " . ($i + 1) . ": Data tidak lengkap";
+                    continue;
+                }
+
+                // Validasi format NIP: harus 18 digit angka
+                if (!preg_match('/^\d{18}$/', $nip)) {
+                    $gagal[] = "Baris " . ($i + 1) . ": NIP '{$nip}' tidak valid — harus tepat 18 digit angka";
                     continue;
                 }
 
                 $mapelAda = Mapel::where('kode_mapel', $kodeMapel)->exists();
                 if (!$mapelAda) {
-                    $gagal[] = "Baris " . ($i + 1) . ": Kode Mapel '{$kodeMapel}' tidak ditemukan di sistem";
+                    $gagal[] = "Baris " . ($i + 1) . ": Kode Mapel '{$kodeMapel}' tidak ditemukan";
                     continue;
                 }
 
@@ -193,12 +223,13 @@ class GuruController extends Controller
 
                 if (!User::where('email', $emailGuru)->exists()) {
                     User::create([
-                        'name'      => $namaGuru,
-                        'email'     => $emailGuru,
-                        'password'  => Hash::make($passwordGuru),
-                        'role'      => 'guru',
-                        'nip'       => $nip,
-                        'is_active' => true,
+                        'name'       => $namaGuru,
+                        'email'      => $emailGuru,
+                        'password'   => Hash::make($passwordGuru),
+                        'role'       => 'guru',
+                        'nip'        => $nip,
+                        'is_active'  => true,
+                        'kelas_wali' => null,
                     ]);
                 }
 
@@ -208,9 +239,7 @@ class GuruController extends Controller
             DB::commit();
 
             $pesan = "Import selesai: {$berhasil} guru berhasil ditambahkan.";
-            if (!empty($duplikat)) {
-                $pesan .= " " . count($duplikat) . " data dilewati (duplikat).";
-            }
+            if (!empty($duplikat)) $pesan .= " " . count($duplikat) . " data dilewati (duplikat).";
             if (!empty($gagal)) {
                 $pesan .= " " . count($gagal) . " baris gagal.";
                 return redirect()->route('admin.guru.index')
@@ -226,12 +255,8 @@ class GuruController extends Controller
         }
     }
 
-    /**
-     * Baca Excel — pakai PhpSpreadsheet, fallback ke ZIP reader yang diperbaiki
-     */
     private function bacaExcel(string $path): array
     {
-        // ── Prioritas 1: PhpSpreadsheet (paling akurat) ──────────────────────
         if (class_exists('\PhpOffice\PhpSpreadsheet\IOFactory')) {
             $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($path);
             $sheet       = $spreadsheet->getActiveSheet();
@@ -239,51 +264,38 @@ class GuruController extends Controller
 
             foreach ($sheet->getRowIterator() as $rowObj) {
                 $rowNum = $rowObj->getRowIndex();
-                if ($rowNum <= 3) continue; // skip baris judul, panduan, header
+                if ($rowNum <= 3) continue;
 
-                $cells = [];
+                $cells    = [];
                 $cellIter = $rowObj->getCellIterator('A', 'C');
                 $cellIter->setIterateOnlyExistingCells(false);
                 foreach ($cellIter as $cell) {
-                    // getCalculatedValue() agar formula pun terbaca
                     $cells[] = $cell->getFormattedValue();
                 }
 
-                // Skip baris kosong
                 if (empty(array_filter(array_map('trim', $cells)))) continue;
-
                 $rows[] = $cells;
             }
 
             return $rows;
         }
 
-        // ── Prioritas 2: ZIP/XML reader yang diperbaiki ───────────────────────
         $zip = new \ZipArchive();
-        if ($zip->open($path) !== true) {
-            throw new \Exception('Tidak bisa membuka file Excel.');
-        }
+        if ($zip->open($path) !== true) throw new \Exception('Tidak bisa membuka file Excel.');
 
         $xml    = $zip->getFromName('xl/worksheets/sheet1.xml');
         $shared = $zip->getFromName('xl/sharedStrings.xml');
         $zip->close();
 
-        if (!$xml) {
-            throw new \Exception('Format file tidak valid.');
-        }
+        if (!$xml) throw new \Exception('Format file tidak valid.');
 
-        // Parse shared strings dengan cara yang lebih lengkap
         $strings = [];
         if ($shared) {
-            // Tangani <t> yang bisa ada di dalam <r> (rich text) maupun langsung di <si>
             $sharedXml = simplexml_load_string($shared);
             foreach ($sharedXml->si as $si) {
-                // Rich text: gabungkan semua <r><t>
                 if (isset($si->r)) {
                     $text = '';
-                    foreach ($si->r as $r) {
-                        $text .= (string)$r->t;
-                    }
+                    foreach ($si->r as $r) $text .= (string)$r->t;
                     $strings[] = $text;
                 } else {
                     $strings[] = (string)$si->t;
@@ -291,9 +303,7 @@ class GuruController extends Controller
             }
         }
 
-        // Parse rows
         $xmlObj = simplexml_load_string($xml);
-        $ns     = $xmlObj->getNamespaces(true);
         $rows   = [];
 
         foreach ($xmlObj->sheetData->row as $row) {
@@ -302,32 +312,17 @@ class GuruController extends Controller
 
             $cells = ['', '', ''];
             foreach ($row->c as $c) {
-                // Ambil huruf kolom saja (A, B, C)
                 preg_match('/^([A-Z]+)/', (string)$c['r'], $m);
-                $colLetter = $m[1] ?? '';
-                $colIdx    = ord($colLetter) - ord('A'); // A=0, B=1, C=2
+                $colIdx         = ord($m[1] ?? 'A') - ord('A');
                 if ($colIdx > 2) continue;
-
-                $type = (string)$c['t'];
-                $val  = isset($c->v) ? (string)$c->v : '';
-
-                if ($type === 's') {
-                    // Shared string
-                    $cells[$colIdx] = $strings[(int)$val] ?? '';
-                } elseif ($type === 'str' || $type === 'inlineStr') {
-                    // Formula string atau inline string
-                    $cells[$colIdx] = isset($c->is->t) ? (string)$c->is->t : $val;
-                } else {
-                    // Number atau kosong
-                    $cells[$colIdx] = $val;
-                }
+                $type           = (string)$c['t'];
+                $val            = isset($c->v) ? (string)$c->v : '';
+                $cells[$colIdx] = $type === 's' ? ($strings[(int)$val] ?? '') : $val;
             }
 
-            if (!empty(array_filter(array_map('trim', $cells)))) {
-                $rows[] = $cells;
-            }
+            if (!empty(array_filter(array_map('trim', $cells)))) $rows[] = $cells;
         }
 
         return $rows;
     }
-}   
+}

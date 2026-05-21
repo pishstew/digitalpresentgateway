@@ -1,169 +1,430 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekap Presensi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-@section('content')
-<style>
-    :root {
-        --primary: #1a2f4e;
-        --accent:  #3b82f6;
-        --green:   #16a34a;
-        --red:     #dc2626;
-        --orange:  #f97316;
-        --bg:      #f1f5f9;
-    }
+        :root {
+            --navy:        #0B1F3A;
+            --gold:        #C9963C;
+            --gold-light:  #e0b060;
+            --gold-dim:    rgba(201,150,60,.16);
+            --gold-border: rgba(201,150,60,.26);
+            --muted:       #8FA3C0;
+            --glass:       rgba(255,255,255,.06);
+            --glass-b:     rgba(255,255,255,.10);
+            --white:       #ffffff;
+            --text-dim:    rgba(255,255,255,.80);
+            /* Status colors */
+            --green:  #4caf8a;
+            --blue:   #60a5fa;
+            --yellow: #fbbf24;
+            --red:    #e05c5c;
+        }
 
-    .page-bg { background: var(--bg); min-height: 100vh; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--navy);
+            color: var(--white);
+            min-height: 100vh;
+            font-size: 16px; /* base lebih besar untuk lansia */
+        }
+        body::before {
+            content: '';
+            position: fixed; inset: 0; z-index: 0;
+            background:
+                radial-gradient(ellipse 70% 50% at 15% 10%, rgba(201,150,60,.07) 0%, transparent 55%),
+                radial-gradient(ellipse 50% 40% at 85% 85%, rgba(17,40,71,.8) 0%, transparent 60%);
+        }
+        body::after {
+            content: '';
+            position: fixed; inset: 0; z-index: 0;
+            background-image:
+                linear-gradient(rgba(201,150,60,.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(201,150,60,.035) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
 
-    .header-section {
-        background: linear-gradient(135deg, #1a2f4e 0%, #243b5e 100%);
-        padding: 30px; border-radius: 12px; color: white;
-        margin-bottom: 24px; box-shadow: 0 8px 16px rgba(26,47,78,.3);
-        display: flex; justify-content: space-between; align-items: center;
-        flex-wrap: wrap; gap: 16px;
-    }
-    .header-section h1 { color: white; font-size: 1.8rem; font-weight: 700; margin: 0 0 6px; }
-    .header-section p  { color: rgba(255,255,255,.6); margin: 0; font-size: 0.9rem; }
+        /* Status bar shimmer */
+        .status-bar {
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), #a8782e, var(--gold));
+            background-size: 200% 100%;
+            animation: shimmer 3s infinite linear;
+            position: relative; z-index: 10;
+        }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-    .btn-back {
-        background: rgba(255,255,255,.15); color: white;
-        padding: 10px 18px; border-radius: 8px; text-decoration: none;
-        font-weight: 600; font-size: 0.9rem; border: 1px solid rgba(255,255,255,.25);
-        transition: all .2s; white-space: nowrap;
-    }
-    .btn-back:hover { background: rgba(255,255,255,.25); color: white; text-decoration: none; }
+        /* ── NAVBAR ──────────────────────────────── */
+        .navbar {
+            position: sticky; top: 0; z-index: 100;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; height: 62px;
+            background: rgba(11,31,58,.92);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--gold-border);
+        }
+        .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .nav-logo {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, var(--gold), #a8782e);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Playfair Display', serif;
+            font-weight: 700; font-size: 1.05rem; color: var(--navy);
+            flex-shrink: 0;
+        }
+        .nav-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem; color: var(--white);
+        }
+        .btn-back {
+            display: flex; align-items: center; gap: 6px;
+            padding: 9px 16px;
+            background: var(--glass);
+            border: 1px solid var(--gold-border);
+            border-radius: 8px;
+            color: var(--gold-light);
+            text-decoration: none;
+            font-size: .88rem; font-weight: 600;
+            transition: all .2s; white-space: nowrap;
+        }
+        .btn-back:hover { background: var(--glass-b); border-color: var(--gold); color: var(--gold); }
 
-    /* filter card */
-    .g-card { background: white; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,.07); margin-bottom: 20px; overflow: hidden; }
-    .g-card-header { background: linear-gradient(135deg, #1a2f4e, #243b5e); padding: 16px 24px; color: white; }
-    .g-card-header h2 { margin: 0; font-size: 1.1rem; font-weight: 600; }
-    .g-card-body { padding: 20px 24px; }
+        /* ── LAYOUT ──────────────────────────────── */
+        .page-wrap {
+            position: relative; z-index: 1;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 28px 18px 72px;
+        }
 
-    .filter-row { display: flex; gap: 12px; flex-wrap: wrap; }
-    .filter-row select, .filter-row input[type=date] {
-        padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 8px;
-        font-size: 0.9rem; color: #1e293b; background: white;
-        appearance: none; cursor: pointer;
-    }
-    .filter-row select:focus, .filter-row input:focus { outline: none; border-color: var(--accent); }
+        /* Page title */
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.4rem, 4vw, 1.85rem);
+            font-weight: 700; color: var(--white);
+            margin-bottom: 4px;
+        }
+        .page-title span { color: var(--gold); }
+        .page-sub { color: var(--muted); font-size: .9rem; margin-bottom: 26px; }
 
-    /* search */
-    .search-row { display: flex; gap: 10px; }
-    .search-row input {
-        flex: 1; padding: 10px 16px; border: 1.5px solid #e2e8f0;
-        border-radius: 8px; font-size: 0.9rem; color: #1e293b;
-    }
-    .search-row input:focus { outline: none; border-color: var(--accent); }
-    .btn-search {
-        padding: 10px 20px; background: var(--accent);
-        color: white; border: none; border-radius: 8px;
-        font-weight: 600; cursor: pointer; transition: all .2s;
-    }
-    .btn-search:hover { background: #2563eb; }
+        /* Alert success */
+        .alert-ok {
+            display: flex; align-items: center; gap: 10px;
+            padding: 13px 18px;
+            background: rgba(76,175,138,.12);
+            border: 1px solid rgba(76,175,138,.28);
+            border-radius: 10px;
+            color: #7fe3b8;
+            font-size: .9rem; font-weight: 500;
+            margin-bottom: 20px;
+        }
 
-    /* stats */
-    .stats-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
-    .stat-box {
-        flex: 1; min-width: 130px; padding: 16px;
-        border-radius: 10px; text-align: center;
-    }
-    .stat-box .stat-num { font-size: 2rem; font-weight: 800; line-height: 1; }
-    .stat-box .stat-lbl { font-size: 0.78rem; font-weight: 600; margin-top: 4px; text-transform: uppercase; letter-spacing: .05em; }
-    .stat-hadir  { background: #f0fdf4; color: var(--green); }
-    .stat-belum  { background: #fef2f2; color: var(--red); }
-    .stat-total  { background: #eff6ff; color: var(--accent); }
+        /* ── CARD ────────────────────────────────── */
+        .card {
+            background: var(--glass);
+            border: 1px solid var(--gold-border);
+            border-radius: 14px;
+            backdrop-filter: blur(14px);
+            overflow: hidden;
+            margin-bottom: 18px;
+        }
+        .card-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--gold-border);
+            background: rgba(201,150,60,.06);
+        }
+        .card-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem; font-weight: 600;
+            color: var(--gold-light);
+        }
+        .card-body { padding: 20px; }
 
-    /* tabs */
-    .tabs { display: flex; gap: 4px; margin-bottom: 16px; }
-    .tab {
-        padding: 8px 20px; border-radius: 8px; font-size: 0.9rem;
-        font-weight: 600; cursor: pointer; border: none;
-        background: #f1f5f9; color: #64748b; text-decoration: none;
-        transition: all .2s;
-    }
-    .tab.active { background: var(--accent); color: white; }
-    .tab:hover { background: #e2e8f0; color: #1e293b; }
-    .tab.active:hover { background: #2563eb; color: white; }
+        /* ── FILTER ──────────────────────────────── */
+        .filter-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .form-group { display: flex; flex-direction: column; gap: 7px; }
+        .form-label {
+            font-size: .78rem; font-weight: 700;
+            color: var(--muted);
+            letter-spacing: .06em; text-transform: uppercase;
+        }
+        .form-select, .form-input {
+            padding: 13px 15px;
+            background: rgba(255,255,255,.07);
+            border: 1px solid rgba(143,163,192,.25);
+            border-radius: 9px;
+            color: var(--white);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .95rem; /* lebih besar untuk keterbacaan */
+            outline: none;
+            transition: all .2s;
+            width: 100%;
+            appearance: none; cursor: pointer;
+        }
+        .form-select:focus, .form-input:focus {
+            border-color: var(--gold);
+            background: rgba(201,150,60,.07);
+            box-shadow: 0 0 0 3px rgba(201,150,60,.10);
+        }
+        .form-select option { background: #112847; color: var(--white); }
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.5); cursor: pointer; }
 
-    /* table */
-    .tbl { width: 100%; border-collapse: collapse; }
-    .tbl thead { background: linear-gradient(90deg, #f0f4f8, #e2e8f0); }
-    .tbl th { padding: 14px 16px; text-align: left; font-weight: 600; color: var(--primary); border-bottom: 2px solid #dde4ef; font-size: 0.85rem; }
-    .tbl td { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; color: #334155; }
-    .tbl tbody tr { transition: background .15s; }
-    .tbl tbody tr:hover { background: #fffbeb; }
-    .tbl tbody tr.row-belum { background: #fff5f5; }
-    .tbl tbody tr.row-belum:hover { background: #fee2e2; }
+        /* ── STATISTIK ───────────────────────────── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+        .stat-box {
+            border-radius: 12px;
+            padding: 18px 16px;
+            text-align: center;
+            border: 1px solid;
+        }
+        .stat-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.4rem; font-weight: 700; line-height: 1;
+        }
+        .stat-lbl {
+            font-size: .77rem; font-weight: 700;
+            margin-top: 5px; text-transform: uppercase; letter-spacing: .05em;
+        }
+        .stat-total { background: rgba(96,165,250,.10); border-color: rgba(96,165,250,.25); color: #93c5fd; }
+        .stat-hadir { background: rgba(76,175,138,.10); border-color: rgba(76,175,138,.25); color: #7fe3b8; }
+        .stat-belum { background: rgba(224,92,92,.10);  border-color: rgba(224,92,92,.25);  color: #f9a8a8; }
 
-    /* badge */
-    .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
-    .badge-hadir  { background: #dcfce7; color: #15803d; }
-    .badge-izin   { background: #fef9c3; color: #a16207; }
-    .badge-sakit  { background: #fee2e2; color: #b91c1c; }
-    .badge-alpa   { background: #f1f5f9; color: #475569; }
-    .badge-belum  { background: #fef2f2; color: var(--red); border: 1px dashed var(--red); }
+        /* ── SEARCH ──────────────────────────────── */
+        .search-wrap {
+            display: flex; gap: 10px;
+        }
+        .search-input {
+            flex: 1;
+            padding: 12px 15px;
+            background: rgba(255,255,255,.07);
+            border: 1px solid rgba(143,163,192,.25);
+            border-radius: 9px;
+            color: var(--white);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .95rem;
+            outline: none;
+            transition: all .2s;
+        }
+        .search-input:focus { border-color: var(--gold); background: rgba(201,150,60,.07); }
+        .search-input::placeholder { color: rgba(143,163,192,.45); }
+        .btn-search {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, var(--gold), #a8782e);
+            border: none; border-radius: 9px;
+            color: var(--navy);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .9rem; font-weight: 700;
+            cursor: pointer;
+            transition: all .2s; white-space: nowrap;
+        }
+        .btn-search:hover { filter: brightness(1.08); }
 
-    /* update form inline */
-    .status-form { display: flex; gap: 6px; align-items: center; }
-    .status-select {
-        padding: 5px 10px; border: 1.5px solid #e2e8f0; border-radius: 6px;
-        font-size: 0.82rem; color: #334155; cursor: pointer;
-    }
-    .btn-update {
-        padding: 5px 12px; background: var(--accent); color: white;
-        border: none; border-radius: 6px; font-size: 0.82rem;
-        font-weight: 600; cursor: pointer; transition: background .2s;
-    }
-    .btn-update:hover { background: #2563eb; }
+        /* ── TABS ────────────────────────────────── */
+        .tabs {
+            display: flex; gap: 8px; margin-bottom: 16px;
+            overflow-x: auto; padding-bottom: 2px;
+        }
+        .tab {
+            padding: 10px 22px;
+            border-radius: 9px;
+            font-size: .9rem; font-weight: 600;
+            text-decoration: none;
+            border: 1px solid var(--gold-border);
+            background: var(--glass);
+            color: var(--muted);
+            transition: all .2s; white-space: nowrap;
+            cursor: pointer;
+        }
+        .tab:hover { background: var(--glass-b); color: var(--gold-light); }
+        .tab.active { background: var(--gold-dim); border-color: var(--gold); color: var(--gold-light); }
 
-    .empty-state { text-align: center; padding: 48px 20px; color: #94a3b8; }
-    .empty-state p { font-size: 1rem; font-weight: 500; }
+        /* ── DESKTOP TABLE ───────────────────────── */
+        .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; border-collapse: collapse; min-width: 540px; }
+        thead tr {
+            background: rgba(201,150,60,.08);
+            border-bottom: 1px solid var(--gold-border);
+        }
+        thead th {
+            padding: 13px 16px;
+            text-align: left;
+            font-size: .77rem; font-weight: 700;
+            color: var(--gold);
+            letter-spacing: .07em; text-transform: uppercase;
+            white-space: nowrap;
+        }
+        tbody tr { border-bottom: 1px solid rgba(143,163,192,.09); transition: background .15s; }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: rgba(255,255,255,.03); }
+        tbody tr.row-belum { background: rgba(224,92,92,.04); }
+        tbody tr.row-belum:hover { background: rgba(224,92,92,.07); }
+        tbody td {
+            padding: 14px 16px;
+            font-size: .92rem; /* lebih besar */
+            color: var(--text-dim);
+            vertical-align: middle;
+        }
 
-    .alert-ok  { background: #f0fdf4; border-left: 4px solid var(--green); border-radius: 8px; padding: 12px 16px; color: #15803d; font-size: 0.9rem; font-weight: 500; margin-bottom: 16px; }
+        /* ── MOBILE CARD LIST ────────────────────── */
+        .mobile-list { display: none; }
+        .mobile-item {
+            padding: 16px 18px;
+            border-bottom: 1px solid rgba(143,163,192,.09);
+        }
+        .mobile-item:last-child { border-bottom: none; }
+        .mobile-row-top {
+            display: flex; align-items: center;
+            justify-content: space-between; gap: 10px;
+            margin-bottom: 8px;
+        }
+        .mobile-nama { font-size: .97rem; font-weight: 600; color: var(--white); }
+        .mobile-nis  { font-size: .8rem; color: var(--muted); font-family: monospace; }
+        .mobile-meta { font-size: .82rem; color: var(--muted); margin-bottom: 10px; }
 
-    @media(max-width:640px){
-        .header-section { flex-direction: column; }
-        .filter-row { flex-direction: column; }
-        .stats-row  { gap: 8px; }
-    }
-</style>
+        /* Status form inline */
+        .status-form { display: flex; gap: 7px; align-items: center; }
+        .status-select {
+            flex: 1;
+            padding: 9px 12px;
+            background: rgba(255,255,255,.07);
+            border: 1px solid rgba(143,163,192,.2);
+            border-radius: 7px;
+            color: var(--white);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .88rem;
+            appearance: none; cursor: pointer; outline: none;
+        }
+        .status-select option { background: #112847; }
+        .btn-update {
+            padding: 9px 16px;
+            background: linear-gradient(135deg, var(--gold), #a8782e);
+            border: none; border-radius: 7px;
+            color: var(--navy);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .85rem; font-weight: 700;
+            cursor: pointer; transition: all .2s; white-space: nowrap;
+        }
+        .btn-update:hover { filter: brightness(1.08); }
 
-<div class="page-bg py-10">
-    <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
+        /* ── BADGES ──────────────────────────────── */
+        .badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 5px 12px; border-radius: 7px;
+            font-size: .8rem; font-weight: 700;
+            white-space: nowrap;
+        }
+        .badge-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+        .badge-hadir { background: rgba(76,175,138,.14); border: 1px solid rgba(76,175,138,.3); color: #7fe3b8; }
+        .badge-izin  { background: rgba(96,165,250,.14); border: 1px solid rgba(96,165,250,.3); color: #93c5fd; }
+        .badge-sakit { background: rgba(251,191,36,.14);  border: 1px solid rgba(251,191,36,.3);  color: #fcd34d; }
+        .badge-alpa  { background: rgba(224,92,92,.14);   border: 1px solid rgba(224,92,92,.3);   color: #f9a8a8; }
+        .badge-belum { background: rgba(224,92,92,.10); border: 1px dashed rgba(224,92,92,.4); color: #f9a8a8; }
 
-        {{-- Header --}}
-        <div class="header-section mb-6">
-            <div>
-                <h1>📋 Rekap Presensi</h1>
-                <p>Lihat kehadiran siswa & perbarui status</p>
-            </div>
-            <a href="{{ route('guru.dashboard') }}" class="btn-back">⬅ Dashboard</a>
+        /* Empty */
+        .empty-state { text-align: center; padding: 48px 20px; color: var(--muted); }
+        .empty-icon  { font-size: 2.5rem; margin-bottom: 12px; }
+        .empty-state p { font-size: .95rem; }
+
+        /* Pilih kelas dulu */
+        .pick-first {
+            text-align: center; padding: 56px 20px; color: var(--muted);
+        }
+        .pick-first .pick-icon { font-size: 3rem; margin-bottom: 14px; }
+        .pick-first p { font-size: 1rem; font-weight: 500; }
+
+        /* ── RESPONSIVE ──────────────────────────── */
+        @media (max-width: 620px) {
+            .filter-grid { grid-template-columns: 1fr; }
+            .stats-grid  { grid-template-columns: repeat(3, 1fr); gap: 9px; }
+            .stat-num    { font-size: 1.8rem; }
+
+            /* Card view on mobile */
+            .table-wrap  { display: none; }
+            .mobile-list { display: block; }
+
+            .tabs { gap: 6px; }
+            .tab  { padding: 9px 14px; font-size: .85rem; }
+        }
+        @media (max-width: 400px) {
+            .page-wrap { padding: 18px 13px 56px; }
+            .navbar    { padding: 0 13px; height: 56px; }
+            .nav-title { font-size: .9rem; }
+            .stats-grid { gap: 7px; }
+            .stat-num   { font-size: 1.6rem; }
+            .stat-lbl   { font-size: .68rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="status-bar"></div>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <a href="{{ route('guru.dashboard') }}" class="nav-brand">
+        <div class="nav-logo">S</div>
+        <span class="nav-title">SchoolSystem</span>
+    </a>
+    <a href="{{ route('guru.dashboard') }}" class="btn-back">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11L5 7l4-4"/></svg>
+        Dashboard
+    </a>
+</nav>
+
+<div class="page-wrap">
+
+    <h1 class="page-title">Rekap <span>Presensi</span></h1>
+    <p class="page-sub">Lihat kehadiran siswa dan perbarui status</p>
+
+    @if(session('success'))
+        <div class="alert-ok">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#4caf8a" stroke-width="1.5"/><path d="M5 8l2.5 2.5 4-4" stroke="#4caf8a" stroke-width="1.5" stroke-linecap="round"/></svg>
+            {{ session('success') }}
         </div>
+    @endif
 
-        @if(session('success'))
-            <div class="alert-ok">✅ {{ session('success') }}</div>
-        @endif
-
-        {{-- Filter --}}
-        <div class="g-card">
-            <div class="g-card-header"><h2>🔽 Filter Kelas & Tanggal</h2></div>
-            <div class="g-card-body">
-                <form method="GET" action="{{ route('guru.presensi.index') }}">
-                    <div class="filter-row">
-                        <select name="jadwal_id" onchange="this.form.submit()" style="flex:1; min-width:200px;">
+    <!-- Filter Kelas & Tanggal -->
+    <div class="card">
+        <div class="card-header"><h2>Pilih Kelas &amp; Tanggal</h2></div>
+        <div class="card-body">
+            <form method="GET" action="{{ route('guru.presensi.index') }}">
+                <div class="filter-grid">
+                    <div class="form-group">
+                        <label class="form-label">Kelas</label>
+                        <select name="jadwal_id" class="form-select" onchange="this.form.submit()">
                             <option value="">— Pilih Kelas —</option>
                             @foreach($jadwals as $j)
                                 <option value="{{ $j->id }}" @selected($j->id == $jadwalId)>
-                                    {{ $j->kelas }} — {{ $j->mapel->nama_mapel ?? $j->kode_mapel }}
-                                    ({{ $j->jam_mulai }})
+                                    {{ $j->kelas }} — {{ $j->mapel->nama_mapel ?? $j->kode_mapel }} ({{ $j->jam_mulai }})
                                 </option>
                             @endforeach
                         </select>
-                        <input type="date" name="tanggal" value="{{ $tanggal }}" onchange="this.form.submit()">
                     </div>
-                </form>
-            </div>
+                    <div class="form-group">
+                        <label class="form-label">Tanggal</label>
+                        <input type="date" name="tanggal" class="form-input" value="{{ $tanggal }}" onchange="this.form.submit()">
+                    </div>
+                </div>
+            </form>
         </div>
+    </div>
 
-        @if($jadwal)
+    @if($jadwal)
 
         {{-- Statistik --}}
         @php
@@ -172,7 +433,7 @@
             $jumlahBelum = $totalSiswa - $jumlahHadir;
         @endphp
 
-        <div class="stats-row">
+        <div class="stats-grid">
             <div class="stat-box stat-total">
                 <div class="stat-num">{{ $totalSiswa }}</div>
                 <div class="stat-lbl">Total Siswa</div>
@@ -187,35 +448,45 @@
             </div>
         </div>
 
-        {{-- Search --}}
-        <div class="g-card">
-            <div class="g-card-body" style="padding: 16px 24px;">
-                <form method="GET" action="{{ route('guru.presensi.index') }}" class="search-row">
+        <!-- Cari Siswa -->
+        <div class="card">
+            <div class="card-body" style="padding:16px 20px;">
+                <form method="GET" action="{{ route('guru.presensi.index') }}" class="search-wrap">
                     <input type="hidden" name="jadwal_id" value="{{ $jadwalId }}">
                     <input type="hidden" name="tanggal"   value="{{ $tanggal }}">
-                    <input type="text" name="search" placeholder="🔍 Cari nama siswa atau NIS..." value="{{ $search }}">
+                    <input type="text" name="search" class="search-input"
+                        placeholder="Cari nama siswa atau NIS..."
+                        value="{{ $search }}">
                     <button type="submit" class="btn-search">Cari</button>
                 </form>
             </div>
         </div>
 
-        {{-- Tab: Semua / Hadir / Belum --}}
+        <!-- Tab Filter -->
         <div class="tabs">
             <a href="{{ request()->fullUrlWithQuery(['tab'=>'semua']) }}"
-               class="tab @if(!request('tab') || request('tab')=='semua') active @endif">Semua</a>
+               class="tab {{ (!request('tab') || request('tab')=='semua') ? 'active' : '' }}">
+                Semua ({{ $totalSiswa }})
+            </a>
             <a href="{{ request()->fullUrlWithQuery(['tab'=>'hadir']) }}"
-               class="tab @if(request('tab')=='hadir') active @endif">✅ Hadir</a>
+               class="tab {{ request('tab')=='hadir' ? 'active' : '' }}">
+                Hadir ({{ $jumlahHadir }})
+            </a>
             <a href="{{ request()->fullUrlWithQuery(['tab'=>'belum']) }}"
-               class="tab @if(request('tab')=='belum') active @endif">❌ Belum</a>
+               class="tab {{ request('tab')=='belum' ? 'active' : '' }}">
+                Belum ({{ $jumlahBelum }})
+            </a>
         </div>
 
-        {{-- Tabel --}}
-        <div class="g-card">
-            <div class="g-card-header">
-                <h2>📌 {{ $jadwal->kelas }} — {{ $jadwal->mapel->nama_mapel ?? '' }} — {{ \Carbon\Carbon::parse($tanggal)->format('d M Y') }}</h2>
+        <!-- Tabel Data -->
+        <div class="card">
+            <div class="card-header">
+                <h2>{{ $jadwal->kelas }} — {{ $jadwal->mapel->nama_mapel ?? '' }} — {{ \Carbon\Carbon::parse($tanggal)->translatedFormat('d M Y') }}</h2>
             </div>
-            <div style="overflow-x:auto;">
-                <table class="tbl">
+
+            {{-- Desktop: tabel --}}
+            <div class="table-wrap">
+                <table>
                     <thead>
                         <tr>
                             <th>No</th>
@@ -223,36 +494,32 @@
                             <th>Nama Siswa</th>
                             <th>Jam Masuk</th>
                             <th style="text-align:center">Status</th>
-                            <th>Aksi</th>
+                            <th>Ubah Status</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @php
-                            $tab = request('tab', 'semua');
-                            $no  = 1;
-                        @endphp
+                        @php $tab = request('tab', 'semua'); $no = 1; @endphp
 
-                        {{-- Siswa yang SUDAH hadir --}}
+                        {{-- Sudah hadir --}}
                         @foreach($presensiHadir as $p)
                             @if($tab == 'belum') @continue @endif
                             <tr>
                                 <td>{{ $no++ }}</td>
-                                <td style="font-family:monospace;">{{ $p->nis }}</td>
-                                <td style="font-weight:500;">{{ $p->siswa->nama_siswa ?? '-' }}</td>
+                                <td style="font-family:monospace; color:var(--muted);">{{ $p->nis }}</td>
+                                <td style="font-weight:600; color:var(--white);">{{ $p->siswa->nama_siswa ?? '-' }}</td>
                                 <td>{{ $p->jam_masuk ?? '-' }}</td>
                                 <td style="text-align:center;">
                                     @if($p->status === 'Hadir')
-                                        <span class="badge badge-hadir">Hadir ✓</span>
+                                        <span class="badge badge-hadir"><span class="badge-dot" style="background:var(--green);"></span>Hadir</span>
                                     @elseif($p->status === 'Izin')
-                                        <span class="badge badge-izin">Izin 📝</span>
+                                        <span class="badge badge-izin"><span class="badge-dot" style="background:var(--blue);"></span>Izin</span>
                                     @elseif($p->status === 'Sakit')
-                                        <span class="badge badge-sakit">Sakit 🤒</span>
+                                        <span class="badge badge-sakit"><span class="badge-dot" style="background:var(--yellow);"></span>Sakit</span>
                                     @else
-                                        <span class="badge badge-alpa">Alpa ✗</span>
+                                        <span class="badge badge-alpa"><span class="badge-dot" style="background:var(--red);"></span>Alpa</span>
                                     @endif
                                 </td>
                                 <td>
-                                    {{-- Update status (untuk kasus curang) --}}
                                     <form method="POST" action="{{ route('guru.presensi.update', $p->id) }}" class="status-form">
                                         @csrf @method('PUT')
                                         <input type="hidden" name="jadwal_id" value="{{ $jadwalId }}">
@@ -269,20 +536,18 @@
                             </tr>
                         @endforeach
 
-                        {{-- Siswa yang BELUM presensi --}}
+                        {{-- Belum presensi --}}
                         @if($tab !== 'hadir')
                             @foreach($semuaSiswa as $siswa)
                                 @if(in_array($siswa->nis, $nisHadir)) @continue @endif
                                 @if($search && stripos($siswa->nama_siswa, $search) === false && stripos($siswa->nis, $search) === false) @continue @endif
                                 <tr class="row-belum">
                                     <td>{{ $no++ }}</td>
-                                    <td style="font-family:monospace;">{{ $siswa->nis }}</td>
-                                    <td style="font-weight:500;">{{ $siswa->nama_siswa }}</td>
-                                    <td style="color:#94a3b8;">—</td>
-                                    <td style="text-align:center;">
-                                        <span class="badge badge-belum">Belum</span>
-                                    </td>
-                                    <td style="color:#94a3b8; font-size:0.82rem;">—</td>
+                                    <td style="font-family:monospace; color:var(--muted);">{{ $siswa->nis }}</td>
+                                    <td style="font-weight:600; color:var(--white);">{{ $siswa->nama_siswa }}</td>
+                                    <td style="color:var(--muted);">—</td>
+                                    <td style="text-align:center;"><span class="badge badge-belum">Belum</span></td>
+                                    <td style="color:var(--muted); font-size:.82rem;">—</td>
                                 </tr>
                             @endforeach
                         @endif
@@ -291,7 +556,8 @@
                             <tr>
                                 <td colspan="6">
                                     <div class="empty-state">
-                                        <p>📭 Tidak ada data yang ditampilkan</p>
+                                        <div class="empty-icon">📭</div>
+                                        <p>Tidak ada data yang ditampilkan</p>
                                     </div>
                                 </td>
                             </tr>
@@ -299,18 +565,75 @@
                     </tbody>
                 </table>
             </div>
+
+            {{-- Mobile: card list --}}
+            <div class="mobile-list">
+                @php $tab = request('tab', 'semua'); $no = 1; @endphp
+
+                @foreach($presensiHadir as $p)
+                    @if($tab == 'belum') @continue @endif
+                    <div class="mobile-item">
+                        <div class="mobile-row-top">
+                            <div>
+                                <div class="mobile-nama">{{ $p->siswa->nama_siswa ?? '-' }}</div>
+                                <div class="mobile-nis">NIS: {{ $p->nis }}</div>
+                            </div>
+                            @if($p->status === 'Hadir')
+                                <span class="badge badge-hadir"><span class="badge-dot" style="background:var(--green);"></span>Hadir</span>
+                            @elseif($p->status === 'Izin')
+                                <span class="badge badge-izin"><span class="badge-dot" style="background:var(--blue);"></span>Izin</span>
+                            @elseif($p->status === 'Sakit')
+                                <span class="badge badge-sakit"><span class="badge-dot" style="background:var(--yellow);"></span>Sakit</span>
+                            @else
+                                <span class="badge badge-alpa"><span class="badge-dot" style="background:var(--red);"></span>Alpa</span>
+                            @endif
+                        </div>
+                        <div class="mobile-meta">Jam masuk: {{ $p->jam_masuk ?? '—' }}</div>
+                        <form method="POST" action="{{ route('guru.presensi.update', $p->id) }}" class="status-form">
+                            @csrf @method('PUT')
+                            <input type="hidden" name="jadwal_id" value="{{ $jadwalId }}">
+                            <input type="hidden" name="tanggal"   value="{{ $tanggal }}">
+                            <select name="status" class="status-select">
+                                <option value="Hadir"  @selected($p->status=='Hadir')>Hadir</option>
+                                <option value="Izin"   @selected($p->status=='Izin')>Izin</option>
+                                <option value="Sakit"  @selected($p->status=='Sakit')>Sakit</option>
+                                <option value="Alpa"   @selected($p->status=='Alpa')>Alpa</option>
+                            </select>
+                            <button type="submit" class="btn-update">Simpan</button>
+                        </form>
+                    </div>
+                @endforeach
+
+                @if($tab !== 'hadir')
+                    @foreach($semuaSiswa as $siswa)
+                        @if(in_array($siswa->nis, $nisHadir)) @continue @endif
+                        @if($search && stripos($siswa->nama_siswa, $search) === false && stripos($siswa->nis, $search) === false) @continue @endif
+                        <div class="mobile-item" style="background:rgba(224,92,92,.04);">
+                            <div class="mobile-row-top">
+                                <div>
+                                    <div class="mobile-nama">{{ $siswa->nama_siswa }}</div>
+                                    <div class="mobile-nis">NIS: {{ $siswa->nis }}</div>
+                                </div>
+                                <span class="badge badge-belum">Belum</span>
+                            </div>
+                        </div>
+                    @endforeach
+                @endif
+            </div>
+
         </div>
 
-        @else
-        <div class="g-card">
-            <div class="g-card-body">
-                <div class="empty-state">
-                    <p>👆 Pilih kelas terlebih dahulu</p>
+    @else
+        <div class="card">
+            <div class="card-body">
+                <div class="pick-first">
+                    <div class="pick-icon">👆</div>
+                    <p>Silakan pilih kelas terlebih dahulu</p>
                 </div>
             </div>
         </div>
-        @endif
+    @endif
 
-    </div>
 </div>
-@endsection
+</body>
+</html>

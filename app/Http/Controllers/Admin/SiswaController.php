@@ -30,13 +30,26 @@ class SiswaController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'nis'        => 'required|string|unique:siswa,nis',
+        $request->validate([
+            'nis'        => [
+                'required',
+                'string',
+                'digits:11',
+                'unique:siswa,nis',
+            ],
             'nama_siswa' => 'required|string',
             'kelas'      => 'required|string',
+        ], [
+            'nis.digits'   => 'NIS harus tepat 11 digit angka.',
+            'nis.unique'   => 'NIS sudah terdaftar di sistem.',
+            'nis.required' => 'NIS wajib diisi.',
         ]);
 
-        Siswa::create($validated);
+        Siswa::create([
+            'nis'        => $request->nis,
+            'nama_siswa' => $request->nama_siswa,
+            'kelas'      => $request->kelas,
+        ]);
 
         $nis           = $request->nis;
         $emailSiswa    = 'siswa.' . $nis . '@sija.sch.id';
@@ -68,12 +81,15 @@ class SiswaController extends Controller
 
     public function update(Request $request, Siswa $siswa)
     {
-        $validated = $request->validate([
+        $request->validate([
             'nama_siswa' => 'required|string',
             'kelas'      => 'required|string',
         ]);
 
-        $siswa->update($validated);
+        $siswa->update([
+            'nama_siswa' => $request->nama_siswa,
+            'kelas'      => $request->kelas,
+        ]);
 
         $user = User::where('email', 'siswa.' . $siswa->nis . '@sija.sch.id')->first();
         if ($user) {
@@ -86,8 +102,6 @@ class SiswaController extends Controller
         return redirect()->route('admin.siswa.index')
             ->with('success', 'Siswa berhasil diubah!');
     }
-
-    // ❌ destroy() DIHAPUS — fitur hapus dinonaktifkan
 
     public function templateImport()
     {
@@ -134,6 +148,12 @@ class SiswaController extends Controller
 
                 if (empty($nis) || empty($namaSiswa) || empty($kelas)) {
                     $gagal[] = "Baris " . ($i + 1) . ": Data tidak lengkap (NIS/Nama/Kelas kosong)";
+                    continue;
+                }
+
+                // Validasi format NIS: harus 11 digit angka
+                if (!preg_match('/^\d{11}$/', $nis)) {
+                    $gagal[] = "Baris " . ($i + 1) . ": NIS '{$nis}' tidak valid — harus tepat 11 digit angka";
                     continue;
                 }
 
@@ -191,12 +211,8 @@ class SiswaController extends Controller
         }
     }
 
-    /**
-     * Baca Excel — pakai PhpSpreadsheet, fallback ke ZIP reader yang diperbaiki
-     */
     private function bacaExcel(string $path): array
     {
-        // ── Prioritas 1: PhpSpreadsheet ──────────────────────────────────────
         if (class_exists('\PhpOffice\PhpSpreadsheet\IOFactory')) {
             $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($path);
             $sheet       = $spreadsheet->getActiveSheet();
@@ -214,14 +230,12 @@ class SiswaController extends Controller
                 }
 
                 if (empty(array_filter(array_map('trim', $cells)))) continue;
-
                 $rows[] = $cells;
             }
 
             return $rows;
         }
 
-        // ── Prioritas 2: ZIP/XML reader yang diperbaiki ───────────────────────
         $zip = new \ZipArchive();
         if ($zip->open($path) !== true) {
             throw new \Exception('Tidak bisa membuka file Excel.');

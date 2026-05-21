@@ -15,13 +15,13 @@ class RoleMiddleware
         }
 
         if (!in_array(auth()->user()->role, $roles)) {
-            // Redirect ke dashboard sesuai role masing-masing
             return match(auth()->user()->role) {
-                'admin' => redirect()->route('admin.dashboard'),
-                'guru'  => redirect()->route('guru.dashboard'),
-                'siswa' => redirect()->route('siswa.dashboard'),
+                'admin'     => redirect()->route('admin.dashboard'),
+                'guru'      => redirect()->route('guru.dashboard'),
+                'siswa'     => redirect()->route('siswa.dashboard'),
                 'walikelas' => redirect()->route('walikelas.dashboard'),
-                default => redirect()->route('login'),
+                'kakon'     => redirect()->route('kakon.dashboard'),
+                default     => redirect()->route('login'),
             };
         }
 
