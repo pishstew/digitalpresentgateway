@@ -6,11 +6,13 @@
     <title>Masuk — SIJA Presensi Digital</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/theme-mode.css') }}">
 
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        :root {
+        /* Variabel default dark — di body agar body.light-mode bisa override */
+        body {
             --navy:      #0B1F3A;
             --navy-mid:  #132D52;
             --navy-soft: #1C3D6E;
@@ -407,9 +409,136 @@
 
         .pw-toggle:hover { color: var(--gold); }
         .pw-wrapper input { padding-right: 44px; }
+
+        /* ── LIGHT MODE — Warm Parchment ── */
+        body.light-mode {
+            --navy:         #F5F0E8;
+            --navy-mid:     #EDE8DD;
+            --navy-soft:    #E4DDD1;
+            --gold:         #A67C3D;
+            --gold-lt:      #7A5A28;
+            --gold-dim:     #C8A878;
+            --white:        #2C2418;
+            --muted:        #7A7060;
+            --border:       rgba(166,124,61,.25);
+            --input-bg:     rgba(253,250,244,.90);
+            --input-border: rgba(166,124,61,.25);
+            --input-focus:  rgba(166,124,61,.40);
+            background: #F5F0E8 !important;
+            color: #2C2418 !important;
+        }
+
+        /* Left panel */
+        body.light-mode .left-panel {
+            background: #EDE8DD !important;
+            border-right-color: rgba(166,124,61,.22) !important;
+        }
+        body.light-mode .left-panel::before {
+            background:
+                radial-gradient(ellipse 80% 60% at 20% 30%, rgba(166,124,61,.08) 0%, transparent 55%),
+                linear-gradient(rgba(166,124,61,.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(166,124,61,.025) 1px, transparent 1px) !important;
+        }
+        body.light-mode .panel-logo {
+            background: linear-gradient(135deg, #A67C3D, #7A5A28) !important;
+            color: #fff !important;
+        }
+        body.light-mode .panel-name  { color: #2C2418 !important; }
+        body.light-mode .panel-sub   { color: #7A7060 !important; }
+        body.light-mode .panel-hero h2 { color: #2C2418 !important; }
+        body.light-mode .panel-hero h2 em { color: #A67C3D !important; }
+        body.light-mode .panel-hero p  { color: #7A7060 !important; }
+
+        /* Role chips */
+        body.light-mode .role-chip {
+            background: rgba(44,36,24,.04) !important;
+            border-color: rgba(166,124,61,.18) !important;
+        }
+        body.light-mode .role-chip-text { color: #2C2418 !important; }
+        body.light-mode .role-chip-sub  { color: #7A7060 !important; }
+
+        /* Right panel */
+        body.light-mode .right-panel { background: #F5F0E8 !important; }
+
+        /* Mobile brand */
+        body.light-mode .mobile-logo {
+            background: linear-gradient(135deg, #A67C3D, #7A5A28) !important;
+            color: #fff !important;
+        }
+        body.light-mode .mobile-name { color: #2C2418 !important; }
+        body.light-mode .mobile-sub  { color: #7A7060 !important; }
+
+        /* Login header */
+        body.light-mode .login-header h1 { color: #2C2418 !important; }
+        body.light-mode .login-header p  { color: #7A7060 !important; }
+
+        /* Form elements */
+        body.light-mode label { color: #7A7060 !important; }
+        body.light-mode input[type="email"],
+        body.light-mode input[type="password"],
+        body.light-mode input[type="text"] {
+            background: rgba(253,250,244,.90) !important;
+            border-color: rgba(166,124,61,.25) !important;
+            color: #2C2418 !important;
+        }
+        body.light-mode input::placeholder { color: rgba(122,112,96,.45) !important; }
+        body.light-mode input:focus {
+            border-color: #A67C3D !important;
+            background: rgba(166,124,61,.05) !important;
+            box-shadow: 0 0 0 3px rgba(166,124,61,.12) !important;
+        }
+        body.light-mode .pw-toggle { color: #7A7060 !important; }
+        body.light-mode .pw-toggle:hover { color: #A67C3D !important; }
+
+        /* Remember / forgot */
+        body.light-mode .remember-label { color: #7A7060 !important; }
+        body.light-mode .forgot-link { color: #A67C3D !important; }
+        body.light-mode .forgot-link:hover { color: #7A5A28 !important; }
+
+        /* Submit btn */
+        body.light-mode .btn-submit {
+            background: #A67C3D !important;
+            color: #fff !important;
+        }
+        body.light-mode .btn-submit:hover { background: #7A5A28 !important; }
+
+        /* Divider */
+        body.light-mode .divider { color: rgba(122,112,96,.5) !important; }
+        body.light-mode .divider::before,
+        body.light-mode .divider::after { background: rgba(44,36,24,.10) !important; }
+
+        /* Footer note */
+        body.light-mode .login-footer p { color: #7A7060 !important; }
+        body.light-mode .login-footer a { color: #A67C3D !important; }
+        body.light-mode .login-footer a:hover { color: #7A5A28 !important; }
+
+        /* Alerts */
+        body.light-mode .alert-error {
+            background: rgba(140,94,92,.10) !important;
+            border-color: rgba(140,94,92,.28) !important;
+            color: #7A3A38 !important;
+        }
+        body.light-mode .alert-status {
+            background: rgba(94,110,74,.10) !important;
+            border-color: rgba(94,110,74,.28) !important;
+            color: #4A5C38 !important;
+        }
+
+        /* Theme switch wrapper di login */
+        body.light-mode .login-theme-btn { color: #7A7060 !important; }
     </style>
 </head>
 <body>
+
+    {{-- THEME SWITCH — pojok kanan atas --}}
+    <div style="position:fixed;top:14px;right:16px;z-index:999;display:flex;align-items:center;gap:7px;">
+        <label class="theme-switch" title="Ganti tema">
+            <input type="checkbox" class="dpg-theme-checkbox" aria-label="Toggle dark/light mode">
+            <span class="track"></span>
+            <span class="thumb"></span>
+        </label>
+        <span class="theme-label login-theme-btn" style="font-size:12px;font-weight:500;color:var(--muted);min-width:30px;">Dark</span>
+    </div>
 
     {{-- LEFT PANEL --}}
     <div class="left-panel">
@@ -558,5 +687,6 @@
                 : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
         }
     </script>
+    <script src="{{ asset('js/theme-mode.js') }}"></script>
 </body>
 </html>

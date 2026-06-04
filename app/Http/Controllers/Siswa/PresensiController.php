@@ -12,7 +12,9 @@ class PresensiController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        $nis = str_replace(['siswa.', '@sija.sch.id'], '', $user->email);
+        $emailNisLast5 = str_replace(['siswa.', '@sija.sch.id'], '', $user->email);
+        $siswa = \App\Models\Siswa::where('nis', 'LIKE', '%' . $emailNisLast5)->first();
+        $nis = $siswa ? $siswa->nis : '';
 
         $query = Presensi::with('jadwal.mapel')
             ->where('nis', $nis);

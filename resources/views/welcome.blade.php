@@ -6,11 +6,13 @@
     <title>SIJA Presensi Digital — SMK</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/theme-mode.css') }}">
 
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        :root {
+        /* Variabel default dark mode — di body agar body.light-mode bisa override */
+        body {
             --navy:      #0B1F3A;
             --navy-mid:  #132D52;
             --navy-soft: #1C3D6E;
@@ -388,6 +390,113 @@
             .hero-right { flex: none; width: 100%; }
             .stats-row { gap: 1.5rem; }
         }
+
+        /* ── LIGHT MODE — Warm Parchment ── */
+        body.light-mode {
+            --navy:      #F5F0E8;
+            --navy-mid:  #EDE8DD;
+            --navy-soft: #E4DDD1;
+            --gold:      #A67C3D;
+            --gold-lt:   #7A5A28;
+            --gold-dim:  #C8A878;
+            --white:     #2C2418;
+            --muted:     #7A7060;
+            --border:    rgba(166,124,61,.25);
+            background: #F5F0E8 !important;
+            color: #2C2418 !important;
+        }
+
+        body.light-mode::before {
+            background: none !important;
+        }
+
+        body.light-mode::after {
+            background-image:
+                linear-gradient(rgba(166,124,61,.018) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(166,124,61,.018) 1px, transparent 1px) !important;
+        }
+
+        /* Navbar */
+        body.light-mode nav {
+            background: rgba(253,248,240,.96) !important;
+            border-bottom-color: rgba(166,124,61,.22) !important;
+            box-shadow: 0 1px 14px rgba(44,36,24,.07);
+        }
+        body.light-mode .nav-name { color: #2C2418 !important; }
+        body.light-mode .nav-sub  { color: #7A7060 !important; }
+        body.light-mode .nav-logo {
+            background: linear-gradient(135deg, #A67C3D, #7A5A28) !important;
+            color: #fff !important;
+        }
+        body.light-mode .btn-outline {
+            border-color: rgba(166,124,61,.30) !important;
+            color: #7A5A28 !important;
+        }
+        body.light-mode .btn-outline:hover {
+            border-color: #A67C3D !important;
+            color: #5A3E18 !important;
+        }
+        body.light-mode .btn-gold {
+            background: #A67C3D !important;
+            border-color: #A67C3D !important;
+            color: #fff !important;
+        }
+        body.light-mode .btn-gold:hover {
+            background: #7A5A28 !important;
+        }
+
+        /* Hero text */
+        body.light-mode .hero-title    { color: #2C2418 !important; }
+        body.light-mode .hero-title span { color: #A67C3D !important; }
+        body.light-mode .hero-desc     { color: #7A7060 !important; }
+        body.light-mode .hero-note     { color: #7A7060 !important; }
+        body.light-mode .hero-badge {
+            background: rgba(166,124,61,.10) !important;
+            border-color: rgba(166,124,61,.28) !important;
+            color: #7A5A28 !important;
+        }
+        body.light-mode .hero-badge::before { background: #A67C3D !important; }
+
+        /* Stats */
+        body.light-mode .stats-row { border-top-color: rgba(166,124,61,.22) !important; }
+        body.light-mode .stat-num   { color: #A67C3D !important; }
+        body.light-mode .stat-label { color: #7A7060 !important; }
+
+        /* Feature card */
+        body.light-mode .feature-card {
+            background: rgba(253,250,244,.90) !important;
+            border-color: rgba(166,124,61,.20) !important;
+        }
+        body.light-mode .feature-card-title { color: #7A7060 !important; }
+        body.light-mode .feature-item {
+            border-bottom-color: rgba(44,36,24,.08) !important;
+        }
+        body.light-mode .feature-text strong { color: #2C2418 !important; }
+        body.light-mode .feature-text span   { color: #7A7060 !important; }
+        body.light-mode .fi-gold { background: rgba(166,124,61,.12) !important; }
+        body.light-mode .fi-blue { background: rgba(56,139,253,.10) !important; }
+        body.light-mode .fi-teal { background: rgba(45,212,191,.08) !important; }
+        body.light-mode .fi-coral{ background: rgba(251,113,133,.08) !important; }
+
+        /* Status bar (feature card) */
+        body.light-mode .status-bar {
+            background: rgba(166,124,61,.06) !important;
+            border-color: rgba(166,124,61,.20) !important;
+        }
+        body.light-mode .status-text { color: #7A5A28 !important; }
+
+        /* Btn hero */
+        body.light-mode .btn-hero {
+            background: #A67C3D !important;
+            color: #fff !important;
+        }
+        body.light-mode .btn-hero:hover { background: #7A5A28 !important; }
+
+        /* Footer */
+        body.light-mode footer {
+            border-top-color: rgba(44,36,24,.12) !important;
+            color: #7A7060 !important;
+        }
     </style>
 </head>
 <body>
@@ -403,15 +512,29 @@
         </div>
 
         <div class="nav-links">
+            <div style="display:flex;align-items:center;gap:7px;">
+                <label class="theme-switch" title="Ganti tema">
+                    <input type="checkbox" class="dpg-theme-checkbox" aria-label="Toggle dark/light mode">
+                    <span class="track"></span>
+                    <span class="thumb"></span>
+                </label>
+                <span class="theme-label" style="font-size:12px;font-weight:500;color:var(--muted);min-width:30px;">Dark</span>
+            </div>
             @auth
-                @php $role = auth()->user()->role; @endphp
-                <a href="{{ $role === 'admin' ? route('admin.dashboard') : ($role === 'guru' ? route('guru.dashboard') : route('siswa.dashboard')) }}"
-                   class="btn-gold">
-                    @if($role === 'admin') Dashboard Admin
-                    @elseif($role === 'guru') Dashboard Guru
-                    @else Dashboard Siswa
-                    @endif
-                </a>
+                @php 
+                    $role = auth()->user()->role; 
+                    if($role === 'admin') {
+                        $dashRoute = route('admin.dashboard');
+                        $dashText = 'Dashboard Admin';
+                    } elseif(in_array($role, ['guru', 'walikelas', 'kakon'])) {
+                        $dashRoute = route('guru.dashboard');
+                        $dashText = 'Dashboard Guru';
+                    } else {
+                        $dashRoute = route('siswa.dashboard');
+                        $dashText = 'Dashboard Siswa';
+                    }
+                @endphp
+                <a href="{{ $dashRoute }}" class="btn-gold">{{ $dashText }}</a>
             @else
                 <a href="{{ route('login') }}" class="btn-outline">Masuk</a>
             @endauth
@@ -434,12 +557,31 @@
             </p>
 
             <div class="hero-actions">
-                <a href="{{ route('login') }}" class="btn-hero">
-                    Masuk ke Sistem
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
+                @auth
+                    @php 
+                        $role = auth()->user()->role; 
+                        if($role === 'admin') {
+                            $dashRoute = route('admin.dashboard');
+                        } elseif(in_array($role, ['guru', 'walikelas', 'kakon'])) {
+                            $dashRoute = route('guru.dashboard');
+                        } else {
+                            $dashRoute = route('siswa.dashboard');
+                        }
+                    @endphp
+                    <a href="{{ $dashRoute }}" class="btn-hero">
+                        Ke Dashboard
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                @else
+                    <a href="{{ route('login') }}" class="btn-hero">
+                        Masuk ke Sistem
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                @endauth
                 <span class="hero-note">Gunakan akun yang diberikan oleh sekolah</span>
             </div>
 
@@ -526,5 +668,6 @@
         &copy; {{ date('Y') }} SMK — Sistem Presensi Digital Kelas XI SIJA 1 &amp; 2
     </footer>
 
+    <script src="{{ asset('js/theme-mode.js') }}"></script>
 </body>
 </html>

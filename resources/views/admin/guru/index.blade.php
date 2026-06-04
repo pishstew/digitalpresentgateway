@@ -6,6 +6,7 @@
     <title>Manajemen Guru — SIJA Presensi</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/theme-mode.css') }}">
 
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -307,16 +308,16 @@
 
         /* PAGINATION */
         .pagi { padding: 14px 16px; border-top: 1px solid var(--border-w); }
-        .pagi nav { display: flex; gap: 6px; flex-wrap: wrap; }
-        .pagi .page-link {
-            padding: 6px 12px; border-radius: 7px; font-size: 12px; font-weight: 600;
-            background: var(--glass); border: 1px solid var(--border-w); color: var(--muted);
-            text-decoration: none; transition: all .2s;
-        }
-        .pagi .page-link:hover,
-        .pagi [aria-current="page"] .page-link {
-            background: rgba(201,150,60,.12); border-color: var(--border); color: var(--gold-lt);
-        }
+        .pagi svg { width: 16px !important; height: 16px !important; display: inline-block; vertical-align: middle; }
+        .pagi nav { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+        .pagi nav > div:first-child { display: none !important; }
+        .pagi nav > div:last-child { display: flex !important; flex-direction: row; align-items: center; justify-content: space-between; width: 100%; gap: 15px; flex-wrap: wrap; }
+        .pagi nav p { font-size: 13px; color: var(--muted); margin: 0; }
+        .pagi nav span.relative { display: inline-flex; gap: 4px; align-items: center; }
+        .pagi nav a, .pagi nav span[aria-current="page"] > span, .pagi nav span.disabled > span { display: inline-flex; align-items: center; justify-content: center; min-width: 32px; height: 32px; padding: 0 10px; border-radius: 8px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.07); color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 600; transition: all 0.2s; cursor: pointer; }
+        .pagi nav a:hover { background: rgba(201, 150, 60, 0.15); border-color: var(--gold); color: var(--gold-lt) !important; }
+        .pagi nav span[aria-current="page"] > span { background: var(--gold) !important; color: var(--navy) !important; border-color: var(--gold) !important; }
+        .pagi nav span.disabled > span { opacity: 0.4; cursor: not-allowed; }
 
         /* FOOTER */
         footer {
@@ -351,6 +352,7 @@
         </svg>
         Dashboard
     </a>
+    <div style="display:flex;align-items:center;gap:7px;margin-left:auto;"><label class="theme-switch" title="Ganti tema"><input type="checkbox" class="dpg-theme-checkbox" aria-label="Toggle dark/light mode"><span class="track"></span><span class="thumb"></span></label><span class="theme-label">Dark</span></div>
 </nav>
 
 <div class="wrap">
@@ -505,7 +507,7 @@
             <form action="{{ route('admin.guru.import') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="import-row">
-                    <input type="file" name="file_import" accept=".xlsx,.xls" class="import-file" required>
+                    <input type="file" name="file_import" accept=".xlsx,.xls,.csv" class="import-file" required>
                     <button type="submit" class="btn btn-teal">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
                         Upload & Import
@@ -652,5 +654,6 @@ document.getElementById('formTambahGuru').addEventListener('submit', function (e
 
 updateNipUI();
 </script>
+<script src="{{ asset('js/theme-mode.js') }}"></script>
 </body>
 </html>

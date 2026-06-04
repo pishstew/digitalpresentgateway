@@ -336,11 +336,11 @@
                     </div>
                     <div class="akun-row">
                         <span class="akun-key">Email</span>
-                        <span class="akun-val">siswa.{NIS}@sija.sch.id</span>
+                        <span class="akun-val">siswa.{5 digit terakhir NIS}@sija.sch.id</span>
                     </div>
                     <div class="akun-row">
                         <span class="akun-key">Password</span>
-                        <span class="akun-val">Siswa#{4 digit terakhir NIS}</span>
+                        <span class="akun-val">password</span>
                     </div>
                 </div>
 

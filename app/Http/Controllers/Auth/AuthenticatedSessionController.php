@@ -41,15 +41,17 @@ class AuthenticatedSessionController extends Controller
         }
 
         // Arahkan user ke halaman dashboard yang sesuai dengan rolenya masing-masing
+        // Hapus `intended()` agar user selalu kembali ke dashboard utama sesuai role-nya
+        // tanpa tersesat ke URL role lain (yang akan menyebabkan 403 Akses Ditolak)
         return match($user->role) {
-            'admin'     => redirect()->intended(route('admin.dashboard')),
-            'siswa'     => redirect()->intended(route('siswa.dashboard')),
+            'admin'     => redirect()->route('admin.dashboard'),
+            'siswa'     => redirect()->route('siswa.dashboard'),
 
             // walikelas & kakon adalah guru pengajar — dashboard utama tetap guru
             // tombol switch ke dashboard khusus tersedia di sana
             'guru',
             'walikelas',
-            'kakon'     => redirect()->intended(route('guru.dashboard')),
+            'kakon'     => redirect()->route('guru.dashboard'),
 
             default     => redirect()->route('login'),
         };

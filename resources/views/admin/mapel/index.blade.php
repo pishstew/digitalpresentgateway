@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manajemen Mata Pelajaran</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/theme-mode.css') }}">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -320,19 +321,75 @@
         /* ── Pagination ── */
         .pagination-wrap {
             padding: 14px 24px;
-            border-top: 1px solid rgba(143,163,192,.1);
+            border-top: 1px solid var(--gold-border);
         }
-        .pagination-wrap nav { display: flex; justify-content: flex-end; }
-        /* Style default Laravel pagination links */
-        .pagination-wrap a,
-        .pagination-wrap span {
+        .pagination-wrap svg {
+            width: 16px !important;
+            height: 16px !important;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .pagination-wrap nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+        .pagination-wrap nav > div:first-child {
+            display: none !important;
+        }
+        .pagination-wrap nav > div:last-child {
+            display: flex !important;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .pagination-wrap nav p {
+            font-size: 13px;
             color: var(--muted);
-            font-size: .82rem;
-            padding: 5px 10px;
-            border-radius: 6px;
-            text-decoration: none;
+            margin: 0;
         }
-        .pagination-wrap a:hover { color: var(--gold); background: var(--gold-dim); }
+        .pagination-wrap nav span.relative {
+            display: inline-flex;
+            gap: 4px;
+            align-items: center;
+        }
+        .pagination-wrap nav a, 
+        .pagination-wrap nav span[aria-current="page"] > span, 
+        .pagination-wrap nav span.disabled > span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            height: 32px;
+            padding: 0 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .pagination-wrap nav a:hover {
+            background: rgba(201, 150, 60, 0.15);
+            border-color: var(--gold);
+            color: var(--gold-light) !important;
+        }
+        .pagination-wrap nav span[aria-current="page"] > span {
+            background: var(--gold) !important;
+            color: var(--navy) !important;
+            border-color: var(--gold) !important;
+        }
+        .pagination-wrap nav span.disabled > span {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
 
         /* ── Status bar top ── */
         .status-bar {
@@ -365,6 +422,7 @@
         <span class="nav-title">SchoolSystem</span>
     </a>
     <div class="nav-right">
+        <div style="display:flex;align-items:center;gap:7px;"><label class="theme-switch" title="Ganti tema"><input type="checkbox" class="dpg-theme-checkbox" aria-label="Toggle dark/light mode"><span class="track"></span><span class="thumb"></span></label><span class="theme-label">Dark</span></div>
         <a href="{{ route('admin.dashboard') }}" class="btn-back">
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 12L6 8l4-4"/></svg>
             Dashboard
@@ -493,5 +551,6 @@
 
 </div>
 
+<script src="{{ asset('js/theme-mode.js') }}"></script>
 </body>
 </html>

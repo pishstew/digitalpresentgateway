@@ -212,7 +212,17 @@ body { padding-top: 60px !important; margin: 0; }
         @endif
     </nav>
 
-    {{-- User dropdown --}}
+    {-- Theme Switch --}
+    <div style="display:flex;align-items:center;gap:7px;flex-shrink:0;">
+        <label class="theme-switch" title="Ganti tema">
+            <input type="checkbox" class="dpg-theme-checkbox" aria-label="Toggle dark/light mode">
+            <span class="track"></span>
+            <span class="thumb"></span>
+        </label>
+        <span class="theme-label" style="font-size:.72rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.45);white-space:nowrap;user-select:none;">Dark</span>
+    </div>
+
+        {-- User dropdown --}
     <div class="topbar-right">
         <div class="user-btn" id="userBtn" onclick="toggleUserMenu()">
             <div class="user-avatar">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</div>
@@ -256,7 +266,7 @@ body { padding-top: 60px !important; margin: 0; }
     @elseif($role === 'siswa')
         <a href="{{ route('siswa.dashboard') }}"      class="sb-link {{ request()->routeIs('siswa.dashboard') ? 'active' : '' }}"><span class="sb-em">🏠</span>Dashboard</a>
         <a href="{{ route('siswa.presensi.index') }}" class="sb-link {{ request()->routeIs('siswa.presensi.*') ? 'active' : '' }}"><span class="sb-em">✅</span>Presensi Saya</a>
-        
+
     @elseif($role === 'walikelas')
         <a href="{{ route('walikelas.dashboard') }}"  class="sb-link {{ request()->routeIs('walikelas.dashboard') ? 'active' : '' }}"><span class="sb-em">📊</span>Dashboard Walikelas</a>
 

@@ -189,9 +189,9 @@
 
         .jam-badge {
             display: inline-flex; align-items: center; justify-content: center;
-            width: 28px; height: 28px; border-radius: 8px;
+            min-width: 40px; height: 28px; border-radius: 8px; padding: 0 8px;
             background: rgba(201,150,60,.12); border: 1px solid var(--border);
-            font-size: 13px; font-weight: 700; color: var(--gold-lt);
+            font-size: 12px; font-weight: 700; color: var(--gold-lt);
         }
 
         /* INFO SIDEBAR */
@@ -297,11 +297,11 @@
 
                         <div class="form-group">
                             <label class="form-label">Jam Ke</label>
-                            <input type="number" name="jam_ke"
+                            <input type="text" name="jam_ke"
                                    class="form-input @error('jam_ke') error @enderror"
-                                   placeholder="Contoh: 1, 2, 3..."
+                                   placeholder="mis: 1-2, 3-4, 5-6"
                                    value="{{ old('jam_ke', $jadwal->jam_ke) }}"
-                                   min="1" required>
+                                   required>
                             @error('jam_ke')<div class="form-err">{{ $message }}</div>@enderror
                         </div>
                     </div>

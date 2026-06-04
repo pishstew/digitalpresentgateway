@@ -404,7 +404,7 @@
                         <div class="info-dot"></div>
                         <div class="info-text">
                             <strong>Email Login</strong>
-                            Menggunakan format siswa.{NIS}@sija.sch.id
+                            Menggunakan format siswa.{5 digit terakhir NIS}@sija.sch.id
                         </div>
                     </div>
                 </div>

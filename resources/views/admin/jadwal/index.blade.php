@@ -6,6 +6,7 @@
     <title>Manajemen Jadwal — SIJA Presensi</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/theme-mode.css') }}">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
@@ -139,6 +140,48 @@
         .radio-pill:has(input:checked) { background: rgba(201,150,60,.12); border-color: var(--border); color: var(--gold-lt); }
         .radio-pill input { accent-color: var(--gold); width: 14px; height: 14px; cursor: pointer; }
 
+        /* FILTER TABS */
+        .filter-tabs { display: flex; gap: 6px; }
+        .filter-tab {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 600;
+            text-decoration: none; border: 1px solid var(--border-w);
+            color: var(--muted); background: var(--glass); transition: all .2s;
+        }
+        .filter-tab:hover { background: rgba(255,255,255,.07); color: var(--white); }
+        .filter-tab.active { background: rgba(201,150,60,.12); border-color: var(--border); color: var(--gold-lt); }
+        .filter-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+        /* FILTER DROPDOWN (hari) */
+        .filter-dd { position: relative; display: inline-block; }
+        .filter-dd-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600;
+            border: 1px solid var(--border-w); color: var(--muted); background: var(--glass);
+            cursor: pointer; transition: all .2s; white-space: nowrap;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .filter-dd-btn:hover { background: rgba(255,255,255,.07); color: var(--white); }
+        .filter-dd-btn.has-filter { background: rgba(201,150,60,.12); border-color: var(--border); color: var(--gold-lt); }
+        .filter-dd-btn svg { width: 13px; height: 13px; }
+        .filter-dd-menu {
+            display: none; position: absolute; top: calc(100% + 6px); right: 0;
+            background: #132D52; border: 1px solid var(--border-w);
+            border-radius: 10px; padding: 5px; min-width: 150px;
+            box-shadow: 0 16px 40px rgba(0,0,0,.5); z-index: 300;
+        }
+        .filter-dd.open .filter-dd-menu { display: block; animation: ddIn .14s ease; }
+        @keyframes ddIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+        .filter-dd-item {
+            display: flex; align-items: center; gap: 9px;
+            padding: 8px 12px; border-radius: 7px;
+            font-size: 13px; font-weight: 500; color: var(--muted);
+            text-decoration: none; transition: background .14s;
+        }
+        .filter-dd-item:hover { background: rgba(255,255,255,.06); color: var(--white); text-decoration: none; }
+        .filter-dd-item.selected { background: rgba(201,150,60,.1); color: var(--gold-lt); }
+        .filter-dd-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
         /* BUTTONS */
         .btn {
             display: inline-flex; align-items: center; gap: 7px; padding: 10px 18px;
@@ -178,9 +221,9 @@
         /* JAM KE badge */
         .jam-badge {
             display: inline-flex; align-items: center; justify-content: center;
-            width: 28px; height: 28px; border-radius: 8px;
+            min-width: 40px; height: 28px; border-radius: 8px; padding: 0 8px;
             background: rgba(201,150,60,.12); border: 1px solid var(--border);
-            font-size: 13px; font-weight: 700; color: var(--gold-lt);
+            font-size: 12px; font-weight: 700; color: var(--gold-lt);
         }
 
         /* BADGE */
@@ -226,6 +269,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
         Dashboard
     </a>
+    <div style="display:flex;align-items:center;gap:7px;margin-left:auto;"><label class="theme-switch" title="Ganti tema"><input type="checkbox" class="dpg-theme-checkbox" aria-label="Toggle dark/light mode"><span class="track"></span><span class="thumb"></span></label><span class="theme-label">Dark</span></div>
 </nav>
 
 <div class="wrap">
@@ -281,10 +325,10 @@
                     {{-- Jam Ke --}}
                     <div class="form-col">
                         <label class="form-label">Jam Ke</label>
-                        <input type="number" name="jam_ke"
+                        <input type="text" name="jam_ke"
                                class="form-input @error('jam_ke') error @enderror"
-                               placeholder="1, 2, 3 ..."
-                               value="{{ old('jam_ke') }}" min="1" required>
+                               placeholder="contoh: 1-2"
+                               value="{{ old('jam_ke') }}" required>
                         @error('jam_ke')<div class="form-err">{{ $message }}</div>@enderror
                     </div>
 
@@ -350,18 +394,69 @@
     {{-- TABEL --}}
     <div class="sec-title">Daftar Jadwal</div>
     <div class="card">
-        <div class="card-head">
+        <div class="card-head" style="flex-wrap:wrap; gap:10px;">
             <div class="card-head-title">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 Semua Jadwal Terdaftar
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+                {{-- Filter Kelas --}}
+                <div class="filter-tabs">
+                    <a href="{{ route('admin.jadwal.index', array_filter(['search' => request('search'), 'hari' => request('hari')])) }}"
+                       class="filter-tab {{ !request('kelas') ? 'active' : '' }}">
+                        Semua
+                    </a>
+                    <a href="{{ route('admin.jadwal.index', array_filter(['kelas' => 'XI SIJA 1', 'search' => request('search'), 'hari' => request('hari')])) }}"
+                       class="filter-tab {{ request('kelas') === 'XI SIJA 1' ? 'active' : '' }}">
+                        <span class="filter-dot" style="background:#a78bfa"></span>
+                        XI SIJA 1
+                    </a>
+                    <a href="{{ route('admin.jadwal.index', array_filter(['kelas' => 'XI SIJA 2', 'search' => request('search'), 'hari' => request('hari')])) }}"
+                       class="filter-tab {{ request('kelas') === 'XI SIJA 2' ? 'active' : '' }}">
+                        <span class="filter-dot" style="background:#f9a8d4"></span>
+                        XI SIJA 2
+                    </a>
+                </div>
+
+                {{-- Filter Hari Dropdown --}}
+                <div class="filter-dd" id="hariDd">
+                    <button type="button" class="filter-dd-btn {{ request('hari') ? 'has-filter' : '' }}" onclick="toggleHariDd()" title="Filter Hari">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+                        </svg>
+                        {{ request('hari') ?: 'Filter Hari' }}
+                        <svg viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:8px;height:8px;opacity:.5;">
+                            <path d="M1 1l4 4 4-4"/>
+                        </svg>
+                    </button>
+                    <div class="filter-dd-menu">
+                        <a href="{{ route('admin.jadwal.index', array_filter(['kelas' => request('kelas'), 'search' => request('search')])) }}"
+                           class="filter-dd-item {{ !request('hari') ? 'selected' : '' }}">
+                            Semua Hari
+                        </a>
+                        @foreach(['Senin' => '#93c5fd', 'Selasa' => '#2dd4bf', 'Rabu' => '#a78bfa', 'Kamis' => '#fde68a', 'Jumat' => '#f9a8d4'] as $namaHari => $color)
+                            <a href="{{ route('admin.jadwal.index', array_filter(['hari' => $namaHari, 'kelas' => request('kelas'), 'search' => request('search')])) }}"
+                               class="filter-dd-item {{ request('hari') === $namaHari ? 'selected' : '' }}">
+                                <span class="filter-dd-dot" style="background:{{ $color }}"></span>
+                                {{ $namaHari }}
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
             </div>
         </div>
 
         {{-- SEARCH --}}
         <div style="padding: 12px 16px; border-bottom: 1px solid var(--border-w);">
             <form method="GET" action="{{ route('admin.jadwal.index') }}" class="search-row">
+                @if(request('kelas'))
+                    <input type="hidden" name="kelas" value="{{ request('kelas') }}">
+                @endif
+                @if(request('hari'))
+                    <input type="hidden" name="hari" value="{{ request('hari') }}">
+                @endif
                 <input type="text" name="search" class="form-input"
-                       placeholder="Cari berdasarkan kelas, hari, atau guru..."
+                       placeholder="Cari berdasarkan hari, atau guru..."
                        value="{{ request('search') }}">
                 <button type="submit" class="btn btn-teal btn-sm">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -446,5 +541,16 @@
 </div>
 
 <footer>&copy; {{ date('Y') }} SMK — Sistem Presensi Digital Kelas XI SIJA 1 &amp; 2</footer>
+
+<script>
+function toggleHariDd() {
+    document.getElementById('hariDd').classList.toggle('open');
+}
+document.addEventListener('click', function(e) {
+    const dd = document.getElementById('hariDd');
+    if (dd && !dd.contains(e.target)) dd.classList.remove('open');
+});
+</script>
+<script src="{{ asset('js/theme-mode.js') }}"></script>
 </body>
 </html>

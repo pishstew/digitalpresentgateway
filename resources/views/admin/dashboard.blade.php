@@ -6,6 +6,7 @@
     <title>Dashboard Admin — SIJA Presensi</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/theme-mode.css') }}">
 
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -501,6 +502,7 @@
         </div>
 
         <div class="nav-right">
+            <div style="display:flex;align-items:center;gap:7px;"><label class="theme-switch" title="Ganti tema"><input type="checkbox" class="dpg-theme-checkbox" aria-label="Toggle dark/light mode"><span class="track"></span><span class="thumb"></span></label><span class="theme-label">Dark</span></div>
             <div class="nav-user">
                 <div class="nav-avatar">
                     {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
@@ -728,8 +730,9 @@
     </div>
 
     <footer>
-        &copy; {{ date('Y') }} SMK — Sistem Presensi Digital Kelas XI SIJA 1 &amp; 2
+        &copy; {{ date('Y') }} Dibuat oleh ONEJAY TEAM &mdash; <a href="{{ url('/about') }}" style="color: var(--gold-lt); text-decoration: none; font-weight: 600;">Tentang Kami | About Us</a>
     </footer>
 
+    <script src="{{ asset('js/theme-mode.js') }}"></script>
 </body>
 </html>

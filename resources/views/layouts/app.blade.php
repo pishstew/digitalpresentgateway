@@ -10,6 +10,7 @@
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" href="{{ asset('css/theme-mode.css') }}">
 
         <!-- Admin Custom Styles -->
 
@@ -37,5 +38,6 @@
                 @yield('content')
             </main>
         </div>
-    </body>
+        <script src="{{ asset('js/theme-mode.js') }}"></script>
+</body>
 </html>

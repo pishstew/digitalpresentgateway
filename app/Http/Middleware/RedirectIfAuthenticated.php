@@ -25,9 +25,8 @@ class RedirectIfAuthenticated
             // Jika user yang sudah login mencoba mengakses form login/register, langsung arahkan ke dashboard sesuai role-nya
             return match($user->role) {
                 'admin' => redirect()->route('admin.dashboard'), // Arahkan admin ke dashboard admin
-                'guru'  => redirect()->route('guru.dashboard'), // Arahkan guru ke dashboard guru
+                'guru', 'walikelas', 'kakon'  => redirect()->route('guru.dashboard'), // Arahkan guru ke dashboard guru
                 'siswa' => redirect()->route('siswa.dashboard'), // Arahkan siswa ke dashboard siswa
-                'walikelas' => redirect()->route('walikelas.dashboard'), // Arahkan walikelas ke dashboard walikelas
                 default => redirect('/'), // Default kembalikan ke halaman utama jika rolenya tidak valid
             };
         }

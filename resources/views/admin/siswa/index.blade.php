@@ -212,7 +212,77 @@
             display: flex; align-items: center; justify-content: space-between;
             font-size: 13px; color: var(--muted);
         }
-        .pagi { padding: 14px 16px; border-top: 1px solid var(--border-w); }
+        .pagi {
+            padding: 14px 16px;
+            border-top: 1px solid var(--border-w);
+        }
+        .pagi svg {
+            width: 16px !important;
+            height: 16px !important;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .pagi nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+        .pagi nav > div:first-child {
+            display: none !important;
+        }
+        .pagi nav > div:last-child {
+            display: flex !important;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .pagi nav p {
+            font-size: 13px;
+            color: var(--muted);
+            margin: 0;
+        }
+        .pagi nav span.relative {
+            display: inline-flex;
+            gap: 4px;
+            align-items: center;
+        }
+        .pagi nav a, 
+        .pagi nav span[aria-current="page"] > span, 
+        .pagi nav span.disabled > span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            height: 32px;
+            padding: 0 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .pagi nav a:hover {
+            background: rgba(201, 150, 60, 0.15);
+            border-color: var(--gold);
+            color: var(--gold-lt) !important;
+        }
+        .pagi nav span[aria-current="page"] > span {
+            background: var(--gold) !important;
+            color: var(--navy) !important;
+            border-color: var(--gold) !important;
+        }
+        .pagi nav span.disabled > span {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
 
         footer { position: relative; z-index: 2; text-align: center; padding: 1.5rem; border-top: 1px solid var(--border-w); font-size: 12px; color: var(--muted); }
 
@@ -303,7 +373,7 @@
             <form action="{{ route('admin.siswa.import') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="import-row">
-                    <input type="file" name="file_import" accept=".xlsx,.xls" class="import-file" required>
+                    <input type="file" name="file_import" accept=".xlsx,.xls,.csv" class="import-file" required>
                     <button type="submit" class="btn btn-teal">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
                         Upload & Import
@@ -316,27 +386,43 @@
     {{-- TABEL --}}
     <div class="sec-title">Daftar Siswa</div>
     <div class="card">
-        <div class="card-head">
+        <div class="card-head" style="flex-wrap:wrap; gap:10px;">
             <div class="card-head-title">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 Semua Siswa Terdaftar
             </div>
             <div class="filter-tabs">
-                <a href="{{ route('admin.siswa.index') }}"
+                <a href="{{ route('admin.siswa.index', array_filter(['search' => request('search')])) }}"
                    class="filter-tab {{ !request('kelas') ? 'active' : '' }}">
                     Semua
                 </a>
-                <a href="{{ route('admin.siswa.index', ['kelas' => 'XI SIJA 1']) }}"
+                <a href="{{ route('admin.siswa.index', array_filter(['kelas' => 'XI SIJA 1', 'search' => request('search')])) }}"
                    class="filter-tab {{ request('kelas') === 'XI SIJA 1' ? 'active' : '' }}">
                     <span class="filter-dot" style="background:#a78bfa"></span>
                     XI SIJA 1
                 </a>
-                <a href="{{ route('admin.siswa.index', ['kelas' => 'XI SIJA 2']) }}"
+                <a href="{{ route('admin.siswa.index', array_filter(['kelas' => 'XI SIJA 2', 'search' => request('search')])) }}"
                    class="filter-tab {{ request('kelas') === 'XI SIJA 2' ? 'active' : '' }}">
                     <span class="filter-dot" style="background:#f9a8d4"></span>
                     XI SIJA 2
                 </a>
             </div>
+        </div>
+
+        {{-- SEARCH BOX --}}
+        <div style="padding: 12px 16px; border-bottom: 1px solid var(--border-w);">
+            <form method="GET" action="{{ route('admin.siswa.index') }}" class="search-row">
+                @if(request('kelas'))
+                    <input type="hidden" name="kelas" value="{{ request('kelas') }}">
+                @endif
+                <input type="text" name="search" class="form-input"
+                       placeholder="Cari nama siswa atau NIS..."
+                       value="{{ request('search') }}">
+                <button type="submit" class="btn btn-teal btn-sm">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    Cari
+                </button>
+            </form>
         </div>
 
         <div class="table-wrap">
@@ -353,7 +439,7 @@
                 </thead>
                 <tbody>
                     @forelse($siswa as $index => $item)
-                        @php $userSiswa = \App\Models\User::where('email', 'siswa.' . $item->nis . '@sija.sch.id')->first(); @endphp
+                        @php $userSiswa = \App\Models\User::where('email', 'siswa.' . substr($item->nis, -5) . '@sija.sch.id')->first(); @endphp
                         <tr>
                             <td style="color:var(--muted)">{{ $siswa->firstItem() + $index }}</td>
                             <td><span class="mono">{{ $item->nis }}</span></td>

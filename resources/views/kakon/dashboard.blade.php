@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="{{ asset('css/theme-mode.css') }}">
 
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -353,6 +354,63 @@
             .stats-grid { grid-template-columns: 1fr 1fr; }
             .filter-grid { grid-template-columns: 1fr; }
         }
+
+        /* ── EXPORT BUTTON ── */
+        .btn-export {
+            display: inline-flex; align-items: center; gap: 7px;
+            padding: 6px 14px; border-radius: 8px;
+            background: rgba(201,150,60,.15); border: 1px solid var(--border);
+            color: var(--gold-lt); font-size: 12px; font-weight: 600;
+            cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: all .2s;
+        }
+        .btn-export:hover { background: rgba(201,150,60,.28); }
+        .btn-export svg { width: 14px; height: 14px; }
+
+        /* ── PRINT STYLES ── */
+        @media print {
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            body { background: #fff !important; color: #000 !important; }
+            body::before, body::after { display: none !important; }
+            nav, .filter-card, footer, .btn-export { display: none !important; }
+            .wrap { padding: 10px !important; }
+            .page-header, .stats-grid { display: none !important; }
+            .main-grid > div:last-child { display: none !important; } /* Hide right column */
+            .main-grid > div:first-child > .panel:first-child { display: none !important; } /* Hide grafik tren */
+            .main-grid { display: block !important; } /* Table full width */
+            
+            .panel { background: #fff !important; border: 1px solid #ddd !important; break-inside: avoid; }
+            .panel-hd { background: #f0f0f0 !important; border-bottom: 1px solid #ddd !important; }
+            .panel-title { color: #000 !important; }
+            .panel-badge { color: #555 !important; background: #eee !important; }
+            table { border-collapse: collapse !important; }
+            thead tr { background: #f0f0f0 !important; border-bottom: 2px solid #ccc !important; }
+            th { color: #555 !important; background: #f5f5f5 !important; }
+            td { color: #000 !important; border-bottom: 1px solid #eee !important; }
+            .user-name { color: #000 !important; }
+            .user-nis { color: #555 !important; }
+            .pill-h { background: #d1fae5 !important; color: #065f46 !important; }
+            .pill-i { background: #dbeafe !important; color: #1e40af !important; }
+            .pill-s { background: #fef3c7 !important; color: #92400e !important; }
+            .pill-a { background: #fee2e2 !important; color: #991b1b !important; }
+            .prog-fill { print-color-adjust: exact !important; }
+            .prog-lbl { color: #000 !important; }
+            .lboard-item { background: #f8f8f8 !important; border: 1px solid #ddd !important; }
+            .lboard-name { color: #000 !important; }
+            .lboard-kelas { color: #555 !important; }
+            .lboard-score { background: #fee2e2 !important; color: #991b1b !important; }
+            .legend-dot { print-color-adjust: exact !important; }
+            .legend-label { color: #555 !important; }
+            .legend-val { color: #000 !important; }
+            .legend-pct { color: #777 !important; }
+            .legend-pct { color: #777 !important; }
+            
+            .print-header { display: block !important; text-align: center; margin-bottom: 20px; }
+            .print-header h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 800; color: #0B1F3A; margin-bottom: 5px; }
+            .print-header p { font-size: 1.1rem; color: #555; }
+            @page { size: A4 landscape; margin: 12mm; }
+        }
+        .print-header { display: none; }
     </style>
 </head>
 <body>
@@ -367,6 +425,7 @@
         </div>
     </div>
     <div class="nav-right">
+        <div style="display:flex;align-items:center;gap:7px;"><label class="theme-switch" title="Ganti tema"><input type="checkbox" class="dpg-theme-checkbox" aria-label="Toggle dark/light mode"><span class="track"></span><span class="thumb"></span></label><span class="theme-label">Dark</span></div>
         <div style="display:flex;align-items:center;gap:8px;">
             <div class="nav-user-ava">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
             <div>
@@ -374,6 +433,7 @@
                 <div style="font-size:10px;color:var(--muted);">Kepala Konsentrasi</div>
             </div>
         </div>
+
         <form method="POST" action="{{ route('logout') }}" style="margin:0">
             @csrf
             <button type="submit" class="nav-pill nav-pill-ghost" style="border:none;cursor:pointer;font-family:inherit;">
@@ -385,6 +445,11 @@
 </nav>
 
 <div class="wrap">
+
+    <div class="print-header">
+        <h2>Laporan Rekap Presensi Siswa</h2>
+        <p>Kelas Konsentrasi: {{ $kelas }} | Periode: {{ ucfirst(str_replace('_', ' ', $period)) }}</p>
+    </div>
 
     {{-- PAGE HEADER --}}
     <div class="page-header">
@@ -429,7 +494,10 @@
                         <select class="f-select" name="period" onchange="document.getElementById('filterForm').submit()">
                             <option value="hari_ini"   @selected($period==='hari_ini')>Hari Ini</option>
                             <option value="minggu_ini" @selected($period==='minggu_ini')>Minggu Ini</option>
+                            <option value="minggu_lalu" @selected($period==='minggu_lalu')>Minggu Lalu</option>
                             <option value="bulan_ini"  @selected($period==='bulan_ini')>Bulan Ini</option>
+                            <option value="bulan_lalu"  @selected($period==='bulan_lalu')>Bulan Lalu</option>
+                            <option value="tahun_ini"  @selected($period==='tahun_ini')>Tahun Ini</option>
                             <option value="semester"   @selected($period==='semester')>Semester Aktif</option>
                         </select>
                     </div>
@@ -527,7 +595,13 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                         Daftar Siswa — {{ $kelas }}
                     </h5>
-                    <span class="panel-badge">{{ $rekapSiswa->count() }} siswa</span>
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <span class="panel-badge">{{ $rekapSiswa->count() }} siswa</span>
+                        <button onclick="window.print()" class="btn-export" style="padding:4px 10px; font-size:11px;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Export PDF
+                        </button>
+                    </div>
                 </div>
                 <div class="tbl-wrap">
                     <table>
@@ -662,7 +736,7 @@
 
 </div>{{-- /wrap --}}
 
-<footer>&copy; {{ date('Y') }} SMK — Sistem Presensi Digital Kelas XI SIJA 1 &amp; 2</footer>
+<footer>&copy; {{ date('Y') }} Dibuat oleh ONEJAY TEAM &mdash; <a href="{{ url('/about') }}" style="color: var(--gold-lt); text-decoration: none; font-weight: 600;">Tentang Kami | About Us</a></footer>
 
 {{-- CHARTS --}}
 <script>
@@ -743,5 +817,6 @@ Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
     });
 })();
 </script>
+<script src="{{ asset('js/theme-mode.js') }}"></script>
 </body>
 </html>

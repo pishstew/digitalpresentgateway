@@ -15,11 +15,19 @@ class SiswaController extends Controller
     {
         $query = Siswa::query();
 
-        if ($request->has('kelas') && $request->kelas) {
+        if ($request->filled('kelas')) {
             $query->where('kelas', $request->kelas);
         }
 
-        $siswa = $query->paginate(10);
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_siswa', 'like', "%{$search}%")
+                  ->orWhere('nis', 'like', "%{$search}%");
+            });
+        }
+
+        $siswa = $query->orderBy('nama_siswa')->paginate(10)->withQueryString();
         return view('admin.siswa.index', compact('siswa'));
     }
 
@@ -52,7 +60,13 @@ class SiswaController extends Controller
         ]);
 
         $nis           = $request->nis;
-        $emailSiswa    = 'siswa.' . $nis . '@sija.sch.id';
+        $baseEmail     = 'siswa.' . substr($nis, -5) . '@sija.sch.id';
+        $emailSiswa    = $baseEmail;
+        $counter       = 1;
+        while (User::where('email', $emailSiswa)->exists()) {
+            $emailSiswa = 'siswa.' . substr($nis, -5) . '-' . $counter . '@sija.sch.id';
+            $counter++;
+        }
         $passwordSiswa = 'Siswa#' . substr($nis, -4);
 
         User::create([
@@ -75,7 +89,7 @@ class SiswaController extends Controller
 
     public function edit(Siswa $siswa)
     {
-        $user = User::where('email', 'siswa.' . $siswa->nis . '@sija.sch.id')->first();
+        $user = User::where('email', 'siswa.' . substr($siswa->nis, -5) . '@sija.sch.id')->first();
         return view('admin.siswa.edit', compact('siswa', 'user'));
     }
 
@@ -91,7 +105,7 @@ class SiswaController extends Controller
             'kelas'      => $request->kelas,
         ]);
 
-        $user = User::where('email', 'siswa.' . $siswa->nis . '@sija.sch.id')->first();
+        $user = User::where('email', 'siswa.' . substr($siswa->nis, -5) . '@sija.sch.id')->first();
         if ($user) {
             $user->update([
                 'name'      => $request->nama_siswa,
@@ -117,10 +131,10 @@ class SiswaController extends Controller
     public function import(Request $request)
     {
         $request->validate([
-            'file_import' => 'required|file|mimes:xlsx,xls|max:5120',
+            'file_import' => 'required|file|mimes:xlsx,xls,csv,txt|max:5120',
         ], [
             'file_import.required' => 'Pilih file Excel terlebih dahulu.',
-            'file_import.mimes'    => 'File harus berformat .xlsx atau .xls',
+            'file_import.mimes'    => 'File harus berformat .xlsx, .xls, atau .csv',
             'file_import.max'      => 'Ukuran file maksimal 5MB',
         ]);
 
@@ -162,8 +176,30 @@ class SiswaController extends Controller
                     continue;
                 }
 
+                $baseEmail     = 'siswa.' . substr($nis, -5) . '@sija.sch.id';
+                $emailSiswa    = $baseEmail;
+                $counter       = 1;
+                while (User::where('email', $emailSiswa)->exists()) {
+                    $emailSiswa = 'siswa.' . substr($nis, -5) . '-' . $counter . '@sija.sch.id';
+                    $counter++;
+                }
+                $passwordSiswa = 'Siswa#' . substr($nis, -4);
+
                 if (Siswa::where('nis', $nis)->exists()) {
-                    $duplikat[] = "NIS {$nis} ({$namaSiswa}) sudah ada, dilewati";
+                    // Cek jika akun login belum ada, buatkan
+                    if (!User::where('email', $emailSiswa)->exists()) {
+                        User::create([
+                            'name'      => $namaSiswa,
+                            'email'     => $emailSiswa,
+                            'password'  => Hash::make($passwordSiswa),
+                            'role'      => 'siswa',
+                            'nip'       => null,
+                            'is_active' => true,
+                        ]);
+                        $berhasil++;
+                        continue;
+                    }
+                    $duplikat[] = "NIS {$nis} ({$namaSiswa}) sudah ada beserta akun loginnya, dilewati";
                     continue;
                 }
 
@@ -172,9 +208,6 @@ class SiswaController extends Controller
                     'nama_siswa' => $namaSiswa,
                     'kelas'      => $kelas,
                 ]);
-
-                $emailSiswa    = 'siswa.' . $nis . '@sija.sch.id';
-                $passwordSiswa = 'Siswa#' . substr($nis, -4);
 
                 if (!User::where('email', $emailSiswa)->exists()) {
                     User::create([

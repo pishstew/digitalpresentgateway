@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Riwayat Presensi</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/theme-mode.css') }}">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -264,17 +265,78 @@
         .empty-icon { font-size: 2rem; margin-bottom: 10px; }
         .empty-state p { font-size: .88rem; }
 
-        /* Pagination */
+        /* Pagination Override */
         .pagination-wrap {
-            padding: 11px 16px;
+            padding: 14px 16px;
             border-top: 1px solid rgba(143,163,192,.1);
         }
-        .pagination-wrap nav { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 2px; }
-        .pagination-wrap a, .pagination-wrap span {
-            color: var(--muted); font-size: .78rem;
-            padding: 5px 9px; border-radius: 5px; text-decoration: none;
+        .pagination-wrap svg {
+            width: 16px !important;
+            height: 16px !important;
+            display: inline-block;
+            vertical-align: middle;
         }
-        .pagination-wrap a:hover { color: var(--gold); background: var(--gold-dim); }
+        .pagination-wrap nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+        .pagination-wrap nav > div:first-child {
+            display: none !important;
+        }
+        .pagination-wrap nav > div:last-child {
+            display: flex !important;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .pagination-wrap nav p {
+            font-size: 13px;
+            color: var(--muted);
+            margin: 0;
+        }
+        .pagination-wrap nav span.relative {
+            display: inline-flex;
+            gap: 4px;
+            align-items: center;
+        }
+        .pagination-wrap nav a, 
+        .pagination-wrap nav span[aria-current="page"] > span, 
+        .pagination-wrap nav span.disabled > span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            height: 32px;
+            padding: 0 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .pagination-wrap nav a:hover {
+            background: rgba(201, 150, 60, 0.15);
+            border-color: var(--gold);
+            color: var(--gold-light) !important;
+        }
+        .pagination-wrap nav span[aria-current="page"] > span {
+            background: var(--gold) !important;
+            color: var(--navy) !important;
+            border-color: var(--gold) !important;
+        }
+        .pagination-wrap nav span.disabled > span {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
 
         /* ── RESPONSIVE ─────────────────────────────────── */
 
@@ -317,6 +379,7 @@
         <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 10L4 6.5 8 3"/></svg>
         <span class="label-text">Dashboard</span>
     </a>
+    <div style="display:flex;align-items:center;gap:7px;margin-left:auto;"><label class="theme-switch" title="Ganti tema"><input type="checkbox" class="dpg-theme-checkbox" aria-label="Toggle dark/light mode"><span class="track"></span><span class="thumb"></span></label><span class="theme-label">Dark</span></div>
 </nav>
 
 <div class="page-wrap">
@@ -445,5 +508,6 @@
     </div>
 
 </div>
+<script src="{{ asset('js/theme-mode.js') }}"></script>
 </body>
 </html>

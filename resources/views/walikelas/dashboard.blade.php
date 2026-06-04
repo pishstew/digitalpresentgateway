@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Wali Kelas – {{ $kelas }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="{{ asset('css/theme-mode.css') }}">
     <style>
         :root {
             --navy:        #0B1F3A;
@@ -135,33 +137,47 @@
         }
         .page-period svg { color: var(--gold); }
 
-        .page-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-        .search-wrap { position: relative; }
-        .search-wrap svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
-        .search-input {
-            padding: 10px 16px 10px 42px;
+        /* ── FILTER CARD (Kakon Style) ── */
+        .filter-card {
             background: var(--glass); border: 1px solid var(--gold-border);
-            border-radius: 12px; color: var(--white); font-size: .9rem;
+            border-radius: 14px; padding: 1.2rem 1.5rem; margin-bottom: 1.5rem;
+            backdrop-filter: blur(12px);
+        }
+        .filter-grid {
+            display: grid; grid-template-columns: 1fr 1fr auto;
+            gap: 12px; align-items: flex-end;
+        }
+        .filter-group { display: flex; flex-direction: column; gap: 6px; }
+        .filter-label {
+            font-size: 11px; font-weight: 700; color: var(--muted);
+            text-transform: uppercase; letter-spacing: .5px;
+        }
+        .input-wrap { position: relative; display: flex; align-items: center; }
+        .input-ico { position: absolute; left: 12px; pointer-events: none; color: var(--muted); display: flex; }
+        .input-ico svg { width: 15px; height: 15px; }
+        .f-select, .f-input {
+            width: 100%; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.07);
+            border-radius: 9px; padding: 10px 14px 10px 36px;
+            font-size: 13px; font-weight: 600; color: var(--white);
             font-family: 'Plus Jakarta Sans', sans-serif;
-            width: 260px; transition: all .2s;
+            outline: none; transition: all .2s; appearance: none;
         }
-        .search-input::placeholder { color: var(--text-dim); }
-        .search-input:focus { outline: none; border-color: var(--gold); background: var(--glass-hover); box-shadow: 0 0 0 3px rgba(201,150,60,.12); }
-
-        .week-nav { display: flex; align-items: center; gap: 8px; }
-        .week-btn {
-            width: 38px; height: 38px; border-radius: 10px;
-            background: var(--glass); border: 1px solid var(--gold-border);
-            color: var(--muted); cursor: pointer; font-size: 1rem;
-            display: flex; align-items: center; justify-content: center;
-            transition: all .2s; text-decoration: none;
+        .f-select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%238FA3C0' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 12px center; background-size: 12px; padding-right: 30px;
         }
-        .week-btn:hover { background: var(--gold-pale); color: var(--gold); border-color: var(--gold); text-decoration: none; }
-        .week-label {
-            padding: 8px 16px; background: var(--gold-pale); border: 1px solid var(--gold-border);
-            border-radius: 10px; font-size: .82rem; font-weight: 600; color: var(--gold-light);
-            font-family: 'JetBrains Mono', monospace; white-space: nowrap;
+        .f-select option { background: var(--navy-mid); }
+        .f-select:focus, .f-input:focus { border-color: var(--gold); background: rgba(255,255,255,.08); }
+        .f-input::placeholder { color: rgba(143,163,192,.5); }
+        .btn-filter {
+            display: inline-flex; align-items: center; gap: 7px;
+            padding: 10px 18px; background: var(--gold); border: none; border-radius: 9px;
+            font-size: 13px; font-weight: 700; color: var(--navy);
+            font-family: 'Plus Jakarta Sans', sans-serif; cursor: pointer;
+            white-space: nowrap; transition: all .2s; height: 40px;
         }
+        .btn-filter:hover { background: var(--gold-light); }
+        .btn-filter svg { width: 14px; height: 14px; }
 
         /* ── STAT CARDS ── */
         .stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 28px; }
@@ -199,6 +215,41 @@
         .stat-value { font-size: 2rem; font-weight: 800; color: var(--white); line-height: 1; margin-bottom: 4px; }
         .stat-label { font-size: .78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; }
         .stat-pct { font-size: .78rem; color: var(--text-dim); margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+
+        /* ── PANEL (Chart Containers) ── */
+        .chart-grid {
+            display: grid; grid-template-columns: 2fr 1fr;
+            gap: 16px; margin-bottom: 28px;
+        }
+        @media (max-width: 900px) { .chart-grid { grid-template-columns: 1fr; } }
+        .panel {
+            background: var(--glass); border: 1px solid var(--gold-border);
+            border-radius: 16px; overflow: hidden;
+            backdrop-filter: blur(12px);
+        }
+        .panel-hd {
+            padding: 1rem 1.4rem; border-bottom: 1px solid var(--gold-border);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .panel-title {
+            display: flex; align-items: center; gap: 9px;
+            font-size: 13px; font-weight: 700; color: var(--white); margin: 0;
+        }
+        .panel-title svg { width: 16px; height: 16px; color: var(--gold); }
+        .panel-badge {
+            font-size: 11px; font-weight: 700; color: var(--muted);
+            background: rgba(255,255,255,.06); border: 1px solid var(--gold-border);
+            padding: 3px 11px; border-radius: 99px;
+        }
+        .panel-body { padding: 1.2rem 1.4rem; }
+        .chart-wrap { position: relative; }
+        
+        .donut-legend { display: flex; flex-direction: column; gap: 8px; margin-top: 1rem; }
+        .d-legend-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .d-legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .d-legend-label { font-size: 12px; color: var(--muted); flex: 1; }
+        .d-legend-val { font-size: 12px; font-weight: 700; color: var(--white); }
+        .d-legend-pct { font-size: 11px; color: var(--muted); min-width: 38px; text-align: right; }
 
         /* ── TABLE SECTION ── */
         .table-section {
@@ -334,6 +385,54 @@
             .navbar{ padding: 0 16px; }
             .page-title{ font-size: 1.6rem; }
         }
+
+        /* ── EXPORT BUTTON ── */
+        .btn-export {
+            display: inline-flex; align-items: center; gap: 7px;
+            padding: 8px 16px; border-radius: 10px;
+            background: rgba(201,150,60,.15); border: 1px solid var(--gold-border);
+            color: var(--gold-light); font-size: .82rem; font-weight: 600;
+            cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: all .2s; text-decoration: none;
+        }
+        .btn-export:hover { background: var(--gold-pale); color: var(--gold); }
+        .btn-export svg { width: 14px; height: 14px; }
+
+        /* ── PRINT STYLES ── */
+        @media print {
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            body { background: #fff !important; color: #000 !important; }
+            body::before, body::after { display: none !important; }
+            .navbar, .filter-card, .footer, .btn-export, .nav-btn { display: none !important; }
+            .page-wrap { background: #fff; }
+            .main { padding: 20px !important; max-width: 100%; }
+            .page-header, .stats-grid, .chart-grid { display: none !important; }
+            .table-section { border: 1px solid #ddd !important; background: #fff !important; break-inside: avoid; }
+            .table-section-header { background: #f0f0f0 !important; border-bottom: 1px solid #ddd !important; }
+            .table-section-title { color: #000 !important; }
+            thead th { color: #555 !important; background: #f5f5f5 !important; }
+            td { color: #000 !important; }
+            tbody tr { border-bottom: 1px solid #eee !important; }
+            .s-name { color: #000 !important; }
+            .s-nis  { color: #555 !important; }
+            .s-H { background: #d1fae5 !important; color: #065f46 !important; border: 1px solid #a7f3d0 !important; }
+            .s-I { background: #fef3c7 !important; color: #92400e !important; border: 1px solid #fde68a !important; }
+            .s-S { background: #ffedd5 !important; color: #9a3412 !important; border: 1px solid #fed7aa !important; }
+            .s-A { background: #fee2e2 !important; color: #991b1b !important; border: 1px solid #fca5a5 !important; }
+            .s-none { background: #f3f4f6 !important; color: #6b7280 !important; border: 1px solid #e5e7eb !important; }
+            .attend-high { background: #d1fae5 !important; color: #065f46 !important; }
+            .attend-mid  { background: #fef3c7 !important; color: #92400e !important; }
+            .attend-low  { background: #fee2e2 !important; color: #991b1b !important; }
+            .legend-bar { background: #f9f9f9 !important; border-top: 1px solid #ddd !important; }
+            .legend-item { color: #555 !important; }
+            .d-legend-label { color: #555 !important; }
+            .d-legend-val { color: #000 !important; }
+            .print-header { display: block !important; text-align: center; margin-bottom: 20px; }
+            .print-header h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 800; color: #0B1F3A; margin-bottom: 5px; }
+            .print-header p { font-size: 1.1rem; color: #555; }
+            @page { size: A4 landscape; margin: 15mm; }
+        }
+        .print-header { display: none; }
     </style>
 </head>
 <body>
@@ -346,10 +445,12 @@
             <span class="nav-title">Sekolah<span>App</span></span>
         </a>
         <div class="nav-right">
+            <div style="display:flex;align-items:center;gap:7px;"><label class="theme-switch" title="Ganti tema"><input type="checkbox" class="dpg-theme-checkbox" aria-label="Toggle dark/light mode"><span class="track"></span><span class="thumb"></span></label><span class="theme-label">Dark</span></div>
             <div class="nav-badge">
                 <div class="pulse-dot"></div>
                 Wali Kelas · {{ $kelas }}
             </div>
+
             <a href="{{ route('guru.dashboard') }}" class="nav-btn">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
                 Dashboard Guru
@@ -361,6 +462,11 @@
     {{-- ═══ MAIN ═══ --}}
     <main class="main">
 
+        <div class="print-header">
+            <h2>Laporan Rekap Presensi Siswa</h2>
+            <p>Kelas: {{ $kelas }} | Periode: {{ ucfirst(str_replace('_', ' ', $filter)) }}</p>
+        </div>
+
         {{-- PAGE HEADER --}}
         <div class="page-header">
             <div class="page-title-group">
@@ -368,33 +474,71 @@
                 <h1 class="page-title">Dashboard <span>Wali Kelas</span></h1>
                 <div class="page-period">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    {{ \Carbon\Carbon::parse($startOfWeek)->translatedFormat('d M') }}
-                    –
-                    {{ \Carbon\Carbon::parse($endOfWeek)->translatedFormat('d M Y') }}
+                    @if($startDate->isSameDay($endDate))
+                        {{ $startDate->translatedFormat('d M Y') }}
+                    @else
+                        {{ $startDate->translatedFormat('d M') }}
+                        –
+                        {{ $endDate->translatedFormat('d M Y') }}
+                    @endif
                 </div>
             </div>
 
-            <div class="page-actions">
-                {{-- Week navigation --}}
-                <div class="week-nav">
-                    <a href="{{ route('walikelas.dashboard', ['week' => \Carbon\Carbon::parse($startOfWeek)->subWeek()->format('Y-m-d'), 'search' => $search]) }}" class="week-btn">‹</a>
-                    <span class="week-label">Minggu ini</span>
-                    <a href="{{ route('walikelas.dashboard', ['week' => \Carbon\Carbon::parse($startOfWeek)->addWeek()->format('Y-m-d'), 'search' => $search]) }}" class="week-btn">›</a>
-                </div>
-
-                {{-- Search --}}
-                <form action="{{ route('walikelas.dashboard') }}" method="GET" class="search-wrap">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                    <input type="text" name="search" class="search-input" placeholder="Cari siswa…" value="{{ $search ?? '' }}">
-                </form>
-            </div>
         </div>
+
+        {{-- ═══ FILTER ═══ --}}
+        <form id="filterForm" method="GET" action="{{ route('walikelas.dashboard') }}">
+            <div class="filter-card">
+                <div class="filter-grid">
+
+                    {{-- Periode --}}
+                    <div class="filter-group">
+                        <span class="filter-label">Periode Waktu</span>
+                        <div class="input-wrap">
+                            <span class="input-ico">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            </span>
+                            <select class="f-select" name="filter" onchange="document.getElementById('filterForm').submit()">
+                                <option value="hari_ini"   @selected($filter==='hari_ini')>Hari Ini</option>
+                                <option value="minggu_ini" @selected($filter==='minggu_ini')>Minggu Ini</option>
+                                <option value="minggu_lalu" @selected($filter==='minggu_lalu')>Minggu Lalu</option>
+                                <option value="bulan_ini"  @selected($filter==='bulan_ini')>Bulan Ini</option>
+                                <option value="bulan_lalu"  @selected($filter==='bulan_lalu')>Bulan Lalu</option>
+                                <option value="tahun_ini"  @selected($filter==='tahun_ini')>Tahun Ini</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {{-- Search --}}
+                    <div class="filter-group">
+                        <span class="filter-label">Cari Nama Siswa</span>
+                        <div class="input-wrap">
+                            <span class="input-ico">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            </span>
+                            <input type="text" class="f-input" name="search"
+                                   value="{{ $search ?? '' }}" placeholder="Masukkan nama..."
+                                   onkeydown="if(event.key==='Enter') document.getElementById('filterForm').submit()">
+                        </div>
+                    </div>
+
+                    {{-- Submit --}}
+                    <div>
+                        <button type="submit" class="btn-filter">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            Cari
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </form>
 
         {{-- ═══ STAT CARDS ═══ --}}
         @php
             $totalSiswa = $siswas->count();
-            // Hitung rekap presensi minggu ini
-            $allPresensi = $siswas->flatMap(fn($s) => $s->presensi->filter(fn($p) => $p->tanggal >= $startOfWeek && $p->tanggal <= $endOfWeek));
+            // Hitung rekap presensi periode ini
+            $allPresensi = $siswas->flatMap(fn($s) => $s->presensi->filter(fn($p) => $p->tanggal >= $startStr && $p->tanggal <= $endStr));
             $totalH = $allPresensi->where('status','hadir')->count();
             $totalI = $allPresensi->where('status','izin')->count();
             $totalS = $allPresensi->where('status','sakit')->count();
@@ -420,19 +564,74 @@
                 <div class="stat-icon" style="color:var(--warn);">📋</div>
                 <div class="stat-value" style="color:var(--warn);">{{ $totalI }}</div>
                 <div class="stat-label">Izin</div>
-                <div class="stat-pct">Minggu ini</div>
+                <div class="stat-pct">Periode ini</div>
             </div>
             <div class="stat-card c-sakit">
                 <div class="stat-icon" style="color:var(--sick);">🩺</div>
                 <div class="stat-value" style="color:var(--sick);">{{ $totalS }}</div>
                 <div class="stat-label">Sakit</div>
-                <div class="stat-pct">Minggu ini</div>
+                <div class="stat-pct">Periode ini</div>
             </div>
             <div class="stat-card c-alpha">
                 <div class="stat-icon" style="color:var(--danger);">⚠</div>
                 <div class="stat-value" style="color:var(--danger);">{{ $totalA }}</div>
                 <div class="stat-label">Alpha</div>
                 <div class="stat-pct">Perlu perhatian</div>
+            </div>
+        </div>
+
+        {{-- ═══ CHARTS ═══ --}}
+        <div class="chart-grid">
+            {{-- GRAFIK TREN --}}
+            <div class="panel">
+                <div class="panel-hd">
+                    <h5 class="panel-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        Tren Aktivitas Presensi
+                    </h5>
+                    <span class="panel-badge">{{ ucfirst(str_replace('_', ' ', $filter)) }}</span>
+                </div>
+                <div class="panel-body">
+                    <div class="chart-wrap" style="height:240px">
+                        <canvas id="chartTren"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            {{-- DONUT CHART --}}
+            <div class="panel">
+                <div class="panel-hd">
+                    <h5 class="panel-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+                        Komposisi Kehadiran
+                    </h5>
+                </div>
+                <div class="panel-body">
+                    <div class="chart-wrap" style="height:150px">
+                        <canvas id="chartDonut"></canvas>
+                    </div>
+
+                    {{-- Custom legend --}}
+                    @php
+                        $legendItems = [
+                            ['label'=>'Hadir', 'key'=>'Hadir', 'color'=>'#2DD4BF'],
+                            ['label'=>'Izin',  'key'=>'Izin',  'color'=>'#F59E0B'],
+                            ['label'=>'Sakit', 'key'=>'Sakit', 'color'=>'#FB923C'],
+                            ['label'=>'Alpa',  'key'=>'Alpa',  'color'=>'#F87171'],
+                        ];
+                    @endphp
+                    <div class="donut-legend">
+                        @foreach($legendItems as $li)
+                            @php $pctLi = $rekapTotal > 0 ? round($rekap[$li['key']] / $rekapTotal * 100, 1) : 0; @endphp
+                            <div class="d-legend-item">
+                                <div class="d-legend-dot" style="background:{{ $li['color'] }}"></div>
+                                <span class="d-legend-label">{{ $li['label'] }}</span>
+                                <span class="d-legend-val">{{ $rekap[$li['key']] }}</span>
+                                <span class="d-legend-pct">{{ $pctLi }}%</span>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -443,8 +642,14 @@
                     <h2 class="table-section-title">Rekap Presensi</h2>
                     <span class="table-count">{{ $totalSiswa }} siswa</span>
                 </div>
-                <div style="font-size:.8rem;color:var(--muted);">
-                    Klik badge untuk detail
+                <div style="display:flex;align-items:center;gap:16px;">
+                    <div style="font-size:.8rem;color:var(--muted);">
+                        Klik badge untuk detail
+                    </div>
+                    <button onclick="exportPDF()" class="btn-export">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Export PDF
+                    </button>
                 </div>
             </div>
 
@@ -558,9 +763,97 @@
 
     {{-- ═══ FOOTER ═══ --}}
     <footer class="footer">
-        &copy; {{ date('Y') }} <span>SekolahApp</span> · Dashboard Wali Kelas · {{ $kelas }}
+        &copy; {{ date('Y') }} <span>Dibuat oleh ONEJAY TEAM</span> &mdash; <a href="{{ url('/about') }}" style="color: var(--gold-light); text-decoration: none; font-weight: 600;">Tentang Kami | About Us</a>
     </footer>
 
 </div>
+
+{{-- CHARTS SCRIPT --}}
+<script>
+const trenData = @json(array_values($trenHarian));
+const rekap    = @json($rekap);
+
+const C = { Hadir:'#2DD4BF', Izin:'#F59E0B', Sakit:'#FB923C', Alpa:'#F87171' };
+
+Chart.defaults.color = '#8FA3C0';
+Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+
+// ── Tren Garis
+(function() {
+    if(trenData.length === 0) return;
+    const labels   = trenData.map(d => d.label);
+    const datasets = ['Hadir','Izin','Sakit','Alpa'].map(k => ({
+        label: k, data: trenData.map(d => d[k]),
+        borderColor: C[k], backgroundColor: C[k] + '15',
+        borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6,
+        pointBackgroundColor: C[k], pointBorderColor: '#0B1F3A', pointBorderWidth: 2,
+        tension: 0.4, fill: true,
+    }));
+
+    new Chart(document.getElementById('chartTren'), {
+        type: 'line',
+        data: { labels, datasets },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: { font:{size:11,weight:'600'}, color:'#8FA3C0', usePointStyle:true, boxWidth:8, boxHeight:8, padding:14 }
+                },
+                tooltip: {
+                    backgroundColor: '#112240', titleColor: '#FFFFFF', bodyColor: '#8FA3C0',
+                    padding: 12, cornerRadius: 10, boxPadding: 6,
+                    borderColor: 'rgba(201,150,60,.28)', borderWidth: 1,
+                    titleFont:{size:12,weight:'700'}, bodyFont:{size:12},
+                },
+            },
+            scales: {
+                x: { grid:{color:'rgba(255,255,255,.04)'}, ticks:{color:'#8FA3C0',font:{size:10,weight:'600'}} },
+                y: { beginAtZero:true, grid:{color:'rgba(255,255,255,.04)'}, ticks:{color:'#8FA3C0',precision:0,font:{size:10,weight:'600'}} },
+            },
+        },
+    });
+})();
+
+// ── Donut
+(function() {
+    const keys   = ['Hadir','Izin','Sakit','Alpa'];
+    const values = keys.map(k => rekap[k]);
+    if(values.reduce((a,b)=>a+b, 0) === 0) return;
+
+    new Chart(document.getElementById('chartDonut'), {
+        type: 'doughnut',
+        data: {
+            labels: keys,
+            datasets: [{
+                data: values,
+                backgroundColor: keys.map(k => C[k]),
+                borderWidth: 3, borderColor: '#0B1F3A', hoverOffset: 8,
+            }],
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false, cutout: '74%',
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#112240', padding: 12, cornerRadius: 10,
+                    borderColor: 'rgba(201,150,60,.28)', borderWidth: 1,
+                    titleFont:{size:12,weight:'700'}, bodyFont:{size:12},
+                    callbacks: {
+                        label: ctx => ` ${ctx.label}: ${ctx.parsed} (${Math.round(ctx.parsed/(ctx.dataset.data.reduce((a,b)=>a+b,0)||1)*100)}%)`,
+                    },
+                },
+            },
+        },
+    });
+})();
+
+function exportPDF() {
+    // Pastikan chart sudah ter-render sebelum print
+    window.print();
+}
+</script>
+<script src="{{ asset('js/theme-mode.js') }}"></script>
 </body>
 </html>

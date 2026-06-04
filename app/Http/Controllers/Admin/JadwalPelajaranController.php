@@ -15,14 +15,28 @@ class JadwalPelajaranController extends Controller
     public function index(Request $request)
     {
         $search = $request->search;
+        $kelas  = $request->kelas;
+        $hari   = $request->hari;
 
         $jadwal = JadwalPelajaran::with(['guru','mapel'])
-            ->when($search, function ($query) use ($search) {
-                $query->where('kelas','like',"%$search%");
+            ->when($kelas, function ($query) use ($kelas) {
+                $query->where('kelas', $kelas);
             })
-            ->paginate(10);
+            ->when($hari, function ($query) use ($hari) {
+                $query->where('hari', $hari);
+            })
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('hari', 'like', "%$search%")
+                      ->orWhereHas('guru', function ($gq) use ($search) {
+                          $gq->where('nama_guru', 'like', "%$search%");
+                      });
+                });
+            })
+            ->paginate(10)
+            ->appends($request->query());
 
-        $guru = Guru::all();
+        $guru  = Guru::all();
         $mapel = Mapel::all();
 
         return view('admin.jadwal.index', compact('jadwal','guru','mapel'));

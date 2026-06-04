@@ -21,6 +21,7 @@ class GuruController extends Controller
                 $query->where('nama_guru', 'like', "%$search%")
                       ->orWhere('nip', 'like', "%$search%");
             })
+            ->orderBy('nama_guru')
             ->paginate(10);
 
         $mapel = Mapel::all();
@@ -57,8 +58,15 @@ class GuruController extends Controller
         ]);
 
         $nip          = $request->nip;
-        $emailGuru    = 'guru.' . $nip . '@sija.sch.id';
-        $passwordGuru = 'Guru#' . substr($nip, -4);
+        $baseEmail    = 'guru.' . substr($nip, -5) . '@sija.sch.id';
+        $emailGuru    = $baseEmail;
+        $counter      = 1;
+        while (User::where('email', $emailGuru)->exists()) {
+            $emailGuru = 'guru.' . substr($nip, -5) . '-' . $counter . '@sija.sch.id';
+            $counter++;
+        }
+        
+        $passwordGuru = 'password';
 
         User::create([
             'name'       => $request->nama_guru,
@@ -161,10 +169,10 @@ class GuruController extends Controller
     public function import(Request $request)
     {
         $request->validate([
-            'file_import' => 'required|file|mimes:xlsx,xls|max:5120',
+            'file_import' => 'required|file|mimes:xlsx,xls,csv,txt|max:5120',
         ], [
             'file_import.required' => 'Pilih file Excel terlebih dahulu.',
-            'file_import.mimes'    => 'File harus berformat .xlsx atau .xls',
+            'file_import.mimes'    => 'File harus berformat .xlsx, .xls, atau .csv',
             'file_import.max'      => 'Ukuran file maksimal 5MB',
         ]);
 
@@ -184,7 +192,7 @@ class GuruController extends Controller
             DB::beginTransaction();
 
             foreach ($rows as $i => $row) {
-                $nip       = trim((string)($row[0] ?? ''));
+                $nip       = str_replace(' ', '', trim((string)($row[0] ?? '')));
                 $namaGuru  = trim((string)($row[1] ?? ''));
                 $kodeMapel = trim((string)($row[2] ?? ''));
 
@@ -218,20 +226,25 @@ class GuruController extends Controller
                     'kode_mapel' => $kodeMapel,
                 ]);
 
-                $emailGuru    = 'guru.' . $nip . '@sija.sch.id';
-                $passwordGuru = 'Guru#' . substr($nip, -4);
-
-                if (!User::where('email', $emailGuru)->exists()) {
-                    User::create([
-                        'name'       => $namaGuru,
-                        'email'      => $emailGuru,
-                        'password'   => Hash::make($passwordGuru),
-                        'role'       => 'guru',
-                        'nip'        => $nip,
-                        'is_active'  => true,
-                        'kelas_wali' => null,
-                    ]);
+                $baseEmail    = 'guru.' . substr($nip, -5) . '@sija.sch.id';
+                $emailGuru    = $baseEmail;
+                $counter      = 1;
+                while (User::where('email', $emailGuru)->exists()) {
+                    $emailGuru = 'guru.' . substr($nip, -5) . '-' . $counter . '@sija.sch.id';
+                    $counter++;
                 }
+                
+                $passwordGuru = 'password';
+
+                User::create([
+                    'name'       => $namaGuru,
+                    'email'      => $emailGuru,
+                    'password'   => Hash::make($passwordGuru),
+                    'role'       => 'guru',
+                    'nip'        => $nip,
+                    'is_active'  => true,
+                    'kelas_wali' => null,
+                ]);
 
                 $berhasil++;
             }

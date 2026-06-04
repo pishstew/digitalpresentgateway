@@ -108,10 +108,25 @@ class DashboardController extends Controller
                 $today->copy()->endOfWeek(Carbon::FRIDAY)->format('Y-m-d'),
                 'Minggu Ini',
             ],
+            'minggu_lalu' => [
+                $today->copy()->subWeek()->startOfWeek(Carbon::MONDAY)->format('Y-m-d'),
+                $today->copy()->subWeek()->endOfWeek(Carbon::FRIDAY)->format('Y-m-d'),
+                'Minggu Lalu',
+            ],
             'bulan_ini'  => [
                 $today->copy()->startOfMonth()->format('Y-m-d'),
                 $today->copy()->endOfMonth()->format('Y-m-d'),
                 'Bulan Ini (' . $today->translatedFormat('F Y') . ')',
+            ],
+            'bulan_lalu'  => [
+                $today->copy()->subMonth()->startOfMonth()->format('Y-m-d'),
+                $today->copy()->subMonth()->endOfMonth()->format('Y-m-d'),
+                'Bulan Lalu (' . $today->copy()->subMonth()->translatedFormat('F Y') . ')',
+            ],
+            'tahun_ini'  => [
+                $today->copy()->startOfYear()->format('Y-m-d'),
+                $today->copy()->endOfYear()->format('Y-m-d'),
+                'Tahun Ini (' . $today->translatedFormat('Y') . ')',
             ],
             'semester'   => $this->getSemester($today),
             default      => [
