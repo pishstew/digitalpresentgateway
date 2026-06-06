@@ -214,6 +214,21 @@
         .info-text { font-size: 12px; color: var(--muted); line-height: 1.6; }
         .info-text strong { color: var(--white); display: block; margin-bottom: 1px; }
 
+
+        /* ── NAV LIGHT MODE ── */
+        body.light-mode nav {
+            background: rgba(253,248,240,.96) !important;
+            border-bottom-color: rgba(166,124,61,.20) !important;
+            box-shadow: 0 1px 14px rgba(44,36,24,.07) !important;
+        }
+        body.light-mode .nav-name { color: #2C2418 !important; }
+        body.light-mode .nav-sub  { color: #7A7060 !important; }
+        body.light-mode .nav-back {
+            color: #7A5A28 !important;
+            border-color: rgba(166,124,61,.28) !important;
+            background: rgba(166,124,61,.06) !important;
+        }
+        body.light-mode .nav-back:hover { background: rgba(166,124,61,.13) !important; }
         footer { position: relative; z-index: 2; text-align: center; padding: 1.5rem; border-top: 1px solid var(--border-w); font-size: 12px; color: var(--muted); }
 
         @media (max-width: 768px) {
@@ -223,6 +238,7 @@
             .radio-group { flex-direction: column; }
         }
     </style>
+    <link rel="stylesheet" href="{{ asset('css/theme-mode.css') }}">
 </head>
 <body>
 
@@ -234,10 +250,15 @@
             <div class="nav-sub">Sistem Informasi Akademik</div>
         </div>
     </div>
-    <a href="{{ route('admin.siswa.index') }}" class="nav-back">
+    <div style="display:flex;align-items:center;gap:10px;">
+        <div style="display:flex;align-items:center;gap:7px;">
+            @include('layouts.theme-switch')
+        </div>
+            <a href="{{ route('admin.siswa.index') }}" class="nav-back">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
         Daftar Siswa
     </a>
+    </div>
 </nav>
 
 <div class="wrap">
@@ -423,5 +444,6 @@ function updateToggleLabel(el) {
         : 'Nonaktif — Siswa tidak dapat login';
 }
 </script>
+    <script src="{{ asset('js/theme-mode.js') }}"></script>
 </body>
 </html>

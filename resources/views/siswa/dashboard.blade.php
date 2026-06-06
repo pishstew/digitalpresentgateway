@@ -419,6 +419,61 @@
         body.light-mode .token-header h3[style*="fcd34d"] {
             color: #7A5A28 !important;
         }
+
+        /* ── GEOFENCING STATUS ── */
+        .geo-status {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: .82rem;
+            font-weight: 600;
+            margin-bottom: 14px;
+            border: 1px solid transparent;
+            transition: all .3s ease;
+        }
+        .geo-loading {
+            background: rgba(143,163,192,.08);
+            border-color: rgba(143,163,192,.15);
+            color: var(--muted);
+        }
+        .geo-ok {
+            background: rgba(52,211,153,.08);
+            border-color: rgba(52,211,153,.20);
+            color: #34d399;
+        }
+        .geo-fail {
+            background: rgba(248,113,113,.08);
+            border-color: rgba(248,113,113,.20);
+            color: #f87171;
+        }
+        .geo-spinner {
+            width: 13px; height: 13px;
+            border: 2px solid rgba(143,163,192,.3);
+            border-top-color: var(--muted);
+            border-radius: 50%;
+            animation: spin .8s linear infinite;
+            flex-shrink: 0;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Light mode geo status */
+        body.light-mode .geo-loading {
+            background: rgba(120,110,90,.07) !important;
+            border-color: rgba(120,110,90,.14) !important;
+            color: #7A7060 !important;
+        }
+        body.light-mode .geo-ok {
+            background: rgba(22,163,74,.07) !important;
+            border-color: rgba(22,163,74,.18) !important;
+            color: #16a34a !important;
+        }
+        body.light-mode .geo-fail {
+            background: rgba(220,53,69,.07) !important;
+            border-color: rgba(220,53,69,.18) !important;
+            color: #dc2626 !important;
+        }
     </style>
 </head>
 <body>
@@ -524,15 +579,24 @@
                     <span class="target-jam">Jam ke-{{ $activeJadwal->jam_ke }}</span>
                 </div>
                 @if($activeJadwal->is_waktunya ?? true)
-                <form action="{{ route('siswa.presensi.store') }}" method="POST">
+                <form action="{{ route('siswa.presensi.store') }}" method="POST" id="presensi-form">
                     @csrf
                     <input type="hidden" name="kode_jam_pelajaran" value="{{ $activeJadwal->kode_jam_pelajaran }}">
+                    {{-- Hidden fields untuk geofencing --}}
+                    <input type="hidden" name="latitude"  id="geo_lat">
+                    <input type="hidden" name="longitude" id="geo_lng">
+                    <input type="hidden" name="geo_error" id="geo_error">
                     <div class="card token-card">
                         <div class="token-header">
                             <h3>Masukkan Kode Absensi</h3>
                             <p>Masukkan kode 4 digit dari guru Anda</p>
                         </div>
                         <div class="token-body">
+                            {{-- Status lokasi --}}
+                            <div id="geo_status" class="geo-status geo-loading">
+                                <span class="geo-spinner"></span>
+                                <span id="geo_status_text">Meminta akses lokasi...</span>
+                            </div>
                             <div class="token-input-container">
                                 <input type="text" name="token" id="token_input" maxlength="4" required placeholder="0000" inputmode="numeric" pattern="[0-9]*" autocomplete="off" oninput="updateTokenUI(this)">
                             </div>
@@ -593,18 +657,97 @@
 </div>
 
 <script>
+/* ══════════════════════════════════════════════════════
+   GEOFENCING — ambil lokasi siswa, kirim ke server
+   ══════════════════════════════════════════════════════ */
+(function () {
+    const geoStatus    = document.getElementById('geo_status');
+    const geoStatusTxt = document.getElementById('geo_status_text');
+    const geoLat       = document.getElementById('geo_lat');
+    const geoLng       = document.getElementById('geo_lng');
+    const geoErr       = document.getElementById('geo_error');
+    const submitBtn    = document.getElementById('submit_token_btn');
+
+    if (!geoStatus) return; // halaman tidak punya form aktif
+
+    function setStatus(type, msg) {
+        geoStatus.className = 'geo-status geo-' + type;
+        // Hapus spinner jika bukan loading
+        if (type !== 'loading') {
+            const spinner = geoStatus.querySelector('.geo-spinner');
+            if (spinner) spinner.remove();
+        }
+        geoStatusTxt.textContent = msg;
+    }
+
+    if (!navigator.geolocation) {
+        setStatus('fail', 'Browser tidak mendukung GPS. Presensi tidak dapat dilakukan.');
+        geoErr.value = 'unsupported';
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        function (pos) {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            geoLat.value = lat;
+            geoLng.value = lng;
+            setStatus('ok', '📍 Lokasi terdeteksi — menunggu kode absensi');
+            // Aktifkan tombol submit jika kode sudah terisi 4 digit
+            tryEnableBtn();
+        },
+        function (err) {
+            const msgs = {
+                1: 'Akses lokasi ditolak. Izinkan lokasi di browser untuk presensi.',
+                2: 'Lokasi tidak dapat ditentukan. Coba pindah ke area terbuka.',
+                3: 'Permintaan lokasi timeout. Refresh dan coba lagi.',
+            };
+            const msg = msgs[err.code] || 'Gagal mendapatkan lokasi.';
+            setStatus('fail', '⚠ ' + msg);
+            geoErr.value = 'denied';
+            // Tetap blokir submit jika lokasi gagal
+            if (submitBtn) { submitBtn.disabled = true; submitBtn.classList.remove('ready'); }
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+
+    function tryEnableBtn() {
+        const tokenInput = document.getElementById('token_input');
+        if (tokenInput && tokenInput.value.length === 4 && geoLat.value) {
+            submitBtn.disabled = false;
+            submitBtn.classList.add('ready');
+        }
+    }
+
+    // Expose agar updateTokenUI bisa memanggil ulang
+    window._geoTryEnableBtn = tryEnableBtn;
+})();
+
+/* ══════════════════════════════════════════════════════
+   TOKEN INPUT UI
+   ══════════════════════════════════════════════════════ */
 function updateTokenUI(input) {
     input.value = input.value.replace(/[^0-9]/g, '');
-    const btn = document.getElementById('submit_token_btn');
+    const btn   = document.getElementById('submit_token_btn');
     const count = document.getElementById('digit_count');
-    const len = input.value.length;
-    
-    if (count) count.innerText = len + '/4 digit';
-    
-    if (len === 4) { btn.disabled = false; btn.classList.add('ready'); }
-    else { btn.disabled = true; btn.classList.remove('ready'); }
-}
+    const len   = input.value.length;
 
+    if (count) count.innerText = len + '/4 digit';
+
+    // Aktifkan hanya jika lokasi sudah ada DAN 4 digit
+    const geoLat = document.getElementById('geo_lat');
+    const hasGeo = geoLat && geoLat.value !== '';
+
+    if (len === 4 && hasGeo) {
+        btn.disabled = false;
+        btn.classList.add('ready');
+    } else {
+        btn.disabled = true;
+        btn.classList.remove('ready');
+    }
+
+    if (window._geoTryEnableBtn) window._geoTryEnableBtn();
+}
 </script>
 <footer style="position: relative; z-index: 2; text-align: center; padding: 1.5rem; border-top: 1px solid rgba(255,255,255,.07); font-size: 12px; color: var(--muted); margin-top: auto;">
     &copy; {{ date('Y') }} Dibuat oleh ONEJAY TEAM &mdash; <a href="{{ url('/about') }}" style="color: var(--gold-lt); text-decoration: none; font-weight: 600;">Tentang Kami | About Us</a>

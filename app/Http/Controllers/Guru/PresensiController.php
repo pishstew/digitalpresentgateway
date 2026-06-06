@@ -40,7 +40,20 @@ class PresensiController extends Controller
         $semuaSiswa    = collect();
         $presensiHadir = collect();
 
-        if ($jadwal) {
+        // Cek apakah guru punya jadwal di hari tanggal yang dipilih
+        $hariIndonesia = [
+            'Monday'    => 'Senin',
+            'Tuesday'   => 'Selasa',
+            'Wednesday' => 'Rabu',
+            'Thursday'  => 'Kamis',
+            'Friday'    => 'Jumat',
+            'Saturday'  => 'Sabtu',
+            'Sunday'    => 'Minggu',
+        ];
+        $hariTanggal = $hariIndonesia[Carbon::parse($tanggal)->format('l')] ?? '';
+        $adaJadwalHariIni = $jadwals->contains('hari', $hariTanggal);
+
+        if ($jadwal && $adaJadwalHariIni) {
             $semuaSiswa = Siswa::where('kelas', $jadwal->kelas)->get();
 
             // Kolom FK di tabel presensi adalah kode_jam_pelajaran, bukan jadwal_id
@@ -62,25 +75,66 @@ class PresensiController extends Controller
 
         return view('guru.presensi.index', compact(
             'jadwals', 'jadwal', 'semuaSiswa', 'presensiHadir',
-            'nisHadir', 'tanggal', 'search', 'jadwalId'
+            'nisHadir', 'tanggal', 'search', 'jadwalId',
+            'adaJadwalHariIni', 'hariTanggal'
         ));
     }
 
     /**
-     * Siswa submit kode presensi → validasi token → simpan record hadir.
+     * Hitung jarak (meter) antara dua koordinat — formula Haversine.
+     */
+    private function hitungJarak(float $lat1, float $lng1, float $lat2, float $lng2): float
+    {
+        $r    = 6371000; // radius bumi dalam meter
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLng = deg2rad($lng2 - $lng1);
+        $a    = sin($dLat / 2) ** 2
+              + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * sin($dLng / 2) ** 2;
+        return $r * 2 * atan2(sqrt($a), sqrt(1 - $a));
+    }
+
+    /**
+     * Siswa submit kode presensi → validasi token + geofencing → simpan record hadir.
      */
     public function store(Request $request)
     {
+        // ── Koordinat & radius sekolah ──────────────────────────────
+        $sekolahLat    = -7.975020;
+        $sekolahLng    = 112.671699;
+        $radiusMeter   = 100;
+
+        // ── Validasi input dasar ────────────────────────────────────
         $request->validate([
-            'kode' => 'required|string|size:4',
-            'nis'  => 'required|exists:siswa,nis',
+            'token'     => 'required|string|size:4',
+            'nis'       => 'required|exists:siswa,nis',
+            'latitude'  => 'required|numeric',
+            'longitude' => 'required|numeric',
+        ], [
+            'latitude.required'  => 'Lokasi GPS tidak terdeteksi. Pastikan izin lokasi diaktifkan.',
+            'longitude.required' => 'Lokasi GPS tidak terdeteksi. Pastikan izin lokasi diaktifkan.',
         ]);
 
+        // ── Validasi Geofencing ─────────────────────────────────────
+        $jarak = $this->hitungJarak(
+            (float) $request->latitude,
+            (float) $request->longitude,
+            $sekolahLat,
+            $sekolahLng
+        );
+
+        if ($jarak > $radiusMeter) {
+            $jarakBulat = round($jarak);
+            return back()->withErrors([
+                'kode' => "Presensi ditolak. Kamu berada {$jarakBulat} meter dari sekolah (batas: {$radiusMeter} meter). Hadir ke sekolah untuk melakukan presensi.",
+            ]);
+        }
+
+        // ── Validasi token ──────────────────────────────────────────
         $tokenAktif  = session('presensi_token');
         $tokenExpiry = session('presensi_token_expiry');
-        $kodeJadwal  = session('presensi_jadwal_id'); // ini adalah kode_jam_pelajaran
+        $kodeJadwal  = session('presensi_jadwal_id');
 
-        if (!$tokenAktif || $request->kode !== $tokenAktif) {
+        if (!$tokenAktif || $request->token !== $tokenAktif) {
             return back()->withErrors(['kode' => 'Kode presensi salah.']);
         }
 
@@ -88,7 +142,7 @@ class PresensiController extends Controller
             return back()->withErrors(['kode' => 'Kode presensi sudah kedaluwarsa.']);
         }
 
-        // Cek sudah presensi hari ini di sesi ini?
+        // ── Cek duplikasi ───────────────────────────────────────────
         $sudahPresensi = Presensi::where('nis', $request->nis)
             ->where('kode_jam_pelajaran', $kodeJadwal)
             ->whereDate('tanggal', Carbon::today())
@@ -98,6 +152,7 @@ class PresensiController extends Controller
             return back()->withErrors(['kode' => 'Anda sudah melakukan presensi untuk sesi ini.']);
         }
 
+        // ── Simpan presensi ─────────────────────────────────────────
         Presensi::create([
             'kode_presensi'      => 'PRE-' . strtoupper(uniqid()),
             'nis'                => $request->nis,
@@ -107,7 +162,7 @@ class PresensiController extends Controller
             'status'             => 'Hadir',
         ]);
 
-        return back()->with('success', 'Presensi berhasil dicatat!');
+        return back()->with('success', 'Presensi berhasil dicatat! ✓');
     }
 
     /**

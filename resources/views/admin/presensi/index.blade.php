@@ -32,8 +32,9 @@
             content: '';
             position: fixed; inset: 0; z-index: 0;
             background:
-                radial-gradient(ellipse 80% 60% at 20% 10%, rgba(201,150,60,.08) 0%, transparent 60%),
-                radial-gradient(ellipse 60% 50% at 80% 80%, rgba(11,31,58,.9) 0%, transparent 70%);
+                radial-gradient(ellipse 80% 60% at 20% 10%, rgba(201,150,60,.09) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 50% at 80% 80%, rgba(11,31,58,.9)    0%, transparent 70%),
+                radial-gradient(ellipse 40% 40% at 90% 10%, rgba(28,61,110,.6)   0%, transparent 55%);
         }
         body::after {
             content: '';
@@ -42,6 +43,68 @@
                 linear-gradient(rgba(201,150,60,.04) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(201,150,60,.04) 1px, transparent 1px);
             background-size: 40px 40px;
+        }
+
+        /* ── Blur orbs dekoratif ── */
+        .deco-orb { position:fixed; border-radius:50%; pointer-events:none; z-index:0; }
+        .deco-orb-1 {
+            width:360px; height:360px; top:-80px; right:-60px;
+            background:rgba(201,150,60,.07); filter:blur(90px);
+        }
+        .deco-orb-2 {
+            width:260px; height:260px; bottom:5%; left:-70px;
+            background:rgba(28,61,110,.7); filter:blur(80px);
+        }
+        .deco-orb-3 {
+            width:180px; height:180px; top:40%; right:-40px;
+            background:rgba(201,150,60,.06); filter:blur(70px);
+        }
+        .deco-orb-4 {
+            width:140px; height:140px; bottom:25%; left:30%;
+            background:rgba(201,150,60,.04); filter:blur(60px);
+        }
+
+        /* ── Garis diagonal dekoratif di pojok kiri atas ── */
+        .deco-lines {
+            position: fixed;
+            top: 0; left: 0;
+            width: 280px; height: 280px;
+            pointer-events: none; z-index: 0;
+            overflow: hidden;
+        }
+        .deco-lines::before, .deco-lines::after {
+            content: '';
+            position: absolute;
+            width: 200%; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(201,150,60,.12), transparent);
+            transform-origin: left center;
+        }
+        .deco-lines::before { top: 80px;  transform: rotate(-35deg); }
+        .deco-lines::after  { top: 130px; transform: rotate(-35deg); opacity:.5; }
+
+        /* ── Corner ornamen pojok kanan bawah ── */
+        .deco-corner {
+            position: fixed;
+            bottom: 0; right: 0;
+            width: 220px; height: 220px;
+            pointer-events: none; z-index: 0;
+            overflow: hidden;
+        }
+        .deco-corner::before {
+            content: '';
+            position: absolute;
+            bottom: -60px; right: -60px;
+            width: 200px; height: 200px;
+            border-radius: 50%;
+            border: 1px solid rgba(201,150,60,.12);
+        }
+        .deco-corner::after {
+            content: '';
+            position: absolute;
+            bottom: -30px; right: -30px;
+            width: 140px; height: 140px;
+            border-radius: 50%;
+            border: 1px solid rgba(201,150,60,.08);
         }
 
         /* Status bar */
@@ -64,7 +127,20 @@
             background: rgba(11,31,58,.85);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--gold-border);
+            transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
         }
+        body.light-mode .navbar {
+            background: rgba(253,248,240,.96) !important;
+            border-bottom-color: rgba(166,124,61,.20) !important;
+            box-shadow: 0 1px 14px rgba(44,36,24,.07) !important;
+        }
+        body.light-mode .nav-title { color: #2C2418 !important; }
+        body.light-mode .btn-back {
+            color: #7A5A28 !important;
+            border-color: rgba(166,124,61,.30) !important;
+            background: rgba(166,124,61,.07) !important;
+        }
+        body.light-mode .btn-back:hover { background: rgba(166,124,61,.14) !important; }
         .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
         .nav-logo {
             width: 36px; height: 36px;
@@ -117,13 +193,71 @@
             0%,100% { opacity:1; transform:scale(1); }
             50%      { opacity:.5; transform:scale(1.4); }
         }
+        /* ── Page header wrapper ── */
+        .page-header-wrap {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
         .page-title {
             font-family: 'Playfair Display', serif;
             font-size: 2rem; font-weight: 700;
             color: var(--white); line-height: 1.2;
         }
         .page-title span { color: var(--gold); }
-        .page-sub { margin-top: 6px; color: var(--muted); font-size: .9rem; margin-bottom: 32px; }
+        .page-sub { margin-top: 6px; color: var(--muted); font-size: .9rem; margin-bottom: 0; }
+
+        /* ── Info pill kanan header ── */
+        .header-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .meta-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 6px 14px;
+            background: rgba(201,150,60,.07);
+            border: 1px solid var(--gold-border);
+            border-radius: 20px;
+            font-size: .78rem;
+            color: var(--muted);
+        }
+        .meta-pill strong { color: var(--gold-light); font-weight: 600; }
+        .meta-pill svg { width:12px; height:12px; color: var(--gold); opacity:.7; flex-shrink:0; }
+
+        /* ── Divider bergaya sebelum card pertama ── */
+        .section-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .section-divider::before {
+            content: '';
+            width: 3px; height: 16px;
+            background: linear-gradient(180deg, var(--gold), transparent);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        .section-divider-label {
+            font-family: 'Playfair Display', serif;
+            font-size: .95rem; font-weight: 700;
+            color: var(--white);
+        }
+        .section-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(201,150,60,.28) 0%, rgba(255,255,255,.03) 75%);
+        }
 
         /* Alert */
         .alert-success {
@@ -137,7 +271,7 @@
             margin-bottom: 24px;
         }
 
-        /* Glass card */
+        /* ── Glass card ── */
         .g-card {
             background: var(--glass);
             border: 1px solid var(--gold-border);
@@ -145,7 +279,20 @@
             backdrop-filter: blur(16px);
             overflow: hidden;
             margin-bottom: 20px;
+            position: relative;
+            transition: box-shadow .25s;
         }
+        /* Top accent bar */
+        .g-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, rgba(201,150,60,.5) 40%, rgba(201,150,60,.5) 60%, transparent 100%);
+            pointer-events: none;
+        }
+        .g-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,.28); }
+
         .g-card-header {
             padding: 16px 24px;
             border-bottom: 1px solid var(--gold-border);
@@ -156,6 +303,14 @@
             font-family: 'Playfair Display', serif;
             font-size: 1.02rem; font-weight: 600;
             color: var(--gold-light);
+            display: flex; align-items: center; gap: 8px;
+        }
+        /* Diamond ornamen di judul card */
+        .g-card-header h2::before {
+            content: '◆';
+            font-size: 7px;
+            color: var(--gold);
+            opacity: .65;
         }
         .g-card-body { padding: 20px 24px; }
 
@@ -175,7 +330,7 @@
         .kelas-pill.active {
             background: linear-gradient(135deg, var(--gold), #a8782e);
             color: var(--navy);
-            box-shadow: 0 4px 16px rgba(201,150,60,.3);
+            box-shadow: 0 4px 20px rgba(201,150,60,.35), 0 0 0 1px rgba(201,150,60,.3);
         }
         .kelas-pill.inactive {
             background: var(--glass);
@@ -256,11 +411,15 @@
             white-space: nowrap;
         }
         tbody tr {
-            border-bottom: 1px solid rgba(143,163,192,.08);
-            transition: background .15s;
+            border-bottom: 1px solid rgba(143,163,192,.07);
+            transition: background .18s, box-shadow .18s;
         }
+        tbody tr:nth-child(even) { background: rgba(201,150,60,.018); }
         tbody tr:last-child { border-bottom: none; }
-        tbody tr:hover { background: rgba(255,255,255,.04); }
+        tbody tr:hover {
+            background: rgba(201,150,60,.055) !important;
+            box-shadow: inset 3px 0 0 var(--gold);
+        }
         tbody td {
             padding: 13px 16px;
             font-size: .88rem;
@@ -394,21 +553,29 @@
             cursor: not-allowed;
         }
 
-        /* Card footer */
+        /* ── Card footer ── */
         .card-footer {
             padding: 13px 24px;
             border-top: 1px solid var(--gold-border);
             display: flex; align-items: center; justify-content: space-between;
-            background: rgba(201,150,60,.04);
+            background: linear-gradient(90deg, rgba(201,150,60,.05) 0%, rgba(255,255,255,.01) 100%);
+        }
+        .card-footer-left {
+            display: flex; align-items: center; gap: 8px;
+        }
+        .card-footer-dot {
+            width: 5px; height: 5px; border-radius: 50%;
+            background: var(--gold); opacity: .5;
         }
         .card-footer span { font-size: .83rem; color: var(--muted); }
         .badge-count {
-            padding: 3px 10px;
-            background: var(--gold-dim);
+            padding: 4px 12px;
+            background: linear-gradient(135deg, rgba(201,150,60,.2), rgba(201,150,60,.1));
             border: 1px solid var(--gold-border);
             border-radius: 20px;
             color: var(--gold-light);
             font-size: .78rem; font-weight: 700;
+            letter-spacing: .03em;
         }
 
         @media (max-width: 640px) {
@@ -421,6 +588,14 @@
 <body>
 
 <div class="status-bar"></div>
+
+<!-- Dekorasi background -->
+<div class="deco-orb deco-orb-1" aria-hidden="true"></div>
+<div class="deco-orb deco-orb-2" aria-hidden="true"></div>
+<div class="deco-orb deco-orb-3" aria-hidden="true"></div>
+<div class="deco-orb deco-orb-4" aria-hidden="true"></div>
+<div class="deco-lines"          aria-hidden="true"></div>
+<div class="deco-corner"         aria-hidden="true"></div>
 
 <!-- Navbar -->
 <nav class="navbar">
@@ -438,12 +613,26 @@
 <div class="page-wrap">
 
     <!-- Page Header -->
-    <div class="page-badge">
-        <div class="pulse-dot"></div>
-        ADMIN PANEL
+    <div class="page-header-wrap">
+        <div>
+            <div class="page-badge">
+                <div class="pulse-dot"></div>
+                ADMIN PANEL
+            </div>
+            <h1 class="page-title">Data <span>Presensi</span></h1>
+            <p class="page-sub">Lihat dan kelola data presensi siswa sekolah</p>
+        </div>
+        <div class="header-meta">
+            <div class="meta-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Tahun Ajaran <strong>2025 / 2026</strong>
+            </div>
+            <div class="meta-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                XI SIJA 1 &amp; 2
+            </div>
+        </div>
     </div>
-    <h1 class="page-title">Data <span>Presensi</span></h1>
-    <p class="page-sub">Lihat dan kelola data presensi siswa sekolah</p>
 
     <!-- Alert -->
     @if ($message = Session::get('success'))
@@ -452,6 +641,11 @@
             {{ $message }}
         </div>
     @endif
+
+    <!-- Section divider -->
+    <div class="section-divider">
+        <span class="section-divider-label">Filter &amp; Pencarian</span>
+    </div>
 
     <!-- Pilih Kelas -->
     <div class="g-card">
@@ -493,6 +687,11 @@
                 </button>
             </form>
         </div>
+    </div>
+
+    <!-- Section divider tabel -->
+    <div class="section-divider">
+        <span class="section-divider-label">Rekap Kehadiran</span>
     </div>
 
     <!-- Tabel -->
@@ -570,7 +769,10 @@
         </div>
 
         <div class="card-footer">
-            <span>Total Presensi</span>
+            <div class="card-footer-left">
+                <div class="card-footer-dot"></div>
+                <span>Total Presensi Tercatat</span>
+            </div>
             <span class="badge-count">{{ $presensi->total() }} record</span>
         </div>
     </div>

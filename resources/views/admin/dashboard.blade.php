@@ -41,10 +41,17 @@
             inset: 0;
             background:
                 radial-gradient(ellipse 80% 60% at 70% -10%, rgba(28,61,110,.8) 0%, transparent 60%),
-                radial-gradient(ellipse 50% 40% at 10% 80%, rgba(201,150,60,.07) 0%, transparent 50%);
+                radial-gradient(ellipse 50% 40% at 10% 80%, rgba(201,150,60,.08) 0%, transparent 50%),
+                radial-gradient(ellipse 35% 35% at 95% 95%, rgba(201,150,60,.05) 0%, transparent 55%);
             pointer-events: none;
             z-index: 0;
         }
+
+        /* ── DEKORASI ORB (blur gold/navy) ── */
+        .deco-orb { position:fixed; border-radius:50%; pointer-events:none; z-index:0; filter:blur(80px); }
+        .deco-orb-1 { width:300px; height:300px; top:-60px; right:8%; background:rgba(201,150,60,.08); }
+        .deco-orb-2 { width:200px; height:200px; bottom:10%; left:-50px; background:rgba(28,61,110,.55); }
+        .deco-orb-3 { width:150px; height:150px; bottom:20%; right:3%; background:rgba(201,150,60,.05); }
 
         body::after {
             content: '';
@@ -70,6 +77,30 @@
             border-bottom: 1px solid var(--border);
             backdrop-filter: blur(20px);
             background: rgba(11,31,58,.85);
+            transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+        }
+
+        /* ── NAV LIGHT MODE ── */
+        body.light-mode nav {
+            background: rgba(253,248,240,.96) !important;
+            border-bottom-color: rgba(166,124,61,.20) !important;
+            box-shadow: 0 1px 14px rgba(44,36,24,.07) !important;
+        }
+
+        body.light-mode .nav-name,
+        body.light-mode .nav-user-name {
+            color: #2C2418 !important;
+        }
+
+        body.light-mode .nav-sub,
+        body.light-mode .nav-user-role {
+            color: #7A7060 !important;
+        }
+
+        body.light-mode .nav-avatar {
+            background: rgba(166,124,61,.13) !important;
+            border-color: rgba(166,124,61,.22) !important;
+            color: #7A5A28 !important;
         }
 
         .nav-brand {
@@ -224,9 +255,59 @@
         .page-date strong {
             display: block;
             font-size: 15px;
-            color: var(--gold-dim);
+            color: rgba(201,150,60,.80);  /* gold 80% — terbaca di dark mode */
             font-weight: 600;
         }
+
+        body.light-mode .page-date {
+            color: #7A7060 !important;
+        }
+
+        body.light-mode .page-date strong {
+            color: #A67C3D !important;
+        }
+
+        /* ── GREETING BAR ── */
+        .greeting-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255,255,255,.03);
+            border: 1px solid rgba(255,255,255,.055);
+            border-radius: 10px;
+            padding: 10px 18px;
+            margin-bottom: 1.8rem;
+            gap: 1rem;
+        }
+
+        .greeting-bar-left { display:flex; align-items:center; gap:10px; }
+
+        .greeting-dot {
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            background: var(--gold);
+            opacity: .65;
+            flex-shrink: 0;
+        }
+
+        .greeting-welcome { color: var(--muted); font-size: 13px; }
+        .greeting-welcome strong { color: var(--white); font-weight: 600; }
+
+        .greeting-time {
+            font-size: 12px;
+            color: var(--muted);
+            font-variant-numeric: tabular-nums;
+            letter-spacing: .3px;
+            flex-shrink: 0;
+        }
+
+        body.light-mode .greeting-bar {
+            background: rgba(166,124,61,.05) !important;
+            border-color: rgba(166,124,61,.14) !important;
+        }
+        body.light-mode .greeting-welcome { color: #7A7060 !important; }
+        body.light-mode .greeting-welcome strong { color: #2C2418 !important; }
+        body.light-mode .greeting-time { color: #7A7060 !important; }
 
         /* ── ALERT ── */
         .alert-success {
@@ -268,17 +349,37 @@
             top: 0; left: 0; right: 0;
             height: 2px;
             border-radius: 14px 14px 0 0;
-            opacity: 0;
-            transition: opacity .25s;
+            opacity: .35;
+            transition: opacity .3s;
         }
 
+        /* Lingkaran dekoratif pojok kanan bawah card */
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            bottom: -12px; right: -12px;
+            width: 72px; height: 72px;
+            border-radius: 50%;
+            opacity: .045;
+            transition: opacity .3s;
+            pointer-events: none;
+        }
+
+        .sc-blue::after   { background: #60a5fa; }
+        .sc-teal::after   { background: #2dd4bf; }
+        .sc-violet::after { background: #a78bfa; }
+        .sc-yellow::after { background: #fbbf24; }
+        .sc-red::after    { background: #f87171; }
+
         .stat-card:hover {
-            transform: translateY(-3px);
-            border-color: rgba(201,150,60,.2);
+            transform: translateY(-4px);
+            border-color: rgba(201,150,60,.22);
             background: rgba(255,255,255,.07);
+            box-shadow: 0 10px 30px rgba(0,0,0,.28);
         }
 
         .stat-card:hover::before { opacity: 1; }
+        .stat-card:hover::after  { opacity: .09; }
 
         .sc-blue::before  { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
         .sc-teal::before  { background: linear-gradient(90deg, #0d9488, #2dd4bf); }
@@ -332,14 +433,22 @@
             margin-bottom: 1rem;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 3px; height: 16px;
+            background: linear-gradient(180deg, var(--gold), transparent);
+            border-radius: 2px;
+            flex-shrink: 0;
         }
 
         .section-title::after {
             content: '';
             flex: 1;
             height: 1px;
-            background: var(--border-w);
+            background: linear-gradient(90deg, rgba(201,150,60,.3) 0%, rgba(255,255,255,.04) 75%);
         }
 
         /* ── MANAGEMENT GRID ── */
@@ -353,6 +462,7 @@
         .mgmt-card {
             background: var(--glass);
             border: 1px solid var(--border-w);
+            border-left: 2px solid transparent;
             border-radius: 14px;
             padding: 1.4rem;
             text-decoration: none;
@@ -360,13 +470,34 @@
             align-items: center;
             gap: 14px;
             transition: all .25s;
-            group: true;
+            position: relative;
+            overflow: hidden;
         }
 
+        /* Shimmer scan saat hover */
+        .mgmt-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.035) 50%, transparent 62%);
+            transform: translateX(-120%);
+            transition: transform .5s ease;
+            pointer-events: none;
+        }
+
+        .mgmt-card:hover::after { transform: translateX(120%); }
+
+        .mgmt-card:has(.si-blue)   { border-left-color: rgba(96,165,250,.35); }
+        .mgmt-card:has(.si-teal)   { border-left-color: rgba(45,212,191,.35); }
+        .mgmt-card:has(.si-violet) { border-left-color: rgba(167,139,250,.35); }
+        .mgmt-card:has(.si-yellow) { border-left-color: rgba(251,191,36,.35); }
+        .mgmt-card:has(.si-red)    { border-left-color: rgba(248,113,113,.35); }
+
         .mgmt-card:hover {
-            background: rgba(255,255,255,.07);
+            background: rgba(255,255,255,.065);
             border-color: var(--border);
-            transform: translateX(4px);
+            transform: translateX(5px);
+            box-shadow: 0 4px 20px rgba(0,0,0,.2);
         }
 
         .mgmt-card:hover .mgmt-chevron { opacity: 1; transform: translateX(3px); }
@@ -433,7 +564,16 @@
 
         .status-text {
             font-size: 13px;
-            color: var(--gold-dim);
+            color: rgba(201,150,60,.75);  /* gold 75% — terbaca di dark mode */
+        }
+
+        body.light-mode .status-bar {
+            background: rgba(166,124,61,.09) !important;
+            border-color: rgba(166,124,61,.22) !important;
+        }
+
+        body.light-mode .status-text {
+            color: #7A5A28 !important;   /* earthy gold, kontras di latar krem */
         }
 
         /* ── LOGOUT BUTTON ── */
@@ -487,9 +627,81 @@
             .stats-grid { grid-template-columns: 1fr 1fr; gap: .7rem; }
             .page-title { font-size: 1.5rem; }
         }
+
+        /* ══════════════════════════════════════════════
+           LIGHT MODE — background & komponen override
+           ══════════════════════════════════════════════ */
+
+        /* 1. Hapus radial gradient navy dari body::before */
+        body.light-mode::before {
+            background:
+                radial-gradient(ellipse 80% 60% at 70% -10%, rgba(201,150,60,.06) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 10% 80%, rgba(166,124,61,.05) 0%, transparent 50%),
+                radial-gradient(ellipse 35% 35% at 95% 95%, rgba(166,124,61,.04) 0%, transparent 55%) !important;
+        }
+
+        /* 2. Sembunyikan grid dot & orb navy di light mode */
+        body.light-mode::after { opacity: 0 !important; }
+        body.light-mode .deco-orb-2 { opacity: 0 !important; }
+        body.light-mode .deco-orb-1 { background: rgba(201,150,60,.06) !important; }
+        body.light-mode .deco-orb-3 { background: rgba(201,150,60,.04) !important; }
+
+        /* 3. Stat cards — hilangkan glass gelap */
+        body.light-mode .stat-card {
+            background: rgba(255,255,255,.82) !important;
+            border-color: rgba(166,124,61,.18) !important;
+            box-shadow: 0 2px 12px rgba(44,36,24,.07) !important;
+        }
+        body.light-mode .stat-card:hover {
+            background: rgba(255,255,255,.95) !important;
+            box-shadow: 0 6px 24px rgba(44,36,24,.12) !important;
+        }
+
+        /* Teks stat card di light mode */
+        body.light-mode .stat-value { color: #1A1208 !important; }
+        body.light-mode .stat-label { color: #7A7060 !important; }
+        body.light-mode .stat-pct   { color: #A09070 !important; }
+
+        /* 4. Mgmt cards */
+        body.light-mode .mgmt-card {
+            background: rgba(255,255,255,.80) !important;
+            border-color: rgba(166,124,61,.18) !important;
+            box-shadow: 0 2px 10px rgba(44,36,24,.06) !important;
+        }
+        body.light-mode .mgmt-card:hover {
+            background: rgba(255,255,255,.96) !important;
+            box-shadow: 0 4px 18px rgba(44,36,24,.10) !important;
+        }
+        body.light-mode .mgmt-title { color: #2C2418 !important; }
+        body.light-mode .mgmt-sub   { color: #7A7060 !important; }
+        body.light-mode .mgmt-chevron { color: #A67C3D !important; }
+
+        /* 5. Section title teks */
+        body.light-mode .section-title { color: #2C2418 !important; }
+
+        /* 6. Page title & badge */
+        body.light-mode .page-title { color: #1A1208 !important; }
+        body.light-mode .page-sub   { color: #7A7060 !important; }
+        body.light-mode .page-badge {
+            background: rgba(166,124,61,.10) !important;
+            border-color: rgba(166,124,61,.25) !important;
+            color: #8A5E1C !important;
+        }
+
+        /* 7. Slot tersedia (empty grid cell) */
+        body.light-mode .mgmt-empty {
+            background: rgba(166,124,61,.04) !important;
+            border-color: rgba(166,124,61,.12) !important;
+            color: #B8A888 !important;
+        }
     </style>
 </head>
 <body>
+
+    {{-- DEKORASI ORB --}}
+    <div class="deco-orb deco-orb-1" aria-hidden="true"></div>
+    <div class="deco-orb deco-orb-2" aria-hidden="true"></div>
+    <div class="deco-orb deco-orb-3" aria-hidden="true"></div>
 
     {{-- NAV --}}
     <nav>
@@ -539,6 +751,15 @@
                 <span>Tahun Ajaran</span>
                 <strong>2025 / 2026</strong>
             </div>
+        </div>
+
+        {{-- GREETING BAR --}}
+        <div class="greeting-bar">
+            <div class="greeting-bar-left">
+                <div class="greeting-dot"></div>
+                <span class="greeting-welcome">Selamat datang, <strong>{{ auth()->user()->name }}</strong></span>
+            </div>
+            <span class="greeting-time" id="greetingTime"></span>
         </div>
 
         {{-- STATS --}}
@@ -734,5 +955,21 @@
     </footer>
 
     <script src="{{ asset('js/theme-mode.js') }}"></script>
+    <script>
+        (function () {
+            const el = document.getElementById('greetingTime');
+            if (!el) return;
+            const days  = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+            const months= ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+            function tick() {
+                const n  = new Date();
+                const hh = String(n.getHours()).padStart(2,'0');
+                const mm = String(n.getMinutes()).padStart(2,'0');
+                const ss = String(n.getSeconds()).padStart(2,'0');
+                el.textContent = days[n.getDay()] + ', ' + n.getDate() + ' ' + months[n.getMonth()] + ' ' + n.getFullYear() + '  ·  ' + hh + ':' + mm + ':' + ss;
+            }
+            tick(); setInterval(tick, 1000);
+        })();
+    </script>
 </body>
 </html>

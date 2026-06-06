@@ -284,6 +284,21 @@
             cursor: not-allowed;
         }
 
+
+        /* ── NAV LIGHT MODE ── */
+        body.light-mode nav {
+            background: rgba(253,248,240,.96) !important;
+            border-bottom-color: rgba(166,124,61,.20) !important;
+            box-shadow: 0 1px 14px rgba(44,36,24,.07) !important;
+        }
+        body.light-mode .nav-name { color: #2C2418 !important; }
+        body.light-mode .nav-sub  { color: #7A7060 !important; }
+        body.light-mode .nav-back {
+            color: #7A5A28 !important;
+            border-color: rgba(166,124,61,.28) !important;
+            background: rgba(166,124,61,.06) !important;
+        }
+        body.light-mode .nav-back:hover { background: rgba(166,124,61,.13) !important; }
         footer { position: relative; z-index: 2; text-align: center; padding: 1.5rem; border-top: 1px solid var(--border-w); font-size: 12px; color: var(--muted); }
 
         @media (max-width: 768px) {
@@ -293,6 +308,7 @@
             th:nth-child(4), td:nth-child(4) { display: none; }
         }
     </style>
+    <link rel="stylesheet" href="{{ asset('css/theme-mode.css') }}">
 </head>
 <body>
 
@@ -305,6 +321,9 @@
         </div>
     </div>
     <div class="nav-actions">
+        <div style="display:flex;align-items:center;gap:7px;">
+            @include('layouts.theme-switch')
+        </div>
         <a href="{{ route('admin.siswa.create') }}" class="btn btn-gold btn-sm">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Tambah Siswa
@@ -493,5 +512,6 @@
 </div>
 
 <footer>&copy; {{ date('Y') }} SMK — Sistem Presensi Digital Kelas XI SIJA 1 &amp; 2</footer>
+    <script src="{{ asset('js/theme-mode.js') }}"></script>
 </body>
 </html>

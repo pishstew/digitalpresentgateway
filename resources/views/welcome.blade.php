@@ -591,7 +591,7 @@
                     <span class="stat-label">Kelas SIJA</span>
                 </div>
                 <div class="stat">
-                    <span class="stat-num">4</span>
+                    <span class="stat-num">5</span>
                     <span class="stat-label">Role Pengguna</span>
                 </div>
                 <div class="stat">

@@ -181,6 +181,7 @@
 
         /* ── STAT CARDS ── */
         .stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 28px; }
+        .stats-grid-search { grid-template-columns: repeat(4, 1fr); }
 
         .stat-card {
             background: var(--glass); border: 1px solid var(--gold-border);
@@ -380,7 +381,7 @@
         /* ── RESPONSIVE ── */
         @media(max-width:900px){
             .main{ padding: 24px 16px; }
-            .stats-grid{ grid-template-columns: repeat(2,1fr); }
+            .stats-grid, .stats-grid-search { grid-template-columns: repeat(2,1fr); }
             .search-input{ width: 180px; }
             .navbar{ padding: 0 16px; }
             .page-title{ font-size: 1.6rem; }
@@ -547,13 +548,15 @@
             $pctH = $totalRec > 0 ? round($totalH/$totalRec*100) : 0;
         @endphp
 
-        <div class="stats-grid">
+        <div class="stats-grid{{ $search ? ' stats-grid-search' : '' }}">
+            @if(!$search)
             <div class="stat-card c-total">
                 <div class="stat-icon">🎓</div>
                 <div class="stat-value">{{ $totalSiswa }}</div>
                 <div class="stat-label">Total Siswa</div>
                 <div class="stat-pct">Kelas {{ $kelas }}</div>
             </div>
+            @endif
             <div class="stat-card c-hadir">
                 <div class="stat-icon" style="color:var(--success);">✓</div>
                 <div class="stat-value" style="color:var(--success);">{{ $totalH }}</div>

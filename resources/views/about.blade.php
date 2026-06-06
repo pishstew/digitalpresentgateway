@@ -249,7 +249,7 @@
                     <div class="detail-row"><div class="detail-label">Email</div><div class="detail-separator">:</div><div class="detail-value">nachmadmaruf@gmail.com</div></div>
                     <div class="detail-row"><div class="detail-label">No Telepon</div><div class="detail-separator">:</div><div class="detail-value">0897-9229-494</div></div>
                     <div class="detail-row"><div class="detail-label">Sosmed</div><div class="detail-separator">:</div><div class="detail-value"><a href="https://www.instagram.com/dearestfishy/?__pwa=1" target="_blank" style="color: var(--gold-light); text-decoration: none;">@dearestfishy</a></div></div>
-                    <div class="detail-row"><div class="detail-label">Jobdesk</div><div class="detail-separator">:</div><div class="detail-value">Lead Developer</div></div>
+                    <div class="detail-row"><div class="detail-label">Jobdesk</div><div class="detail-separator">:</div><div class="detail-value">UI/UX Designer</div></div>
                 </div>
             </div>
 
@@ -259,7 +259,7 @@
                     <div class="photo-inner" style="background-image: url('{{ asset('images/shofa.jpg') }}');"></div>
                 </div>
                 <h3 class="member-name">Shofa Annisatus Zahra</h3>
-                <div class="member-role">UI/UX Designer</div>
+                <div class="member-role">Project Coordinator</div>
 
                 <div class="member-details">
                     <div class="detail-row"><div class="detail-label">Nama</div><div class="detail-separator">:</div><div class="detail-value">Shofa Annisatus Zahra</div></div>
@@ -270,7 +270,7 @@
                     <div class="detail-row"><div class="detail-label">Email</div><div class="detail-separator">:</div><div class="detail-value">sahrasofa99@gmail.com</div></div>
                     <div class="detail-row"><div class="detail-label">No Telepon</div><div class="detail-separator">:</div><div class="detail-value">0856-4524-3705</div></div>
                     <div class="detail-row"><div class="detail-label">Sosmed</div><div class="detail-separator">:</div><div class="detail-value"><a href="https://www.instagram.com/shfaaa_zhra?igsh=MXE0aW84Z2NuN3JwbQ==" target="_blank" style="color: var(--gold-light); text-decoration: none;">@shfaaa_zhra</a></div></div>
-                    <div class="detail-row"><div class="detail-label">Jobdesk</div><div class="detail-separator">:</div><div class="detail-value">UI/UX Designer</div></div>
+                    <div class="detail-row"><div class="detail-label">Jobdesk</div><div class="detail-separator">:</div><div class="detail-value">Project Coordinator</div></div>
                 </div>
             </div>
 
