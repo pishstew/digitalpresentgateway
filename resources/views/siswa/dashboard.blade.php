@@ -536,7 +536,6 @@
                                     <div class="jam-box {{ $jadwal->sudah_absen ? 'selesai' : 'pending' }}">{{ $jadwal->jam_ke }}</div>
                                     <div class="jadwal-info">
                                         <h4>{{ $jadwal->mapel->nama_mapel ?? 'Mapel' }}</h4>
-                                        <div style="font-size: 0.75rem; color: var(--muted); margin-bottom: 4px;">{{ $jadwal->jam_mulai ?? '' }} - {{ $jadwal->jam_selesai ?? '' }}</div>
                                         <p>
                                             @if($jadwal->sudah_absen)
                                                 <span class="done-txt">✓ Hadir {{ date('H:i', strtotime($jadwal->data_presensi->jam_masuk)) }}</span>

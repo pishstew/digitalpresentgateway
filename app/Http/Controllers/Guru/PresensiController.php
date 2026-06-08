@@ -98,10 +98,17 @@ class PresensiController extends Controller
      */
     public function store(Request $request)
     {
-        // ── Koordinat & radius sekolah ──────────────────────────────
-        $sekolahLat    = -7.975020;
-        $sekolahLng    = 112.671699;
-        $radiusMeter   = 100;
+        // ── Koordinat & radius dari sesi guru ──────────────────────
+        $guruLat     = session('guru_lat');
+        $guruLng     = session('guru_lng');
+        $radiusMeter = 15;
+
+        // Pastikan sesi koordinat guru tersedia
+        if (!$guruLat || !$guruLng) {
+            return back()->withErrors([
+                'kode' => 'Sesi presensi tidak valid. Minta guru untuk generate ulang kode presensi.',
+            ]);
+        }
 
         // ── Validasi input dasar ────────────────────────────────────
         $request->validate([
@@ -114,18 +121,18 @@ class PresensiController extends Controller
             'longitude.required' => 'Lokasi GPS tidak terdeteksi. Pastikan izin lokasi diaktifkan.',
         ]);
 
-        // ── Validasi Geofencing ─────────────────────────────────────
+        // ── Validasi Geofencing (15 m dari posisi guru) ─────────────
         $jarak = $this->hitungJarak(
             (float) $request->latitude,
             (float) $request->longitude,
-            $sekolahLat,
-            $sekolahLng
+            (float) $guruLat,
+            (float) $guruLng
         );
 
         if ($jarak > $radiusMeter) {
             $jarakBulat = round($jarak);
             return back()->withErrors([
-                'kode' => "Presensi ditolak. Kamu berada {$jarakBulat} meter dari sekolah (batas: {$radiusMeter} meter). Hadir ke sekolah untuk melakukan presensi.",
+                'kode' => "Presensi ditolak. Kamu berada {$jarakBulat} meter dari guru (batas: {$radiusMeter} meter). Dekati guru untuk melakukan presensi.",
             ]);
         }
 

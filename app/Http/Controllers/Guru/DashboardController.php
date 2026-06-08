@@ -45,6 +45,11 @@ class DashboardController extends Controller
         $request->validate([
             // PRIMARY KEY tabel adalah kode_jam_pelajaran (string), bukan id integer
             'jadwal_id' => 'required|exists:jadwal_pelajaran,kode_jam_pelajaran',
+            'guru_lat'  => 'required|numeric',
+            'guru_lng'  => 'required|numeric',
+        ], [
+            'guru_lat.required' => 'Lokasi GPS guru tidak terdeteksi. Pastikan izin lokasi diaktifkan.',
+            'guru_lng.required' => 'Lokasi GPS guru tidak terdeteksi. Pastikan izin lokasi diaktifkan.',
         ]);
 
         $token  = str_pad(random_int(0, 9999), 4, '0', STR_PAD_LEFT);
@@ -54,6 +59,8 @@ class DashboardController extends Controller
             'presensi_token'        => $token,
             'presensi_token_expiry' => $expiry->toDateTimeString(),
             'presensi_jadwal_id'    => $request->jadwal_id,
+            'guru_lat'              => (float) $request->guru_lat,
+            'guru_lng'              => (float) $request->guru_lng,
         ]);
 
         return redirect()->route('guru.dashboard')
@@ -63,7 +70,7 @@ class DashboardController extends Controller
     public function selesaikan()
     {
         $jadwalId = session('presensi_jadwal_id');
-        session()->forget(['presensi_token', 'presensi_token_expiry', 'presensi_jadwal_id']);
+        session()->forget(['presensi_token', 'presensi_token_expiry', 'presensi_jadwal_id', 'guru_lat', 'guru_lng']);
 
         return redirect()->route('guru.presensi.index', ['jadwal_id' => $jadwalId])
             ->with('success', 'Sesi presensi telah diselesaikan.');

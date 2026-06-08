@@ -432,8 +432,22 @@
     <div class="card">
         <div class="card-header"><h2>Generate Kode Absensi</h2></div>
         <div class="card-body">
-            <form method="POST" action="{{ route('guru.token.generate') }}">
+            {{-- Alert lokasi --}}
+            <div id="locAlert" style="display:none; margin-bottom:14px;" class="alert alert-err">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#e05c5c" stroke-width="1.5"/><path d="M8 5v4M8 11v.5" stroke="#e05c5c" stroke-width="1.5" stroke-linecap="round"/></svg>
+                <span id="locAlertMsg">Mengambil lokasi GPS...</span>
+            </div>
+            <div id="locOk" style="display:none; margin-bottom:14px;" class="alert alert-ok">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#4caf8a" stroke-width="1.5"/><path d="M5 8l2.5 2.5 4-4" stroke="#4caf8a" stroke-width="1.5" stroke-linecap="round"/></svg>
+                <span id="locOkMsg">Lokasi berhasil dideteksi</span>
+            </div>
+
+            <form method="POST" action="{{ route('guru.token.generate') }}" id="formGenerate">
                 @csrf
+                {{-- Input tersembunyi untuk koordinat guru --}}
+                <input type="hidden" name="guru_lat" id="guru_lat">
+                <input type="hidden" name="guru_lng" id="guru_lng">
+
                 <div class="form-group" style="margin-bottom:16px;">
                     <label class="form-label" for="jadwal_id">Pilih Kelas &amp; Jadwal</label>
                     <select name="jadwal_id" id="jadwal_id" class="form-select" required>
@@ -448,11 +462,62 @@
                         @endforelse
                     </select>
                 </div>
-                <button type="submit" class="btn-generate" @if($jadwals->isEmpty()) disabled @endif>
+                <button type="button" id="btnGenerate" class="btn-generate" @if($jadwals->isEmpty()) disabled @endif>
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v6M5 8h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-                    Generate Kode Absensi
+                    <span id="btnGenerateText">Generate Kode Absensi</span>
                 </button>
             </form>
+
+            <script>
+            document.getElementById('btnGenerate').addEventListener('click', function () {
+                const btn     = this;
+                const locAlert = document.getElementById('locAlert');
+                const locOk    = document.getElementById('locOk');
+                const locMsg   = document.getElementById('locAlertMsg');
+                const locOkMsg = document.getElementById('locOkMsg');
+                const btnText  = document.getElementById('btnGenerateText');
+
+                if (!navigator.geolocation) {
+                    locAlert.style.display = 'flex';
+                    locMsg.textContent = 'Browser tidak mendukung GPS. Gunakan browser lain (Chrome/Firefox).';
+                    return;
+                }
+
+                // Tampilkan loading
+                btn.disabled = true;
+                btnText.textContent = 'Mengambil lokasi GPS...';
+                locAlert.style.display = 'none';
+                locOk.style.display    = 'none';
+
+                navigator.geolocation.getCurrentPosition(
+                    function (pos) {
+                        // Sukses — isi hidden input lalu submit form
+                        document.getElementById('guru_lat').value = pos.coords.latitude;
+                        document.getElementById('guru_lng').value = pos.coords.longitude;
+
+                        locOk.style.display  = 'flex';
+                        locOkMsg.textContent = 'Lokasi terdeteksi (' +
+                            pos.coords.latitude.toFixed(5) + ', ' +
+                            pos.coords.longitude.toFixed(5) + '). Memproses...';
+
+                        document.getElementById('formGenerate').submit();
+                    },
+                    function (err) {
+                        // Gagal — tampilkan pesan sesuai error code
+                        btn.disabled = false;
+                        btnText.textContent = 'Generate Kode Absensi';
+                        locAlert.style.display = 'flex';
+                        const pesan = {
+                            1: 'Izin lokasi ditolak. Aktifkan izin lokasi di pengaturan browser.',
+                            2: 'Lokasi tidak tersedia. Pastikan GPS aktif.',
+                            3: 'Waktu habis saat mengambil lokasi. Coba lagi.',
+                        };
+                        locMsg.textContent = pesan[err.code] || 'Gagal mengambil lokasi GPS. Coba lagi.';
+                    },
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                );
+            });
+            </script>
         </div>
     </div>
     @endif
