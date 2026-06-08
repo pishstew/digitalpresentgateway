@@ -62,9 +62,6 @@
         "test": [
             "@php artisan config:clear --ansi",
             "@php artisan test"
-        ],
-        "build": [
-            "npx vite build"
         ]
 
     },
