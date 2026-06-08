@@ -37,7 +37,7 @@ docker compose up -d --force-recreate app
 
 # ── 5. Jalankan perintah Laravel di dalam container ───────────
 echo "[5/5] Laravel post-deploy..."
-docker compose exec -T app php artisan migrate --force
+# docker compose exec -T app php artisan migrate --force
 docker compose exec -T app php artisan config:cache
 docker compose exec -T app php artisan route:cache
 docker compose exec -T app php artisan view:cache
