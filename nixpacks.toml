@@ -1,0 +1,2 @@
+[start]
+cmd = "php artisan migrate --force --graceful && php-fpm -D && nginx -g 'daemon off;'"

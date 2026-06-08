@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasTable('presensi')) return;
     Schema::create('presensi', function (Blueprint $table) {
     // Kode presensi → PRIMARY KEY
     // identitas unik tiap absensi
