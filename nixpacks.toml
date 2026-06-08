@@ -1,2 +1,11 @@
 [start]
 cmd = "php artisan migrate --force --graceful && php-fpm -D && nginx -g 'daemon off;'"
+
+[phases.setup]
+nixPkgs = ["nodejs"]
+
+[phases.build]
+cmds = ["npm install", "npm run build"]
+
+[start]
+cmd = "php artisan migrate --force --graceful && php-fpm -D && nginx -g 'daemon off;'"
