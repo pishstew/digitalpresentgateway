@@ -35,9 +35,9 @@
     font-size: 0.68rem; font-weight: 700; letter-spacing: .06em;
     text-transform: uppercase; flex-shrink: 0;
 }
-.role-badge.admin  { background: rgba(239,68,68,.15);  color: #f87171; border: 1px solid rgba(239,68,68,.2); }
-.role-badge.guru   { background: rgba(59,130,246,.15); color: #60a5fa; border: 1px solid rgba(59,130,246,.2); }
-.role-badge.siswa  { background: rgba(34,197,94,.15);  color: #4ade80; border: 1px solid rgba(34,197,94,.2); }
+.role-badge.admin     { background: rgba(239,68,68,.15);  color: #f87171; border: 1px solid rgba(239,68,68,.2); }
+.role-badge.guru      { background: rgba(59,130,246,.15); color: #60a5fa; border: 1px solid rgba(59,130,246,.2); }
+.role-badge.siswa     { background: rgba(34,197,94,.15);  color: #4ade80; border: 1px solid rgba(34,197,94,.2); }
 .role-badge.walikelas { background: rgba(168,85,247,.15); color: #c084fc; border: 1px solid rgba(168,85,247,.2); }
 
 /* Nav links — center */
@@ -156,6 +156,36 @@ body { padding-top: 60px !important; margin: 0; }
     .user-name { display: none; }
     .topbar-brand-text { display: none; }
 }
+
+/* ── THEME SWITCH ────────────────────────────────────── */
+.theme-switch {
+    position: relative;
+    display: inline-block;
+    width: 38px; height: 22px;
+    cursor: pointer; flex-shrink: 0;
+}
+.theme-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+.track {
+    position: absolute; inset: 0;
+    background: rgba(255,255,255,.15);
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.2);
+    transition: background .25s;
+}
+.theme-switch input:checked ~ .track {
+    background: #3b82f6;
+    border-color: #3b82f6;
+}
+.thumb {
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 16px; height: 16px;
+    background: white;
+    border-radius: 50%;
+    transition: transform .25s;
+    box-shadow: 0 1px 4px rgba(0,0,0,.3);
+}
+.theme-switch input:checked ~ .thumb { transform: translateX(16px); }
 </style>
 
 {{-- ── TOPBAR ── --}}
@@ -203,16 +233,16 @@ body { padding-top: 60px !important; margin: 0; }
         @elseif($role === 'siswa')
             <a href="{{ route('siswa.dashboard') }}"      class="topbar-nav-link {{ request()->routeIs('siswa.dashboard') ? 'active' : '' }}"><span class="nav-em">🏠</span>Dashboard</a>
             <a href="{{ route('siswa.presensi.index') }}" class="topbar-nav-link {{ request()->routeIs('siswa.presensi.*') ? 'active' : '' }}"><span class="nav-em">✅</span>Presensi Saya</a>
-            
+
         @elseif($role === 'walikelas')
             <a href="{{ route('walikelas.dashboard') }}"  class="topbar-nav-link {{ request()->routeIs('walikelas.dashboard') ? 'active' : '' }}"><span class="nav-em">📊</span>Dashboard Walikelas</a>
-        
+
         @elseif($role === 'kakon')
-            <a href="{{ route('kakon.dashboard') }}"  class="topbar-nav-link {{ request()->routeIs('kakon.dashboard') ? 'active' : '' }}"><span class="nav-em">📊</span>Dashboard Kakon</a>
+            <a href="{{ route('kakon.dashboard') }}"      class="topbar-nav-link {{ request()->routeIs('kakon.dashboard') ? 'active' : '' }}"><span class="nav-em">📊</span>Dashboard Kakon</a>
         @endif
     </nav>
 
-    {-- Theme Switch --}
+    {{-- Theme Switch --}}
     <div style="display:flex;align-items:center;gap:7px;flex-shrink:0;">
         <label class="theme-switch" title="Ganti tema">
             <input type="checkbox" class="dpg-theme-checkbox" aria-label="Toggle dark/light mode">
@@ -222,7 +252,7 @@ body { padding-top: 60px !important; margin: 0; }
         <span class="theme-label" style="font-size:.72rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.45);white-space:nowrap;user-select:none;">Dark</span>
     </div>
 
-        {-- User dropdown --}
+    {{-- User dropdown --}}
     <div class="topbar-right">
         <div class="user-btn" id="userBtn" onclick="toggleUserMenu()">
             <div class="user-avatar">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</div>
