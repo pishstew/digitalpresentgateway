@@ -522,7 +522,7 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <form method="POST" action="{{ route('guru.presensi.update', $p->id) }}" class="status-form">
+                                    <form method="POST" action="{{ route('guru.presensi.update', $p->kode_presensi) }}" class="status-form">
                                         @csrf @method('PUT')
                                         <input type="hidden" name="jadwal_id" value="{{ $jadwalId }}">
                                         <input type="hidden" name="tanggal"   value="{{ $tanggal }}">
@@ -591,7 +591,7 @@
                             @endif
                         </div>
                         <div class="mobile-meta">Jam masuk: {{ $p->jam_masuk ?? '—' }}</div>
-                        <form method="POST" action="{{ route('guru.presensi.update', $p->id) }}" class="status-form">
+                        <form method="POST" action="{{ route('guru.presensi.update', $p->kode_presensi) }}" class="status-form">
                             @csrf @method('PUT')
                             <input type="hidden" name="jadwal_id" value="{{ $jadwalId }}">
                             <input type="hidden" name="tanggal"   value="{{ $tanggal }}">
