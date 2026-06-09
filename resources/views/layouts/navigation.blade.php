@@ -1,7 +1,7 @@
 @php $role = Auth::user()->role; @endphp
 
 <style>
-/* ── TOPBAR ──────────────────────────────────────────── */
+/* -- TOPBAR -------------------------------------------- */
 .topbar {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
     height: 60px;
@@ -40,7 +40,7 @@
 .role-badge.siswa     { background: rgba(34,197,94,.15);  color: #4ade80; border: 1px solid rgba(34,197,94,.2); }
 .role-badge.walikelas { background: rgba(168,85,247,.15); color: #c084fc; border: 1px solid rgba(168,85,247,.2); }
 
-/* Nav links — center */
+/* Nav links - center */
 .topbar-nav {
     display: flex; align-items: center; gap: 2px;
     margin: 0 auto;
@@ -109,7 +109,7 @@
 .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
 .hamburger.open span:nth-child(3) { width: 20px; transform: translateY(-7px) rotate(-45deg); }
 
-/* ── SIDEBAR (mobile drawer) ─────────────────────────── */
+/* -- SIDEBAR (mobile drawer) --------------------------- */
 .sidebar-overlay {
     display: none; position: fixed; inset: 0; z-index: 90;
     background: rgba(0,0,0,.55); backdrop-filter: blur(3px);
@@ -147,7 +147,7 @@
 /* push content below fixed topbar */
 body { padding-top: 60px !important; margin: 0; }
 
-/* ── RESPONSIVE ──────────────────────────────────────── */
+/* -- RESPONSIVE ---------------------------------------- */
 @media (max-width: 820px) {
     .topbar-nav  { display: none; }
     .hamburger   { display: flex; }
@@ -157,7 +157,7 @@ body { padding-top: 60px !important; margin: 0; }
     .topbar-brand-text { display: none; }
 }
 
-/* ── THEME SWITCH ────────────────────────────────────── */
+/* -- THEME SWITCH -------------------------------------- */
 .theme-switch {
     position: relative;
     display: inline-flex;
@@ -180,7 +180,7 @@ body { padding-top: 60px !important; margin: 0; }
     transition: background .3s ease, box-shadow .3s ease;
 }
 .track::after {
-    content: '✦ · ✦';
+    content: '\2726 \00B7 \2726';
     position: absolute; right: 6px;
     font-size: 6px; color: rgba(255,255,255,.4);
     letter-spacing: 1px; pointer-events: none;
@@ -207,16 +207,16 @@ body { padding-top: 60px !important; margin: 0; }
     transition: transform .3s cubic-bezier(.34,1.56,.64,1),
                 background .3s ease, box-shadow .3s ease;
 }
-.thumb::after { content: '🌙'; font-size: 11px; line-height: 1; }
+.thumb::after { content: '\1F319'; font-size: 11px; line-height: 1; }
 .dpg-theme-checkbox:checked ~ .thumb {
     transform: translateY(-50%) translateX(28px);
     background: radial-gradient(circle at 35%, #fffde7, #fbbf24);
     box-shadow: 0 2px 8px rgba(251,191,36,.6), 0 0 12px rgba(251,191,36,.3);
 }
-.dpg-theme-checkbox:checked ~ .thumb::after { content: '☀️'; }
+.dpg-theme-checkbox:checked ~ .thumb::after { content: '\2600'; }
 </style>
 
-{{-- ── TOPBAR ── --}}
+{{-- -- TOPBAR -- --}}
 <header class="topbar">
 
     {{-- Hamburger --}}
@@ -302,7 +302,7 @@ body { padding-top: 60px !important; margin: 0; }
     </div>
 </header>
 
-{{-- ── SIDEBAR MOBILE ── --}}
+{{-- -- SIDEBAR MOBILE -- --}}
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
 <nav class="sidebar" id="sidebar">
@@ -344,7 +344,7 @@ body { padding-top: 60px !important; margin: 0; }
 </nav>
 
 <script>
-/* ── SIDEBAR & DROPDOWN ── */
+/* -- SIDEBAR & DROPDOWN -- */
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('open');
     document.getElementById('sidebarOverlay').classList.toggle('show');
@@ -363,7 +363,7 @@ document.addEventListener('click', function(e) {
     }
 });
 
-/* ── DARK / LIGHT MODE (Pilihan A: OFF=Dark default, ON=Light) ── */
+/* -- DARK / LIGHT MODE (Pilihan A: OFF=Dark default, ON=Light) -- */
 (function () {
     var STORAGE_KEY = 'sija-theme';
 
