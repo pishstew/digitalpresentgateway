@@ -1,11 +1,9 @@
-[start]
-cmd = "php artisan migrate --force --graceful && php-fpm -D && nginx -g 'daemon off;'"
-
 [phases.setup]
 nixPkgs = ["nodejs"]
 
 [phases.build]
-cmds = ["npm install", "npm run build"]
+cmds = ["npm install", "npm run build", "composer install --no-dev --optimize-autoloader", "php artisan config:cache", "php artisan route:cache", "php artisan view:cache"]
 
+# ✅ FIX: Hanya satu [start] section (sebelumnya duplikat menyebabkan warning)
 [start]
 cmd = "php artisan migrate --force --graceful && php-fpm -D && nginx -g 'daemon off;'"

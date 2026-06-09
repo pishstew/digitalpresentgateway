@@ -1,107 +1,50 @@
 /**
- * theme-mode.js — DPG Digital Presence Guard
- * Mengelola toggle Dark/Light mode dengan localStorage persistence
+ * SIJA Presensi — theme-mode.js
+ *
+ * KONVENSI PILIHAN A:
+ *   Toggle OFF (abu gelap, icon 🌙) = Dark mode  ← DEFAULT
+ *   Toggle ON  (kuning, icon ☀️)   = Light mode
+ *
+ * Sistem: body.light-mode (bukan html.dark)
+ * Checkbox checked = light mode aktif
  */
-
 (function () {
-    'use strict';
+    var STORAGE_KEY = 'sija-theme';
+    var body        = document.body;
 
-    const STORAGE_KEY = 'dpg-theme';
-    const LIGHT_CLASS = 'light-mode';
+    function getSaved() { return localStorage.getItem(STORAGE_KEY); }
+    function setSaved(t){ localStorage.setItem(STORAGE_KEY, t); }
 
-    /* ── Terapkan tema secepat mungkin (sebelum render) ── */
-    function applyTheme(isLight) {
+    function applyTheme(theme) {
+        setSaved(theme);
+        var isLight = (theme === 'light');
+
+        // Toggle class di <body> — dipakai seluruh CSS (theme-mode.css & welcome inline)
         if (isLight) {
-            document.body.classList.add(LIGHT_CLASS);
+            body.classList.add('light-mode');
         } else {
-            document.body.classList.remove(LIGHT_CLASS);
+            body.classList.remove('light-mode');
         }
-    }
 
-    /* ── Baca preferensi tersimpan ── */
-    function getSavedTheme() {
-        try {
-            return localStorage.getItem(STORAGE_KEY) === 'light';
-        } catch (e) {
-            return false;
-        }
-    }
-
-    /* ── Simpan preferensi ── */
-    function saveTheme(isLight) {
-        try {
-            localStorage.setItem(STORAGE_KEY, isLight ? 'light' : 'dark');
-        } catch (e) { /* silent fail */ }
-    }
-
-    /* ── Update semua switch di halaman ── */
-    function syncAllSwitches(isLight) {
+        // Sync semua checkbox: checked = light (ON = terang, sesuai Pilihan A)
         document.querySelectorAll('.dpg-theme-checkbox').forEach(function (cb) {
             cb.checked = isLight;
         });
 
-        // Update label teks jika ada
-        document.querySelectorAll('.theme-label').forEach(function (label) {
-            label.textContent = isLight ? 'Light' : 'Dark';
+        // Sync label teks
+        document.querySelectorAll('.theme-label').forEach(function (el) {
+            el.textContent = isLight ? 'Light' : 'Dark';
         });
     }
 
-    /* ── Toggle handler ── */
-    function handleToggle(e) {
-        var isLight = e.target.checked;
-        applyTheme(isLight);
-        saveTheme(isLight);
-        syncAllSwitches(isLight);
-    }
+    // Inisialisasi — default: dark
+    applyTheme(getSaved() || 'dark');
 
-    /* ── Init: jalankan setelah DOM siap ── */
-    function init() {
-        var isLight = getSavedTheme();
-
-        // Terapkan tema
-        applyTheme(isLight);
-
-        // Bind semua checkbox switch
-        document.querySelectorAll('.dpg-theme-checkbox').forEach(function (cb) {
-            cb.checked = isLight;
-            cb.addEventListener('change', handleToggle);
-        });
-
-        // Sync label
-        syncAllSwitches(isLight);
-
-        // Backward compatibility: tombol lama (btn-theme-toggle)
-        var oldBtn = document.getElementById('themeToggleBtn');
-        if (oldBtn) {
-            oldBtn.style.display = 'none'; // Sembunyikan tombol lama
+    // Event listener untuk semua checkbox toggle di halaman
+    document.addEventListener('change', function (e) {
+        if (e.target && e.target.classList.contains('dpg-theme-checkbox')) {
+            // checked = ON = Light mode (Pilihan A)
+            applyTheme(e.target.checked ? 'light' : 'dark');
         }
-    }
-
-    // Jalankan segera jika DOM sudah siap, atau tunggu DOMContentLoaded
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
-
-    // Ekspos fungsi ke global jika diperlukan
-    window.dpgTheme = {
-        toggle: function () {
-            var isLight = !document.body.classList.contains(LIGHT_CLASS);
-            applyTheme(isLight);
-            saveTheme(isLight);
-            syncAllSwitches(isLight);
-        },
-        setLight: function () {
-            applyTheme(true);
-            saveTheme(true);
-            syncAllSwitches(true);
-        },
-        setDark: function () {
-            applyTheme(false);
-            saveTheme(false);
-            syncAllSwitches(false);
-        }
-    };
-
+    });
 })();

@@ -316,6 +316,7 @@ body { padding-top: 60px !important; margin: 0; }
 </nav>
 
 <script>
+/* ── SIDEBAR & DROPDOWN ── */
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('open');
     document.getElementById('sidebarOverlay').classList.toggle('show');
@@ -333,4 +334,43 @@ document.addEventListener('click', function(e) {
         btn.classList.remove('open');
     }
 });
+
+/* ── DARK / LIGHT MODE (Pilihan A: OFF=Dark default, ON=Light) ── */
+(function () {
+    var STORAGE_KEY = 'sija-theme';
+
+    function getSaved()  { return localStorage.getItem(STORAGE_KEY); }
+    function setSaved(t) { localStorage.setItem(STORAGE_KEY, t); }
+
+    function applyTheme(theme) {
+        setSaved(theme);
+        var isLight = (theme === 'light');
+
+        // Sistem: body.light-mode (konsisten dengan welcome.blade & theme-mode.css)
+        if (isLight) {
+            document.body.classList.add('light-mode');
+        } else {
+            document.body.classList.remove('light-mode');
+        }
+
+        // checked = ON = Light (Pilihan A: toggle ON = terang)
+        document.querySelectorAll('.dpg-theme-checkbox').forEach(function (cb) {
+            cb.checked = isLight;
+        });
+
+        // Label: OFF→"Dark", ON→"Light"
+        document.querySelectorAll('.theme-label').forEach(function (el) {
+            el.textContent = isLight ? 'Light' : 'Dark';
+        });
+    }
+
+    // Default: dark
+    applyTheme(getSaved() || 'dark');
+
+    document.addEventListener('change', function (e) {
+        if (e.target && e.target.classList.contains('dpg-theme-checkbox')) {
+            applyTheme(e.target.checked ? 'light' : 'dark');
+        }
+    });
+})();
 </script>
