@@ -19,13 +19,12 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-     public function boot(): void
+ public function boot(): void
     {
-        // Force HTTPS di production (Railway)
-        // Ini fix Mixed Content error: asset() akan generate https:// bukan http://
+        // Force HTTPS di production (Railway) — fix Mixed Content error
         if (config('app.env') === 'production') {
-            URL::forceScheme('https');
+            \Illuminate\Support\Facades\URL::forceScheme('https');
         }
+    }
 }
-
-}
+ 
