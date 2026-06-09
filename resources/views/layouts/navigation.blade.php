@@ -160,32 +160,60 @@ body { padding-top: 60px !important; margin: 0; }
 /* ── THEME SWITCH ────────────────────────────────────── */
 .theme-switch {
     position: relative;
-    display: inline-block;
-    width: 38px; height: 22px;
+    display: inline-flex;
+    align-items: center;
     cursor: pointer; flex-shrink: 0;
 }
-.theme-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
-.track {
-    position: absolute; inset: 0;
-    background: rgba(255,255,255,.15);
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,.2);
-    transition: background .25s;
+.dpg-theme-checkbox {
+    position: absolute;
+    opacity: 0; width: 0; height: 0;
+    pointer-events: none;
 }
-.theme-switch input:checked ~ .track {
-    background: #3b82f6;
-    border-color: #3b82f6;
+.track {
+    width: 56px; height: 28px;
+    border-radius: 99px;
+    position: relative;
+    display: flex; align-items: center;
+    padding: 0 3px;
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,.4);
+    transition: background .3s ease, box-shadow .3s ease;
+}
+.track::after {
+    content: '✦ · ✦';
+    position: absolute; right: 6px;
+    font-size: 6px; color: rgba(255,255,255,.4);
+    letter-spacing: 1px; pointer-events: none;
+    transition: opacity .3s ease;
+}
+.dpg-theme-checkbox:checked ~ .track {
+    background: linear-gradient(135deg, #f0c060, #fde68a, #fbbf24);
+    box-shadow: 0 0 10px rgba(240,192,96,.3), inset 0 1px 2px rgba(255,255,255,.4);
+}
+.dpg-theme-checkbox:checked ~ .track::after { opacity: 0; }
+.theme-switch:hover .track {
+    box-shadow: inset 0 2px 4px rgba(0,0,0,.4), 0 0 0 3px rgba(255,255,255,.08);
 }
 .thumb {
-    position: absolute;
-    top: 3px; left: 3px;
-    width: 16px; height: 16px;
-    background: white;
+    width: 22px; height: 22px;
     border-radius: 50%;
-    transition: transform .25s;
-    box-shadow: 0 1px 4px rgba(0,0,0,.3);
+    position: absolute;
+    left: 3px; top: 50%;
+    transform: translateY(-50%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; z-index: 1;
+    background: radial-gradient(circle at 35%, #c8d6f0, #7e9ec8);
+    box-shadow: 0 2px 6px rgba(0,0,0,.5);
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1),
+                background .3s ease, box-shadow .3s ease;
 }
-.theme-switch input:checked ~ .thumb { transform: translateX(16px); }
+.thumb::after { content: '🌙'; font-size: 11px; line-height: 1; }
+.dpg-theme-checkbox:checked ~ .thumb {
+    transform: translateY(-50%) translateX(28px);
+    background: radial-gradient(circle at 35%, #fffde7, #fbbf24);
+    box-shadow: 0 2px 8px rgba(251,191,36,.6), 0 0 12px rgba(251,191,36,.3);
+}
+.dpg-theme-checkbox:checked ~ .thumb::after { content: '☀️'; }
 </style>
 
 {{-- ── TOPBAR ── --}}
